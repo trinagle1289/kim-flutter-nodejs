@@ -1,0 +1,3 @@
+// 會使用到的套件
+@tensorflow/tfjs-node-gpu // TFJS 的 NPM GPU 套件
+canvas // 影像處理套件

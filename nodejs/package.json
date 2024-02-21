@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "@tensorflow/tfjs-node-gpu": "^4.17.0",
+    "canvas": "^2.11.2"
+  },
+  "name": "nodejs-package",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/trinagle1289/kim-flutter-nodejs.git"
+  },
+  "keywords": [
+    "kim",
+    "flutter",
+    "nodejs"
+  ],
+  "author": "KeXian Kuo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trinagle1289/kim-flutter-nodejs/issues"
+  },
+  "homepage": "https://github.com/trinagle1289/kim-flutter-nodejs#readme",
+  "description": ""
+}
