@@ -72,10 +72,27 @@ async function savePNGImage(path: string, imgIn: Buffer | string) {
 }
 /** 在圖片中繪製圓圈 */
 async function drawCirclesInImage(
-  path: string,
   imgIn: Buffer | string,
-  circles: number[][]
-) {}
+  circles: number[][],
+  radius: number
+) {
+  let img = await canvasLib.loadImage(imgIn); // 載入圖片
+  let canvas = canvasLib.createCanvas(img.width, img.height); // 建立畫布
+
+  // 進行繪圖
+  let ctx = canvas.getContext("2d");
+
+  ctx.drawImage(img, 0, 0); // 繪製圖片
+  // 畫圓形(紅色)
+  ctx.fillStyle = "rgba(255,0,0,255)";
+  circles.forEach((e) => {
+    ctx.beginPath();
+    ctx.arc(e[0], e[1], radius, 0, 2 * Math.PI);
+    ctx.fill();
+  });
+
+  return canvas.toBuffer("image/jpeg");
+}
 
 /// 主程式
 let model = await loadModel(MODEL_PATH); // 模型物件
