@@ -6,6 +6,7 @@
   "name": "nodejs-package",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "devDependencies": {},
   "scripts": {
     "test": "node index.js"
