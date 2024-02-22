@@ -49,7 +49,7 @@ async function makeSquareImage(imgIn: Buffer | string) {
 
   // 設定圖片繪製位置
   let drawPosX = widthIsBigger ? 0 : Math.floor((img.height - img.width) / 2);
-  let drawPosY = widthIsBigger ? -Math.floor((img.height - img.width) / 2) : 0;
+  let drawPosY = widthIsBigger ? Math.floor((img.width - img.height) / 2) : 0;
 
   // 進行繪圖，並將圖片放置於中心
   let ctx = canvas.getContext("2d");
