@@ -3,9 +3,10 @@ import * as http from "node:http";
 import * as fs from "node:fs";
 import * as tf from "@tensorflow/tfjs-node-gpu";
 import * as canvasLib from "canvas";
+import { imageMeta } from "image-meta";
 
 /// 常數
-const MODEL_PATH = "models/movenet/singlepose/lightning/model.json";
+const MODEL_PATH = "models/movenet/singlepose/thunder/model.json";
 const IMG_PATH = "images/pexels-photo-4384679.jpeg";
 
 /// 函式
@@ -93,6 +94,37 @@ async function drawCirclesInImage(
 
   return canvas.toBuffer("image/jpeg");
 }
+/** 在圖片上繪製MoveNet的預測結果 */
+async function saveMovenetImage(
+  path: string,
+  img: string,
+  result: tf.Tensor,
+  radius: number = 30
+) {
+  let meta = imageMeta(fs.readFileSync(img));
+  if (meta.width == undefined || meta.height == undefined) {
+    return;
+  }
+
+  // 變數
+  let widthIsBigger = meta.width > meta.height; // 確認寬度是否比高度大
+  let size = widthIsBigger ? meta.width : meta.height; // 最大的長度
+  let diffX = !widthIsBigger ? Math.floor((meta.height - meta.width) / 2) : 0; // 要調整的 X 軸位置
+  let diffY = widthIsBigger ? Math.floor((meta.width - meta.height) / 2) : 0; // 要調整的 Y 軸位置
+
+  // 取得關鍵點座標
+  let data = (await result.squeeze().array()) as number[][];
+  let kpts: number[][] = [[]];
+  for (let idx = 0; idx < data.length; idx++) {
+    kpts[idx] = [
+      Math.floor(data[idx][1] * size - diffX),
+      Math.floor(data[idx][0] * size - diffY),
+    ];
+  }
+
+  // 繪圖並儲存成影像
+  await savePNGImage("result.png", await drawCirclesInImage(img, kpts, radius));
+}
 
 /// 主程式
 let model = await loadModel(MODEL_PATH); // 模型物件
@@ -105,4 +137,4 @@ let resizedTensor = tensorResizeShape(
   "int32"
 );
 let result = model.predict(resizedTensor) as tf.Tensor; // 使用模型預測結果
-result.print();
+await saveMovenetImage("result.png", IMG_PATH, result, 3989/256);
