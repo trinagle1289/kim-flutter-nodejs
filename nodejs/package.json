@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "@tensorflow/tfjs-node-gpu": "^4.17.0",
-    "canvas": "^2.11.2"
+    "canvas": "^2.11.2",
+    "image-size": "^1.1.1"
   },
   "name": "nodejs-package",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-  "devDependencies": {},
   "scripts": {
     "test": "node index.js"
   },
