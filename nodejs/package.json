@@ -2,7 +2,7 @@
   "dependencies": {
     "@tensorflow/tfjs-node-gpu": "^4.17.0",
     "canvas": "^2.11.2",
-    "image-size": "^1.1.1"
+    "image-meta": "^0.2.0"
   },
   "name": "nodejs-package",
   "version": "1.0.0",
