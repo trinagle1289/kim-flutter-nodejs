@@ -1,21 +1,42 @@
+/// 套件
 import * as http from "node:http";
 import * as fs from "node:fs";
 import * as tf from "@tensorflow/tfjs-node-gpu";
 import * as canvasLib from "canvas";
 
-// 常數
+/// 常數
 const MODEL_PATH = "models/movenet/singlepose/lightning/model.json";
 const IMG_PATH = "images/pexels-photo-4384679.jpeg";
 
-// 函式
+/// 函式
 /** 加載模型 */
 async function loadModel(path: string) {
   return tf.loadGraphModel(`file://${path}`);
 }
 /** 影像輸入轉換 */
-function tensorResizeShape(image, shape?) {
-    let resizedImage = tf.image.resizeBilinear(image, [shape[1], shape[2]]);
-    return tf.reshape(resizedImage, shape);
+function tensorResizeShape(
+  image: tf.Tensor3D | tf.Tensor4D,
+  shape?: number[] | undefined,
+  dtype?: tf.DataType
+) {
+  // 防止 shape 數值出錯對策
+  if (shape == undefined) {
+    console.log(`shape 參數為 undefined, 將回傳輸入影像`);
+    return image;
+  }
+  if (shape.length < 3) {
+    console.log(`shape 陣列小於 3, 將回傳輸入影像`);
+    return image;
+  }
+
+  // 調整圖片大小
+  let resizedImage = tf.image.resizeBilinear(image, [shape[1], shape[2]]);
+  // 設定圖片格式
+  if (dtype != undefined) {
+    resizedImage = resizedImage.cast(dtype);
+  }
+
+  return tf.reshape(resizedImage, shape);
 }
 /** 製作方形圖片 */
 async function makeSquareImage(imgIn: Buffer | string) {
@@ -36,7 +57,7 @@ async function makeSquareImage(imgIn: Buffer | string) {
   ctx.fillRect(0, 0, canvas.width, canvas.height); // 繪製背景顏色
   ctx.drawImage(img, drawPosX, drawPosY); // 繪製圖片
 
-  return canvas.toBuffer("image/png");
+  return canvas.toBuffer("image/jpeg");
 }
 /** 儲存PNG圖片 */
 async function savePNGImage(path: string, imgIn: Buffer | string) {
@@ -44,17 +65,22 @@ async function savePNGImage(path: string, imgIn: Buffer | string) {
   let canvas = canvasLib.createCanvas(img.width, img.height); // 建立畫布
   canvas.getContext("2d").drawImage(img, 0, 0); // 進行繪圖
 
-  let out = fs.createWriteStream(path);
-  let stream = canvas.createPNGStream();
-  stream.pipe(out);
+  let out = fs.createWriteStream(path); // 檔案輸出物件
+  let stream = canvas.createPNGStream(); // 建立 PNG 流
+  stream.pipe(out); // PNG 流綁定到檔案輸出物件
 
   out.on("finish", () => console.log("PNG 圖片檔已成功建立!"));
 }
 
-// 主程式
+/// 主程式
 let model = await loadModel(MODEL_PATH); // 模型物件
-let imgBuf = await makeSquareImage(IMG_PATH); // 圖片緩衝區
-let imgTensor = tf.node.decodeImage(imgBuf);
-let inputSize = model.inputs[0].shape!;
-let resizedTensor = await tensorResizeShape(imgTensor, inputSize)
-let result = model.predict(resizedTensor);
+let imgBuf = await makeSquareImage(IMG_PATH); // 圖片緩衝
+let imgTensor = tf.node.decodeImage(imgBuf); // 圖片張量
+// 調整張量大小
+let resizedTensor = tensorResizeShape(
+  imgTensor,
+  model.inputs[0].shape,
+  "int32"
+);
+let result = model.predict(resizedTensor) as tf.Tensor; // 使用模型預測結果
+result.print();
