@@ -68,9 +68,14 @@ async function savePNGImage(path: string, imgIn: Buffer | string) {
   let out = fs.createWriteStream(path); // 檔案輸出物件
   let stream = canvas.createPNGStream(); // 建立 PNG 流
   stream.pipe(out); // PNG 流綁定到檔案輸出物件
-
   out.on("finish", () => console.log("PNG 圖片檔已成功建立!"));
 }
+/** 在圖片中繪製圓圈 */
+async function drawCirclesInImage(
+  path: string,
+  imgIn: Buffer | string,
+  circles: number[][]
+) {}
 
 /// 主程式
 let model = await loadModel(MODEL_PATH); // 模型物件
