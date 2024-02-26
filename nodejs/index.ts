@@ -1,9 +1,5 @@
 /// 套件
-import * as http from "node:http";
-import * as fs from "node:fs";
 import * as tf from "@tensorflow/tfjs-node-gpu";
-import * as canvasLib from "canvas";
-import { imageMeta } from "image-meta";
 
 import { makeSquareImage } from "./src/img_process";
 import { loadModel, tensorResizeShape } from "./src/tf_model";

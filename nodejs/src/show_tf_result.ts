@@ -4,7 +4,14 @@ import { imageMeta } from "image-meta";
 
 import * as img_process from "./img_process";
 
-/** 在圖片上繪製MoveNet的預測結果 */
+/**
+ * 在圖片上繪製 MoveNet 的預測結果
+ * @param path 儲存 PNG 影像路徑
+ * @param img 輸入影像路徑
+ * @param result MoveNet 預測結果
+ * @param radius 繪製紅色圓形的半徑
+ * @returns
+ */
 export async function saveMovenetResult(
   path: string,
   img: string,
@@ -12,6 +19,8 @@ export async function saveMovenetResult(
   radius: number = 30
 ) {
   let meta = imageMeta(fs.readFileSync(img));
+
+  // 無法抓到圖片資訊
   if (meta.width == undefined || meta.height == undefined) {
     return;
   }
