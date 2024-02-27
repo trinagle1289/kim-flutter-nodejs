@@ -1,3 +1,6 @@
+# 不追蹤 task 檔案，因為容量都大於 10MB
+assets/models/mediapipe/
+
 # Logs
 logs
 *.log
