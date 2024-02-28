@@ -104,7 +104,7 @@ abstract class ImageRenderer {
   protected abstract getLines(result: Pose[]): number[][];
 }
 
-/** MoveNet單人姿勢結果渲染器 */
+/** 姿勢渲染器 */
 export class PoseRenderer extends ImageRenderer {
   public async renderResult(src: string, result: Pose[]): Promise<this> {
     this._imgBuffer = fs.readFileSync(src); // 設定影像Buffer
