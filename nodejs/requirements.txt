@@ -1,5 +1,5 @@
 ## 會使用到的套件
 @tensorflow/tfjs-node-gpu # TFJS 的 NPM GPU 套件
-@mediapipe/tasks-vision # MediaPipe
+# @mediapipe/tasks-vision # MediaPipe
 canvas # 影像處理套件
 image-meta # 取得影像資料
