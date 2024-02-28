@@ -105,7 +105,7 @@ abstract class ImageRenderer {
 }
 
 /** MoveNet單人姿勢結果渲染器 */
-export class MovenetSinglePoseRenderer extends ImageRenderer {
+export class SinglePoseRenderer extends ImageRenderer {
   public async renderResult(src: string, result: Pose[]): Promise<this> {
     this._imgBuffer = fs.readFileSync(src); // 設定影像Buffer
     let circles = this.getCircles(result); // 取得圓圈
