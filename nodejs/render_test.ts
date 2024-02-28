@@ -3,21 +3,19 @@ import * as pose_detection from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-node-gpu";
 import * as img_renderer from "./src/img_renderer";
 
-const IMG_PATH = "assets/images/pexels-photo-4384679.jpeg";
+const IMG_PATH = "assets/images/maxresdefault.jpg";
 
 await tf.setBackend("tensorflow");
 let img = tf.node.decodeImage(fs.readFileSync(IMG_PATH)) as tf.Tensor3D;
 
-let model = pose_detection.SupportedModels.BlazePose;
-let cfg: pose_detection.BlazePoseTfjsModelConfig = {
-  runtime: "tfjs",
-  modelType: "full",
+let model = pose_detection.SupportedModels.MoveNet;
+let cfg: pose_detection.MoveNetModelConfig = {
+  modelType: pose_detection.movenet.modelType.MULTIPOSE_LIGHTNING,
 };
 let detector = await pose_detection.createDetector(model, cfg);
 
-await tf.setBackend("cpu");
 let result = await detector.estimatePoses(img);
-console.log(result[0].keypoints);
+console.log(result);
 
-let renderer = new img_renderer.SinglePoseRenderer();
-await(await renderer.renderResult(IMG_PATH, result)).savePNG("test3.png");
+let renderer = new img_renderer.PoseRenderer();
+await (await renderer.renderResult(IMG_PATH, result)).savePNG("test4.png");
