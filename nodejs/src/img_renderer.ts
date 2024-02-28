@@ -105,7 +105,7 @@ abstract class ImageRenderer {
 }
 
 /** MoveNet單人姿勢結果渲染器 */
-export class SinglePoseRenderer extends ImageRenderer {
+export class PoseRenderer extends ImageRenderer {
   public async renderResult(src: string, result: Pose[]): Promise<this> {
     this._imgBuffer = fs.readFileSync(src); // 設定影像Buffer
     let circles = this.getCircles(result); // 取得圓圈
@@ -114,12 +114,16 @@ export class SinglePoseRenderer extends ImageRenderer {
   }
 
   protected getCircles(result: Pose[]): number[][] {
-    let kpts: number[][] = []; // 關鍵點座標
+    let circles: number[][] = []; // 關鍵點座標
+
     // 提取關鍵點
-    result[0].keypoints.forEach((e) => {
-      kpts.push([Math.floor(e.x), Math.floor(e.y)]);
+    result.forEach((person) => {
+      person.keypoints.forEach((kpt) => {
+        circles.push([Math.floor(kpt.x), Math.floor(kpt.y)]);
+      });
     });
-    return kpts;
+
+    return circles;
   }
 
   protected getLines(result: Pose[]): number[][] {
