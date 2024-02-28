@@ -1,9 +1,9 @@
 /// 套件
 import * as tf from "@tensorflow/tfjs-node-gpu";
 
-import { makeSquareImage } from "./src/img_process";
-import { loadModel, tensorResizeShape } from "./src/tfjs_lib";
-import { saveMovenetResult } from "./src/show_tf_result";
+import { makeSquareImage } from "../src/img_process";
+import { loadModel, tensorResizeShape } from "../src/tfjs_lib";
+import { saveMovenetResult } from "../src/show_tf_result";
 
 /// 常數
 const MODEL_PATH = "models/movenet/singlepose/thunder/model.json";
