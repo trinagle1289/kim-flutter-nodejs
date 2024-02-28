@@ -1,5 +1,7 @@
 ## 會使用到的套件
 @tensorflow/tfjs-node-gpu # TFJS 的 NPM GPU 套件
 # @mediapipe/tasks-vision # MediaPipe
+@tensorflow-models/pose-detection # 加載了 TensorFlow 的全部模型 
+@mediapipe/pose # 載入 Mediapipe 模型
 canvas # 影像處理套件
 image-meta # 取得影像資料
