@@ -3,7 +3,7 @@ import { SupportedModels } from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-node-gpu";
 
 /** 姿勢偵測器建構器 */
-class PoseDetectorBuilder {
+export class PoseDetectorBuilder {
   /** 模型設定 */
   private _modelCfg:
     | pose_detection.PosenetModelConfig
@@ -47,7 +47,7 @@ class PoseDetectorBuilder {
 }
 
 /** 姿勢偵測器 */
-class PoseDetector {
+export class PoseDetector {
   /** 模型種類 */
   public modelType: SupportedModels;
   /** 偵測器 */
