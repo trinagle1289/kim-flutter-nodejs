@@ -7,10 +7,21 @@ import { Pose } from "@tensorflow-models/pose-detection";
 abstract class ImageRenderer {
   /** 影像Buffer */
   protected _imgBuffer: Buffer;
+  /** 圓圈半徑 */
+  protected circleRadius: number = 10;
 
   /** 取得影像Buffer */
   public get ImageBuffer(): Buffer {
     return this._imgBuffer;
+  }
+
+  /** 設定圓圈半徑
+   * @param radius 圓圈半徑
+   * @returns 渲染器自身
+   */
+  public withCircleRadius(radius: number) {
+    this.circleRadius = radius;
+    return this;
   }
 
   /** 繪製多個圓圈
@@ -21,7 +32,7 @@ abstract class ImageRenderer {
    */
   protected async drawCircles(
     circles: number[][],
-    radius: number = 10,
+    radius: number = this.circleRadius,
     rgb: number[] = [255, 0, 0]
   ): Promise<this> {
     let imgData = await canvasLib.loadImage(this._imgBuffer);
@@ -109,7 +120,7 @@ export class PoseRenderer extends ImageRenderer {
   public async renderResult(src: string, result: Pose[]): Promise<this> {
     this._imgBuffer = fs.readFileSync(src); // 設定影像Buffer
     let circles = this.getCircles(result); // 取得圓圈
-    this._imgBuffer = (await this.drawCircles(circles, 10))._imgBuffer; // 畫圈
+    this._imgBuffer = (await this.drawCircles(circles))._imgBuffer; // 畫圈
     return this;
   }
 
