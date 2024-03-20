@@ -1,0 +1,25 @@
+{
+  "name": "video-decoder",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "tsx index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/trinagle1289/kim-flutter-nodejs.git"
+  },
+  "keywords": [
+    "nodejs",
+    "video",
+    "image"
+  ],
+  "author": "Kuo KeXian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trinagle1289/kim-flutter-nodejs/issues"
+  },
+  "homepage": "https://github.com/trinagle1289/kim-flutter-nodejs#readme",
+  "description": "",
+  "type": "module"
+}
