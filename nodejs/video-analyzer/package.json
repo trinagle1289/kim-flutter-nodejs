@@ -21,6 +21,7 @@
     "url": "https://github.com/trinagle1289/kim-flutter-nodejs/issues"
   },
   "homepage": "https://github.com/trinagle1289/kim-flutter-nodejs#readme",
+  "type": "module",
   "dependencies": {
     "@mediapipe/pose": "^0.5.1675469404",
     "@tensorflow-models/pose-detection": "^2.1.3",
