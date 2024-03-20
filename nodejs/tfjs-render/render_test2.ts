@@ -1,10 +1,15 @@
 import { PoseRenderer } from "./src/img_renderer";
-import { PoseDetectorBuilder } from "./src/pose_models";
+import {
+  BlazeposeTfjs,
+  MovenetML,
+  MovenetSL,
+  MovenetST,
+  PosenetResNet50,
+  PosenetMobileNetV1,
+} from "./src/tf_models";
 
 import * as fs from "node:fs";
 import * as tfn from "@tensorflow/tfjs-node-gpu";
-import * as pose_detection from "@tensorflow-models/pose-detection";
-import { SupportedModels } from "@tensorflow-models/pose-detection";
 
 // 常數
 const IMG_PATH = "assets/images/girl-4051811_960_720.jpg"; // 影像路徑
@@ -21,70 +26,13 @@ console.log(
 // 取得影像張量
 let imgTensor = tfn.node.decodeImage(fs.readFileSync(IMG_PATH)) as tfn.Tensor3D;
 
-// 模型設定
-let blazeposeTfjsCfg: pose_detection.BlazePoseTfjsModelConfig = {
-  runtime: "tfjs",
-};
-let movenetMLCfg: pose_detection.MoveNetModelConfig = {
-  modelType: pose_detection.movenet.modelType.MULTIPOSE_LIGHTNING,
-};
-let movenetSLCfg: pose_detection.MoveNetModelConfig = {
-  modelType: pose_detection.movenet.modelType.SINGLEPOSE_LIGHTNING,
-};
-let movenetSTCfg: pose_detection.MoveNetModelConfig = {
-  modelType: pose_detection.movenet.modelType.SINGLEPOSE_THUNDER,
-};
-let posenetResNet50Cfg: pose_detection.PosenetModelConfig = {
-  architecture: "ResNet50",
-  outputStride: 16,
-  inputResolution: {
-    width: 257,
-    height: 257,
-  },
-};
-let posenetMobileNetV1Cfg: pose_detection.PosenetModelConfig = {
-  architecture: "MobileNetV1",
-  outputStride: 16,
-  inputResolution: {
-    width: 257,
-    height: 257,
-  },
-};
-
-// 模型物件
-let blazeposeTfjs = await new PoseDetectorBuilder()
-  .withModel(SupportedModels.BlazePose)
-  .withConfig(blazeposeTfjsCfg)
-  .build();
-let movenetML = await new PoseDetectorBuilder()
-  .withModel(SupportedModels.MoveNet)
-  .withConfig(movenetMLCfg)
-  .build();
-let movenetSL = await new PoseDetectorBuilder()
-  .withModel(SupportedModels.MoveNet)
-  .withConfig(movenetSLCfg)
-  .build();
-let movenetST = await new PoseDetectorBuilder()
-  .withModel(SupportedModels.MoveNet)
-  .withConfig(movenetSTCfg)
-  .build();
-let posenetResNet50 = await new PoseDetectorBuilder()
-  .withModel(SupportedModels.PoseNet)
-  .withConfig(posenetResNet50Cfg)
-  .build();
-let posenetMobileNetV1 = await new PoseDetectorBuilder()
-  .withModel(SupportedModels.PoseNet)
-  .withConfig(posenetMobileNetV1Cfg)
-  .build();
-console.log("Finish Building Models");
-
 // 進行模型運算
-let blazeposeTfjsResult = await blazeposeTfjs.estimatePoses(imgTensor);
-let movenetMLResult = await movenetML.estimatePoses(imgTensor);
-let movenetSLResult = await movenetSL.estimatePoses(imgTensor);
-let movenetSTResult = await movenetST.estimatePoses(imgTensor);
-let posenetResNet50Result = await posenetResNet50.estimatePoses(imgTensor);
-let posenetMobileNetV1Result = await posenetMobileNetV1.estimatePoses(
+let blazeposeTfjsResult = await BlazeposeTfjs.estimatePoses(imgTensor);
+let movenetMLResult = await MovenetML.estimatePoses(imgTensor);
+let movenetSLResult = await MovenetSL.estimatePoses(imgTensor);
+let movenetSTResult = await MovenetST.estimatePoses(imgTensor);
+let posenetResNet50Result = await PosenetResNet50.estimatePoses(imgTensor);
+let posenetMobileNetV1Result = await PosenetMobileNetV1.estimatePoses(
   imgTensor
 );
 
