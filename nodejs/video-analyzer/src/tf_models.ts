@@ -4,6 +4,16 @@ import * as tfn from "@tensorflow/tfjs-node-gpu";
 import * as pose_detection from "@tensorflow-models/pose-detection";
 import { SupportedModels } from "@tensorflow-models/pose-detection";
 
+// 對外使用變數
+export {
+  BlazeposeTfjs,
+  MovenetML,
+  MovenetSL,
+  MovenetST,
+  PosenetResNet50,
+  PosenetMobileNetV1,
+};
+
 // 設定運算後端
 console.log(
   (await tfn.setBackend("tensorflow"))
@@ -67,13 +77,3 @@ var PosenetMobileNetV1 = await new PoseDetectorBuilder()
   .withConfig(posenetMobileNetV1Cfg)
   .build();
 console.log("Finish Building Models");
-
-// 對外使用變數
-export {
-  BlazeposeTfjs,
-  MovenetML,
-  MovenetSL,
-  MovenetST,
-  PosenetResNet50,
-  PosenetMobileNetV1,
-};
