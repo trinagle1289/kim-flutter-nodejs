@@ -21,5 +21,11 @@
   },
   "homepage": "https://github.com/trinagle1289/kim-flutter-nodejs#readme",
   "description": "",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "ffmpeg": "^0.0.4"
+  },
+  "devDependencies": {
+    "@types/ffmpeg": "^1.0.7"
+  }
 }

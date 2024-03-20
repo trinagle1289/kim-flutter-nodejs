@@ -1,1 +1,1 @@
-@rse/ffmpeg
+ffmpeg
