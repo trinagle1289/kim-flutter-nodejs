@@ -86,7 +86,7 @@ abstract class ImageRenderer {
     return this;
   }
   /** 儲存為PNG圖片
-   * @param path
+   * @param path 儲存路徑
    */
   public async savePNG(path: string): Promise<void> {
     let imgOut = await canvasLib.loadImage(this._imgBuffer);
@@ -101,10 +101,10 @@ abstract class ImageRenderer {
   }
 
   /** 取得渲染模型結果
-   * @param src 輸入影像路徑
+   * @param sourceImgPath 原始影像路徑
    * @param result 此渲染器
    */
-  public abstract renderResult(src: string, result: Pose[]): Promise<this>;
+  public abstract renderResult(sourceImgPath: string, result: Pose[]): Promise<this>;
   /** 取得圓圈陣列
    * @param result 圓圈陣列
    */
@@ -117,8 +117,8 @@ abstract class ImageRenderer {
 
 /** 姿勢渲染器 */
 export class PoseRenderer extends ImageRenderer {
-  public async renderResult(src: string, result: Pose[]): Promise<this> {
-    this._imgBuffer = fs.readFileSync(src); // 設定影像Buffer
+  public async renderResult(sourceImgPath: string, result: Pose[]): Promise<this> {
+    this._imgBuffer = fs.readFileSync(sourceImgPath); // 設定影像Buffer
     let circles = this.getCircles(result); // 取得圓圈
     this._imgBuffer = (await this.drawCircles(circles))._imgBuffer; // 畫圈
     return this;
