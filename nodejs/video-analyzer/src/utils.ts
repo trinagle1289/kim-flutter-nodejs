@@ -4,9 +4,18 @@ import * as pathLib from "node:path";
 /** 暫存資料夾 (位於 tmp/) */
 export class TmpDir {
   private path: string;
-  public constructor(_path: string = "./tmp") {
+  /** 建立暫存資料夾
+   * @param _path 建立路徑
+   * @param toClean 是否清理資料夾
+   */
+  public constructor(_path: string = "./tmp", toClean: boolean = false) {
     this.path = _path;
-    fs.mkdir(this.path, (err) => console.log("Finish Creating TMP Directory."));
+    if (!fs.existsSync(this.path)) {
+      fs.mkdir(this.path, (_err) =>
+        console.log("Finish Creating TMP Directory.")
+      );
+    }
+    if (toClean) this.deleteAllFiles();
   }
 
   /** 資料夾路徑 */
