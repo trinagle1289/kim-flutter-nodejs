@@ -17,18 +17,15 @@ const VIDEO_PATH = `${VIDEO_DIR}/${VIDEO_NAME}${VIDEO_TYPE}`;
 tfn.setBackend("tensorflow");
 
 // 清理並建立暫存資料夾
-let tmp = new TmpDir("./tmp");
-let tmp2 = new TmpDir("./tmp2");
-let tmp3 = new TmpDir("./tmp3");
-tmp.deleteAllFiles();
-tmp2.deleteAllFiles();
-tmp3.deleteAllFiles();
+let tmp = new TmpDir("./tmp", true);
+let tmp2 = new TmpDir("./tmp2", true);
+let tmp3 = new TmpDir("./tmp3", true);
 
 // 建立所有影像幀
 let vidIn = await new ffmpeg(VIDEO_PATH);
 await vidIn
   .setVideoSize("1080x1920", true, true)
-  .save(`${tmp.DirPath}/${VIDEO_NAME}(%05d).png`);
+  .save(`${tmp.DirPath}/${VIDEO_NAME}(%03d).png`);
 
 // 儲存渲染後的所有圖片
 await tmp.handleAllFiles(async (_name, _path) => {
