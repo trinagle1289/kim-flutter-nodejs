@@ -87,8 +87,9 @@ abstract class ImageRenderer {
   }
   /** 儲存為PNG圖片
    * @param path 儲存路徑
+   * @param showLog 是否需要顯示運行狀態 
    */
-  public async savePNG(path: string): Promise<void> {
+  public async savePNG(path: string, showLog: boolean = false): Promise<void> {
     let imgOut = await canvasLib.loadImage(this._imgBuffer);
     let canvas = canvasLib.createCanvas(imgOut.width, imgOut.height);
     canvas.getContext("2d").drawImage(imgOut, 0, 0);
@@ -97,14 +98,17 @@ abstract class ImageRenderer {
     let stream = canvas.createPNGStream(); // 建立 PNG 流
     stream.pipe(out); // PNG 流綁定到檔案輸出物件
 
-    out.on("finish", () => console.log("PNG 圖片檔已成功建立!"));
+    if (showLog) out.on("finish", () => console.log("PNG 圖片檔已成功建立!"));
   }
 
   /** 取得渲染模型結果
    * @param sourceImgPath 原始影像路徑
    * @param result 此渲染器
    */
-  public abstract renderResult(sourceImgPath: string, result: Pose[]): Promise<this>;
+  public abstract renderResult(
+    sourceImgPath: string,
+    result: Pose[]
+  ): Promise<this>;
   /** 取得圓圈陣列
    * @param result 圓圈陣列
    */
@@ -117,7 +121,10 @@ abstract class ImageRenderer {
 
 /** 姿勢渲染器 */
 export class PoseRenderer extends ImageRenderer {
-  public async renderResult(sourceImgPath: string, result: Pose[]): Promise<this> {
+  public async renderResult(
+    sourceImgPath: string,
+    result: Pose[]
+  ): Promise<this> {
     this._imgBuffer = fs.readFileSync(sourceImgPath); // 設定影像Buffer
     let circles = this.getCircles(result); // 取得圓圈
     this._imgBuffer = (await this.drawCircles(circles))._imgBuffer; // 畫圈
