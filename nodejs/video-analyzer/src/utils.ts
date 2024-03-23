@@ -32,12 +32,14 @@ export class TmpDir {
    * @param callback 對單個檔案的操作
    */
   public async handleAllFiles(
-    callback: (_name: string, _path: string) => Promise<void>
+    callback: (_file: string, _path: string, _idx: number) => Promise<void>
   ): Promise<void> {
     let _files = fs.readdirSync(this.path);
-
-    for (let _file of _files)
-      await callback(_file, pathLib.join(this.path, _file));
+    for (let _idx = 0; _idx < _files.length; _idx++) {
+      let _file = _files[_idx];
+      let _path = pathLib.join(this.path, _file);
+      await callback(_file, _path, _idx);
+    }
   }
 
   /** 刪除資料夾內容 */
