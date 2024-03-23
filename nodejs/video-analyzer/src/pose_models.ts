@@ -76,7 +76,7 @@ export class PoseDetector {
     let originBackend = tf.getBackend();
 
     if (this.modelType == SupportedModels.MoveNet) {
-      tf.setBackend("tensorflow");
+      tf.setBackend(originBackend);
     } else {
       tf.setBackend("cpu");
     }
