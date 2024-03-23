@@ -29,8 +29,10 @@ await vidIn
 
 // 儲存渲染後的所有圖片
 await tmp.handleAllFiles(async (_name, _path) => {
+  tfn.engine().startScope(); // 用於清理 Tensor 資料，跟 endScope() 搭配
   let img = tfn.node.decodePng(fs.readFileSync(_path));
   let result = await MovenetST.estimatePoses(img);
   let renderer = await new PoseRenderer().renderResult(_path, result);
   await renderer.savePNG(`${tmp2.DirPath}/${_name}`);
+  tfn.engine().endScope(); // 用於清理 Tensor 資料，跟 startScope() 搭配
 });
