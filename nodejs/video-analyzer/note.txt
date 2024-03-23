@@ -1,0 +1,11 @@
+tfjs 筆記:
+import * as tfn from "@tensorflow/tfjs-node-gpu"
+
+1. 可使用 tfn.engine().startScope() 和 tfn.engine().endScope() 進行GPU資料的清除
+ex:
+tfn.engine().startScope();
+// 你的Tensor運算
+tfn.engine().endScope();
+
+參考資料:
+https://stackoverflow.com/questions/56513495/memory-leak-in-tensorflow-js-how-to-clean-up-unused-tensors
