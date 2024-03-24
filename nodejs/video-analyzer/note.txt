@@ -1,6 +1,9 @@
 tfjs 筆記:
 import * as tfn from "@tensorflow/tfjs-node-gpu"
 
+*由於在進行運算時，tensor 物件不會在程式運作期間進行回收
+因此需要自行寫一段程式碼來讓系統回收這些暫存資料
+
 1. 可使用 tfn.engine().startScope() 和 tfn.engine().endScope() 進行GPU資料的清除
 ex:
 tfn.engine().startScope();
@@ -9,3 +12,10 @@ tfn.engine().endScope();
 
 參考資料:
 https://stackoverflow.com/questions/56513495/memory-leak-in-tensorflow-js-how-to-clean-up-unused-tensors
+
+2. 可使用 tfn.engine().disposeTensor() 來清除特定的 tensor 物件
+ex: tfn.engine().disposeTensor(img); // img 為你的 tensor 物件
+
+
+3. 可使用 tfn.dispose(); 來清除特定的 tensor 物件
+ex: tfn.dispose(img); // img 為你的 tensor 物件
