@@ -73,3 +73,10 @@ export class TmpDir extends BaseDirectory {
     super.deleteAllFiles(showLog);
   }
 }
+
+/** 資源資料夾 */
+export class ResourceDir extends BaseDirectory {
+  public deleteAllFiles(showLog?: boolean): void {
+    console.log("The resource folder will not delete its files");
+  }
+}
