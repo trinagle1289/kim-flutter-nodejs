@@ -1,11 +1,9 @@
+import * as fs from "node:fs";
+import * as tfn from "@tensorflow/tfjs-node-gpu";
+import ffmpeg from "ffmpeg";
 import { PoseRenderer } from "./src/img_renderer";
 import { MovenetST } from "./src/tf_models";
 import { TmpDir } from "./src/utils";
-
-import * as fs from "node:fs";
-
-import ffmpeg from "ffmpeg";
-import * as tfn from "@tensorflow/tfjs-node-gpu";
 
 // 影片路徑
 const VIDEO_DIR = "../../resources/video/20240321";
@@ -14,7 +12,7 @@ const VIDEO_TYPE = ".mp4";
 const VIDEO_PATH = `${VIDEO_DIR}/${VIDEO_NAME}${VIDEO_TYPE}`;
 
 // 設定 tfjs 後端
-tfn.setBackend("tensorflow");
+await tfn.setBackend("tensorflow");
 
 // 清理並建立暫存資料夾
 let tmp = new TmpDir("./tmp", true);
