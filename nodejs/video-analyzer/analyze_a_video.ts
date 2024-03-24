@@ -17,7 +17,6 @@ await tfn.setBackend("tensorflow");
 // 清理並建立暫存資料夾
 let tmp = new TmpDir("./tmp", true);
 let tmp2 = new TmpDir("./tmp2", true);
-let tmp3 = new TmpDir("./tmp3", true);
 
 // 建立所有影像幀
 let vidIn = await new ffmpeg(VIDEO_PATH);
