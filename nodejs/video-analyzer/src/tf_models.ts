@@ -14,13 +14,6 @@ export {
   PosenetMobileNetV1,
 };
 
-// 設定運算後端
-console.log(
-  (await tfn.setBackend("tensorflow"))
-    ? `Finish setting backend: ${tfn.getBackend()}`
-    : "Failed to set backend 'tensorflow'"
-);
-
 // 模型設定
 let blazeposeTfjsCfg: pose_detection.BlazePoseTfjsModelConfig = {
   runtime: "tfjs",
