@@ -1,8 +1,11 @@
 import { PoseDetectorBuilder } from "./pose_models";
-
-import * as tfn from "@tensorflow/tfjs-node-gpu";
-import * as pose_detection from "@tensorflow-models/pose-detection";
-import { SupportedModels } from "@tensorflow-models/pose-detection";
+import {
+  SupportedModels,
+  BlazePoseTfjsModelConfig,
+  MoveNetModelConfig,
+  PosenetModelConfig,
+  movenet
+} from "@tensorflow-models/pose-detection";
 
 // 對外使用變數
 export {
@@ -15,19 +18,19 @@ export {
 };
 
 // 模型設定
-let blazeposeTfjsCfg: pose_detection.BlazePoseTfjsModelConfig = {
+let blazeposeTfjsCfg: BlazePoseTfjsModelConfig = {
   runtime: "tfjs",
 };
-let movenetMLCfg: pose_detection.MoveNetModelConfig = {
-  modelType: pose_detection.movenet.modelType.MULTIPOSE_LIGHTNING,
+let movenetMLCfg: MoveNetModelConfig = {
+  modelType: movenet.modelType.MULTIPOSE_LIGHTNING,
 };
-let movenetSLCfg: pose_detection.MoveNetModelConfig = {
-  modelType: pose_detection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+let movenetSLCfg: MoveNetModelConfig = {
+  modelType: movenet.modelType.SINGLEPOSE_LIGHTNING,
 };
-let movenetSTCfg: pose_detection.MoveNetModelConfig = {
-  modelType: pose_detection.movenet.modelType.SINGLEPOSE_THUNDER,
+let movenetSTCfg: MoveNetModelConfig = {
+  modelType: movenet.modelType.SINGLEPOSE_THUNDER,
 };
-let posenetResNet50Cfg: pose_detection.PosenetModelConfig = {
+let posenetResNet50Cfg: PosenetModelConfig = {
   architecture: "ResNet50",
   outputStride: 16,
   inputResolution: {
@@ -35,7 +38,7 @@ let posenetResNet50Cfg: pose_detection.PosenetModelConfig = {
     height: 257,
   },
 };
-let posenetMobileNetV1Cfg: pose_detection.PosenetModelConfig = {
+let posenetMobileNetV1Cfg: PosenetModelConfig = {
   architecture: "MobileNetV1",
   outputStride: 16,
   inputResolution: {
