@@ -1,4 +1,4 @@
-import { PoseDetectorBuilder } from "./pose_models";
+import { PoseDetectorBuilder } from "./pose_models.js";
 import {
   SupportedModels,
   BlazePoseTfjsModelConfig,
