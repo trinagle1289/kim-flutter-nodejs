@@ -1,9 +1,9 @@
 import * as fs from "node:fs";
 import * as tfn from "@tensorflow/tfjs-node-gpu";
 import ffmpeg from "ffmpeg";
-import { PoseRenderer } from "./src/img_renderer";
-import { MovenetST } from "./src/tf_models";
-import { TmpDir } from "./src/utils";
+import { PoseRenderer } from "./src/img_renderer.js";
+import { MovenetST } from "./src/tf_models.js";
+import { TmpDir } from "./src/utils.js";
 
 // 影片路徑
 const VIDEO_DIR = "../../resources/video/20240321";

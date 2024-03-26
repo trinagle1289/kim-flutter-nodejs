@@ -3,9 +3,9 @@ import * as pth_lib from "node:path";
 import ffmpeg from "ffmpeg";
 import * as tfn from "@tensorflow/tfjs-node-gpu";
 import { Pose } from "@tensorflow-models/pose-detection";
-import * as models from "./src/tf_models";
-import * as render_img from "./src/img_renderer";
-import { ResourceDir, TmpDir } from "./src/utils";
+import * as models from "./src/tf_models.js";
+import * as render_img from "./src/img_renderer.js";
+import { ResourceDir, TmpDir } from "./src/utils.js";
 
 const VIDEO_DIR_PATH = "../../resources/video/20240321"; // 影片資料夾路徑
 const VIDEO_SIZE = "1080x1920"; // 影片大小
