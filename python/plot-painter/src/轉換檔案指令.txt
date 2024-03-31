@@ -1,0 +1,2 @@
+# 將 utils.ipynb 轉換成 python 檔案
+jupyter nbconvert --to python .\utils.ipynb
