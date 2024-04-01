@@ -79,7 +79,7 @@ export class TmpDir extends BaseDirectory {
       fs.mkdirSync(this._path);
       if (showLog) console.log("Finish Creating TMP Directory.");
     }
-    if (toClean) this.deleteAllFiles(showLog);
+    if (toClean) this.forceRemoveAllFiles(showLog);
   }
   /** 刪除資料夾內容 */
   public deleteAllFiles(showLog: boolean = false): void {
