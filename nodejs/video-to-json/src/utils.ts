@@ -24,15 +24,23 @@ class BaseDirectory {
 
   /** 處理全部檔案
    * @param callback 對單個檔案的操作
+   * _fullPath: 檔案完整路徑
+   * _parsedPath: 經由 path.parse 轉換過的路徑，有著更多資訊
+   * _idx: 索引值
    */
   public async handleAllFiles(
-    callback: (_file: string, _path: string, _idx: number) => Promise<void>
+    callback: (
+      _fullPath: string,
+      _parsedPath: pathLib.ParsedPath,
+      _idx: number
+    ) => Promise<void>
   ): Promise<void> {
     let _files = fs.readdirSync(this._path);
     for (let _idx = 0; _idx < _files.length; _idx++) {
-      let _file = _files[_idx];
-      let _path = pathLib.join(this._path, _file);
-      await callback(_file, _path, _idx);
+      let f = _files[_idx];
+      let _path = pathLib.join(this._path, f); // 組合資料夾和檔案路徑
+      let _parsedPath = pathLib.parse(_path);
+      await callback(_path, _parsedPath, _idx);
     }
   }
 

@@ -24,8 +24,8 @@ await video
 
 // Get Pose Result In Frames
 console.log("2");
-await tmp.handleAllFiles(async (f, pth) => {
-  let img = tfn.node.decodePng(fs.readFileSync(pth));
+await tmp.handleAllFiles(async (p) => {
+  let img = tfn.node.decodePng(fs.readFileSync(p));
   let pose = await model.BlazeposeTfjs.estimatePoses(img);
   img.dispose();
 //   console.log(`${pth_lib.parse(f).name}:\n`);
