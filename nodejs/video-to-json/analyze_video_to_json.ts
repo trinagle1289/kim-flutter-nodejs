@@ -20,7 +20,7 @@ let video = await new ffmpeg(VIDEO_PATH);
 await video
   .setVideoSize(VIDEO_SIZE, true, true)
   .setVideoFrameRate(1)
-  .save(`${tmp.DirPath}/${vid_name}(%02d).png`);
+  .save(`${tmp.DirPath}${vid_name}(%02d).png`);
 
 // Get Pose Result In Frames
 console.log("2");

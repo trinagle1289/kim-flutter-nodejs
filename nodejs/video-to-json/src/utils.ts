@@ -1,5 +1,5 @@
 import * as fs from "node:fs";
-import * as pathLib from "node:path";
+import * as path_lib from "node:path";
 
 /** 基底資料夾類別 */
 class BaseDirectory {
@@ -9,7 +9,7 @@ class BaseDirectory {
    * @param _path 資料夾路徑
    */
   public constructor(_path: string) {
-    this._path = _path;
+    this._path = path_lib.normalize(_path + "/");
   }
 
   /** 取得資料夾路徑 */
@@ -31,15 +31,15 @@ class BaseDirectory {
   public async handleAllFiles(
     callback: (
       _fullPath: string,
-      _parsedPath: pathLib.ParsedPath,
+      _parsedPath: path_lib.ParsedPath,
       _idx: number
     ) => Promise<void>
   ): Promise<void> {
     let _files = fs.readdirSync(this._path);
     for (let _idx = 0; _idx < _files.length; _idx++) {
       let f = _files[_idx];
-      let _path = pathLib.join(this._path, f); // 組合資料夾和檔案路徑
-      let _parsedPath = pathLib.parse(_path);
+      let _path = path_lib.join(this._path, f); // 組合資料夾和檔案路徑
+      let _parsedPath = path_lib.parse(_path);
       await callback(_path, _parsedPath, _idx);
     }
   }
@@ -50,7 +50,7 @@ class BaseDirectory {
   public deleteAllFiles(showLog: boolean = false): void {
     let files = fs.readdirSync(this._path);
     files.forEach((_file) => {
-      fs.unlinkSync(pathLib.join(this._path, _file));
+      fs.unlinkSync(path_lib.join(this._path, _file));
       if (showLog) console.log(`Delete ${_file}`);
     });
   }
