@@ -54,6 +54,12 @@ class BaseDirectory {
       if (showLog) console.log(`Delete ${_file}`);
     });
   }
+
+  /** 強制移除所有檔案 */
+  public forceRemoveAllFiles(showLog: boolean = false): void {
+    fs.rmSync(this._path, { recursive: true, force: true });
+    if (showLog) console.log("Finish Force Remove All Files.");
+  }
 }
 
 /** 暫存資料夾 (位於 tmp/) */
@@ -85,6 +91,9 @@ export class TmpDir extends BaseDirectory {
 /** 資源資料夾 */
 export class ResourceDir extends BaseDirectory {
   public deleteAllFiles(showLog?: boolean): void {
+    console.log("The resource folder will not delete its files");
+  }
+  public forceRemoveAllFiles(showLog?: boolean): void {
     console.log("The resource folder will not delete its files");
   }
 }
