@@ -79,7 +79,7 @@ export class TmpDir extends BaseDirectory {
   ) {
     super(_path);
     if (!fs.existsSync(this._path)) {
-      fs.mkdirSync(this._path);
+      fs.mkdirSync(this._path, { recursive: true });
       if (showLog)
         console.log(`Finish Creating TMP Directory in ${this._path}.`);
     }
