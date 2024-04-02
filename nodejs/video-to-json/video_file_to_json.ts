@@ -11,7 +11,7 @@ import { Pose } from "@tensorflow-models/pose-detection";
 
 let resDir = new utils.ResourceDir(VIDEO_FILE_PATH);
 let tmpDir = new utils.TmpDir("tmp");
-let jsonBaseDir = new utils.TmpDir(OUTPUT_JSON_PATH);
+let jsonDir = new utils.TmpDir(OUTPUT_JSON_PATH);
 let tmpDirList: utils.TmpDir[] = [];
 
 // 1. 處理全部來源檔案
@@ -63,32 +63,32 @@ for (let tmpDir of tmpDirList) {
   );
 
   // 將運算結果進行儲存
-  console.log(`Saving Json Files In ${jsonBaseDir.DirPath}${outputPath}`);
-  if (fs.existsSync(jsonBaseDir.DirPath + outputPath)) {
-    fs.mkdirSync(jsonBaseDir.DirPath + outputPath);
+  console.log(`Saving Json Files In ${jsonDir.DirPath}${outputPath}`);
+  if (!fs.existsSync(jsonDir.DirPath + outputPath)) {
+    fs.mkdirSync(jsonDir.DirPath + outputPath);
   }
   fs.writeFileSync(
-    `${jsonBaseDir.DirPath}${outputPath}/BlazeposeTfjs.json`,
+    `${jsonDir.DirPath}${outputPath}/BlazeposeTfjs.json`,
     JSON.stringify(blazeposeTfjs)
   );
   fs.writeFileSync(
-    `${jsonBaseDir.DirPath}${outputPath}/MovenetML.json`,
+    `${jsonDir.DirPath}${outputPath}/MovenetML.json`,
     JSON.stringify(movenetML)
   );
   fs.writeFileSync(
-    `${jsonBaseDir.DirPath}${outputPath}/MovenetSL.json`,
+    `${jsonDir.DirPath}${outputPath}/MovenetSL.json`,
     JSON.stringify(movenetSL)
   );
   fs.writeFileSync(
-    `${jsonBaseDir.DirPath}${outputPath}/MovenetST.json`,
+    `${jsonDir.DirPath}${outputPath}/MovenetST.json`,
     JSON.stringify(movenetST)
   );
   fs.writeFileSync(
-    `${jsonBaseDir.DirPath}${outputPath}/PosenetMobileNetV1.json`,
+    `${jsonDir.DirPath}${outputPath}/PosenetMobileNetV1.json`,
     JSON.stringify(posenetMobileNetV1)
   );
   fs.writeFileSync(
-    `${jsonBaseDir.DirPath}${outputPath}/PosenetResNet50.json`,
+    `${jsonDir.DirPath}${outputPath}/PosenetResNet50.json`,
     JSON.stringify(posenetResNet50)
   );
 }
