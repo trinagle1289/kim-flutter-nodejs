@@ -2,8 +2,8 @@ const VIDEO_FILE_PATH = "../../resources/video/20240401";
 const VIDEO_SIZE = "1080x1920";
 const OUTPUT_JSON_PATH = "./json";
 
-import * as utils from "./src/utils.js";
 import { createVideoFrames } from "./src/ffmpeg_utils.js";
+import * as utils from "./src/utils.js";
 import * as fs from "node:fs";
 import * as path_lib from "node:path";
 import * as tf_pose_result from "./src/tf_pose_result.js";
@@ -21,8 +21,7 @@ await resDir.handleAllFiles(async (path, parsed) => {
   await createVideoFrames(
     path,
     `${savedDir.DirPath}${name}(%03d).png`,
-    VIDEO_SIZE,
-    5
+    VIDEO_SIZE
   );
 });
 console.log("Finish create frames");
@@ -64,7 +63,10 @@ for (let tmpDir of tmpDirList) {
   );
 
   // 將運算結果進行儲存
-  console.log(`Saving Json Files In ${jsonBaseDir.DirPath}${outputPath}/`);
+  console.log(`Saving Json Files In ${jsonBaseDir.DirPath}${outputPath}`);
+  if (fs.existsSync(jsonBaseDir.DirPath + outputPath)) {
+    fs.mkdirSync(jsonBaseDir.DirPath + outputPath);
+  }
   fs.writeFileSync(
     `${jsonBaseDir.DirPath}${outputPath}/BlazeposeTfjs.json`,
     JSON.stringify(blazeposeTfjs)
