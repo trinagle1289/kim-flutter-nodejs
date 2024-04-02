@@ -7,29 +7,46 @@
 import json
 import math
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 
-# In[3]:
+# In[ ]:
 
 
-def get_angle_in_points(pt1: np.ndarray, pt2: np.ndarray, cenPt: np.ndarray) -> float:
+def draw_pose_result(
+    labels: list[str], data_type: str = None, ax: plt.Axes = None
+) -> plt.Axes:
     """
-    從三個點之間取得角度
-    中心點為 cenPt
-    (使用餘弦定理)
+    繪製姿勢結果折線圖
+    labels: 姿勢標籤列表
+    data_type: 所代表的模型
+    ax: Matplotlib 座標資料
     """
-    # 求角 A (對面為邊 a)
-    # a: pt1 pt2 距離
-    # b: pt1 cenPt 距離
-    # c: pt2 cenPt 距離
+    POSE_LABEL = ["A1", "A2", "A3", "A4", "A5"]
+    data = []
 
-    a = np.linalg.norm(pt1 - pt2)
-    b = np.linalg.norm(pt1 - cenPt)
-    c = np.linalg.norm(pt2 - cenPt)
+    # 將標籤以數值的形式存入到 data 中
+    for lab in labels:
+        if lab == "A1":
+            data.append(0)
+        if lab == "A2":
+            data.append(1)
+        if lab == "A3":
+            data.append(2)
+        if lab == "A4":
+            data.append(3)
+        if lab == "A5":
+            data.append(4)
 
-    angleA = math.degrees(math.acos((b * b + c * c - a * a) / (2 * b * c)))
-    return angleA
+    if ax is None:
+        ax = plt.gca()
+
+    ax.set_xlabel("time frame")
+    ax.set_ylabel("pose label")
+    ax.set_yticks(list(range(5)), POSE_LABEL)
+    ax.plot(range(len(data)), data, label=data_type)
+    return ax
 
 
 # In[92]:
@@ -65,6 +82,7 @@ class PoseData:
         # 檢查是否擁有 3D 關鍵點
         if list(self.json_data[0][0].keys()).count("keypoints3D") > 0:
             self.hasKpt3D = True
+        return
 
     def __str__(self):
         """取得 JSON 字串"""
@@ -83,8 +101,7 @@ class PoseData:
             pt1 = self.get_kpt_pos(idx_frame, idx_pose, side[0])
             pt2 = self.get_kpt_pos(idx_frame, idx_pose, side[1])
             cenPt = self.get_kpt_pos(idx_frame, idx_pose, center)
-            angles.update({center: get_angle_in_points(pt1, pt2, cenPt)})
-
+            angles.update({center: self._get_angle_in_points(pt1, pt2, cenPt)})
         return angles
 
     def get_kpt_pos(self, idx_frame: int, idx_pose: int, kpt_name: str) -> np.ndarray:
@@ -100,7 +117,6 @@ class PoseData:
             if not self.hasKpt3D
             else np.array([kpt["x"], kpt["y"], kpt["z"]])
         )
-
         return pos
 
     def get_lhc_label(self, idx_frame: int, idx_pose: int) -> str:
@@ -128,7 +144,6 @@ class PoseData:
             label = "A2"
         else:
             label = "A1"
-
         return label
 
     def get_lhc_score(self, idx_pose: int) -> int:
@@ -149,8 +164,17 @@ class PoseData:
         A5 - A5: 20
         """
         score = 0
-
         return score
+
+    def to_label_list(self) -> list[str]:
+        """
+        將姿勢標籤轉換成一組列表格式
+        """
+        # 使用 PoseData 類別
+        labels = []
+        for i in range(self.get_number_of_frames()):
+            labels.append(self.get_lhc_label(i, 0))
+        return labels
 
     def get_kpt_index(self, kpt_name: str) -> int:
         """
@@ -166,7 +190,6 @@ class PoseData:
             if kpts[i]["name"] == kpt_name:
                 idx = i
                 break
-
         return idx
 
     ### 分隔區: 下面函式並未使用到此類別其他函式
@@ -202,4 +225,30 @@ class PoseData:
             else self.json_data[idx_frame][idx_pose]["keypoints3D"]
         )
         return result
+
+    def _get_angle_in_points(
+        self, pt1: np.ndarray, pt2: np.ndarray, cenPt: np.ndarray
+    ) -> float:
+        """
+        從三個點之間取得角度
+        中心點為 cenPt
+        (使用餘弦定理)
+        """
+        # 求角 A (對面為邊 a)
+        # a: pt1 pt2 距離
+        # b: pt1 cenPt 距離
+        # c: pt2 cenPt 距離
+
+        a = np.linalg.norm(pt1 - pt2)
+        b = np.linalg.norm(pt1 - cenPt)
+        c = np.linalg.norm(pt2 - cenPt)
+
+        angleA = math.degrees(math.acos((b * b + c * c - a * a) / (2 * b * c)))
+        return angleA
+
+
+# In[ ]:
+
+
+
 
