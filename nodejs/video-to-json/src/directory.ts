@@ -44,21 +44,24 @@ class BaseDirectory {
     }
   }
 
-  /** 刪除資料夾內容
+  /** 清除資料夾所有內容
    * @param showLog 顯示輸出資訊
    */
-  public deleteAllFiles(showLog: boolean = false): void {
+  public cleanFolder(showLog: boolean = false): void {
     let files = fs.readdirSync(this._path);
     files.forEach((_file) => {
-      fs.unlinkSync(path_lib.join(this._path, _file));
-      if (showLog) console.log(`Delete ${_file}`);
+      let path = path_lib.normalize(path_lib.join(this._path, _file));
+      fs.rmSync(path, { recursive: true });
+      if (showLog) console.log(`Delete ${path}`);
     });
   }
 
-  /** 強制移除所有檔案 */
-  public forceRemoveAllFiles(showLog: boolean = false): void {
+  /** 刪除包含資料夾的所有檔案
+   * @param showLog 顯示輸出資訊
+   */
+  public deleteSelf(showLog: boolean = false): void {
     fs.rmSync(this._path, { recursive: true, force: true });
-    if (showLog) console.log("Finish Force Remove All Files.");
+    if (showLog) console.log(`Finish deleting ${this._path} Folder.`);
   }
 }
 
@@ -80,21 +83,21 @@ export class TmpDir extends BaseDirectory {
       if (showLog)
         console.log(`Finish Creating TMP Directory in ${this._path}.`);
     }
-    if (toClean) this.deleteAllFiles(showLog);
+    if (toClean) this.cleanFolder(showLog);
   }
   /** 刪除資料夾內容 */
-  public deleteAllFiles(showLog: boolean = false): void {
+  public cleanFolder(showLog: boolean = false): void {
     if (showLog) console.log("Deleting All TMP Files.");
-    super.deleteAllFiles(showLog);
+    super.cleanFolder(showLog);
   }
 }
 
 /** 資源資料夾 */
 export class ResourceDir extends BaseDirectory {
-  public deleteAllFiles(showLog?: boolean): void {
-    console.log("The resource folder will not delete its files");
+  public cleanFolder(showLog?: boolean): void {
+    if (showLog) console.log("The resource folder will not delete its files.");
   }
-  public forceRemoveAllFiles(showLog?: boolean): void {
-    console.log("The resource folder will not delete its files");
+  public deleteSelf(showLog?: boolean): void {
+    if (showLog) console.log("The resource folder will not delete itself.");
   }
 }
