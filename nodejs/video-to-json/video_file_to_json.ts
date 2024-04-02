@@ -1,5 +1,6 @@
 const VIDEO_FILE_PATH = "../../resources/video/20240401";
 const VIDEO_SIZE = "1080x1920";
+const VIDEO_FRAME = 5;
 const OUTPUT_JSON_PATH = "./json";
 
 import { createVideoFrames } from "./src/ffmpeg_utils.js";
@@ -15,13 +16,15 @@ let jsonDir = new utils.TmpDir(OUTPUT_JSON_PATH);
 let tmpDirList: utils.TmpDir[] = [];
 
 // 1. 處理全部來源檔案
+console.log(`Handling All Videos in ${resDir.DirPath}`);
 await resDir.handleAllFiles(async (path, parsed) => {
   let name = parsed.name;
   let savedDir = new utils.TmpDir("tmp/" + name, false, true);
   await createVideoFrames(
     path,
     `${savedDir.DirPath}${name}(%03d).png`,
-    VIDEO_SIZE
+    VIDEO_SIZE,
+    VIDEO_FRAME
   );
 });
 console.log("Finish create frames");
