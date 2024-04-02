@@ -80,7 +80,7 @@ export class TmpDir extends BaseDirectory {
       if (showLog)
         console.log(`Finish Creating TMP Directory in ${this._path}.`);
     }
-    if (toClean) this.forceRemoveAllFiles(showLog);
+    if (toClean) this.deleteAllFiles(showLog);
   }
   /** 刪除資料夾內容 */
   public deleteAllFiles(showLog: boolean = false): void {
