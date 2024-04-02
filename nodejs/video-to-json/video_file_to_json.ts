@@ -2,38 +2,37 @@ const VIDEO_FILE_PATH = "../../resources/video/20240401";
 const VIDEO_SIZE = "1080x1920";
 const OUTPUT_JSON_PATH = "./json";
 
+import * as utils from "./src/utils.js";
+import { createVideoFrames } from "./src/ffmpeg_utils.js";
 import * as fs from "node:fs";
 import * as path_lib from "node:path";
-import * as utils from "./src/utils.js";
 import * as tf_pose_result from "./src/tf_pose_result.js";
 import { Pose } from "@tensorflow-models/pose-detection";
-import { createVideoFrames } from "./src/ffmpeg_utils.js";
 
-let tmpDir = new utils.TmpDir("tmp");
 let resDir = new utils.ResourceDir(VIDEO_FILE_PATH);
-let jsonBaseDir = new utils.ResourceDir(OUTPUT_JSON_PATH);
+let tmpDir = new utils.TmpDir("tmp");
+let jsonBaseDir = new utils.TmpDir(OUTPUT_JSON_PATH);
 let tmpDirList: utils.TmpDir[] = [];
 
-// 處理全部來源檔案
+// 1. 處理全部來源檔案
 await resDir.handleAllFiles(async (path, parsed) => {
   let name = parsed.name;
   let savedDir = new utils.TmpDir("tmp/" + name, false, true);
   await createVideoFrames(
     path,
-    `${savedDir.DirPath}${name}(%04d).png`,
+    `${savedDir.DirPath}${name}(%03d).png`,
     VIDEO_SIZE,
-    5,
-    "h264_nvenc"
+    5
   );
 });
 console.log("Finish create frames");
 
-// 將新建資料夾整理成陣列
+// 2. 將新建資料夾整理成陣列
 await tmpDir.handleAllFiles(async (path) => {
   tmpDirList.push(new utils.TmpDir(path, false, true));
 });
 
-// 將輸出圖片轉換成 json 檔案
+// 3. 將輸出圖片轉換成 json 檔案
 for (let tmpDir of tmpDirList) {
   // 建立各個姿勢估計結果物件
   let blazeposeTfjs: Pose[][] = [];
