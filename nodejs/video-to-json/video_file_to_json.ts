@@ -4,22 +4,22 @@ const VIDEO_FRAME = 5;
 const OUTPUT_JSON_PATH = "./json";
 
 import { createVideoFrames } from "./src/ffmpeg_utils.js";
-import * as utils from "./src/utils.js";
+import * as dirs from "./src/directory.js";
 import * as fs from "node:fs";
 import * as path_lib from "node:path";
 import * as tf_pose_result from "./src/tf_pose_result.js";
 import { Pose } from "@tensorflow-models/pose-detection";
 
-let resDir = new utils.ResourceDir(VIDEO_FILE_PATH);
-let tmpDir = new utils.TmpDir("tmp");
-let jsonDir = new utils.TmpDir(OUTPUT_JSON_PATH);
-let tmpDirList: utils.TmpDir[] = [];
+let resDir = new dirs.ResourceDir(VIDEO_FILE_PATH);
+let tmpDir = new dirs.TmpDir("tmp");
+let jsonDir = new dirs.TmpDir(OUTPUT_JSON_PATH);
+let tmpDirList: dirs.TmpDir[] = [];
 
 // 1. 處理全部來源檔案
 console.log(`Handling All Videos in ${resDir.DirPath}`);
 await resDir.handleAllFiles(async (path, parsed) => {
   let name = parsed.name;
-  let savedDir = new utils.TmpDir("tmp/" + name, false, true);
+  let savedDir = new dirs.TmpDir("tmp/" + name, false, true);
   await createVideoFrames(
     path,
     `${savedDir.DirPath}${name}(%03d).png`,
@@ -31,7 +31,7 @@ console.log("Finish create frames");
 
 // 2. 將新建資料夾整理成陣列
 await tmpDir.handleAllFiles(async (path) => {
-  tmpDirList.push(new utils.TmpDir(path, false, true));
+  tmpDirList.push(new dirs.TmpDir(path, false, true));
 });
 
 // 3. 將輸出圖片轉換成 json 檔案
