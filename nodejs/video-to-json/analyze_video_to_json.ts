@@ -44,18 +44,18 @@ await tmp.handleAllFiles(async (path) => {
 
 // 3. 將陣列物件儲存成 json 檔案
 fs.writeFileSync(
-  `${tmp2.DirPath}BlazeposeTfjs.json`,
+  `${tmp2.DirPath}Blazepose Tfjs.json`,
   JSON.stringify(blazeposeTfjs)
 );
-fs.writeFileSync(`${tmp2.DirPath}MovenetML.json`, JSON.stringify(movenetML));
-fs.writeFileSync(`${tmp2.DirPath}MovenetSL.json`, JSON.stringify(movenetSL));
-fs.writeFileSync(`${tmp2.DirPath}MovenetST.json`, JSON.stringify(movenetST));
+fs.writeFileSync(`${tmp2.DirPath}Movenet Multipose Lightning.json`, JSON.stringify(movenetML));
+fs.writeFileSync(`${tmp2.DirPath}Movenet Singlepose Lightning.json`, JSON.stringify(movenetSL));
+fs.writeFileSync(`${tmp2.DirPath}Movenet Singlepose Thunder.json`, JSON.stringify(movenetST));
 fs.writeFileSync(
-  `${tmp2.DirPath}PosenetMobileNetV1.json`,
+  `${tmp2.DirPath}Posenet MobileNetV1.json`,
   JSON.stringify(posenetMobileNetV1)
 );
 fs.writeFileSync(
-  `${tmp2.DirPath}PosenetResNet50.json`,
+  `${tmp2.DirPath}Posenet ResNet50.json`,
   JSON.stringify(posenetResNet50)
 );
 
