@@ -1,7 +1,7 @@
 // 常數
 const VIDEO_PATH = "../../resources/video/20240401/A1-A5_1.mp4";
 const VIDEO_SIZE = "1080x1920";
-const VIDEO_FRAME_RATE = 10;
+const VIDEO_FRAME_RATE = 20;
 const JSON_PATH = "./tmp2/A1-A5_1";
 
 import { TmpDir } from "./src/directory.js";
@@ -31,6 +31,7 @@ let movenetST: Pose[][] = [];
 let posenetMobileNetV1: Pose[][] = [];
 let posenetResNet50: Pose[][] = [];
 await tmp.handleAllFiles(async (path) => {
+  console.log(`Handling file: ${path}`);
   let builder = await new FullPoseResultBuilder(path).build();
 
   blazeposeTfjs.push(builder.BlazeposeTfjs);
