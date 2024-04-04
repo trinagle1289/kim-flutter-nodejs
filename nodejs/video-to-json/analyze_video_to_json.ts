@@ -12,7 +12,6 @@ import { FullPoseResultBuilder } from "./src/tf_pose_result.js";
 import * as fs from "node:fs";
 
 let tmp = new TmpDir("tmp", true, true);
-let tmp2 = new TmpDir(JSON_PATH, true, true);
 let videoPath = path_lib.parse(VIDEO_PATH);
 
 // 1. 建立影像幀
@@ -43,6 +42,7 @@ await tmp.handleAllFiles(async (path) => {
 });
 
 // 3. 將陣列物件儲存成 json 檔案
+let tmp2 = new TmpDir(JSON_PATH, true, true);
 fs.writeFileSync(
   `${tmp2.DirPath}Blazepose Tfjs.json`,
   JSON.stringify(blazeposeTfjs)
