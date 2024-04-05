@@ -1,8 +1,9 @@
 // 常數
-const VIDEO_PATH = "../../resources/video/20240401/A1-A5_1.mp4";
+const VIDEO_TYPE = "A5_3-A3";
+const VIDEO_PATH = `../../resources/video/20240401/${VIDEO_TYPE}.mp4`;
 const VIDEO_SIZE = "1080x1920";
-const VIDEO_FRAME_RATE = 20;
-const JSON_PATH = "./tmp2/A1-A5_1";
+const VIDEO_FRAME_RATE = null;
+const JSON_PATH = `./tmp2/${VIDEO_TYPE}`;
 
 import { TmpDir } from "./src/directory.js";
 import * as path_lib from "node:path";
@@ -42,14 +43,23 @@ await tmp.handleAllFiles(async (path) => {
 });
 
 // 3. 將陣列物件儲存成 json 檔案
-let tmp2 = new TmpDir(JSON_PATH, true, true);
+let tmp2 = new TmpDir(JSON_PATH, false, true);
 fs.writeFileSync(
   `${tmp2.DirPath}Blazepose Tfjs.json`,
   JSON.stringify(blazeposeTfjs)
 );
-fs.writeFileSync(`${tmp2.DirPath}Movenet Multipose Lightning.json`, JSON.stringify(movenetML));
-fs.writeFileSync(`${tmp2.DirPath}Movenet Singlepose Lightning.json`, JSON.stringify(movenetSL));
-fs.writeFileSync(`${tmp2.DirPath}Movenet Singlepose Thunder.json`, JSON.stringify(movenetST));
+fs.writeFileSync(
+  `${tmp2.DirPath}Movenet Multipose Lightning.json`,
+  JSON.stringify(movenetML)
+);
+fs.writeFileSync(
+  `${tmp2.DirPath}Movenet Singlepose Lightning.json`,
+  JSON.stringify(movenetSL)
+);
+fs.writeFileSync(
+  `${tmp2.DirPath}Movenet Singlepose Thunder.json`,
+  JSON.stringify(movenetST)
+);
 fs.writeFileSync(
   `${tmp2.DirPath}Posenet MobileNetV1.json`,
   JSON.stringify(posenetMobileNetV1)
