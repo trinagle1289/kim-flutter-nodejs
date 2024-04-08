@@ -46,9 +46,39 @@ outputPath.forEach((val) => {
 
 // 3. 將暫存資料夾中的圖片進行根據姿勢模型進行渲染，並將結果儲存於輸出資料夾中
 await tmpdir.handleAllFilesFuture(async (path, parsed) => {
+  // 取得所有模型的運算結果
   let results = await new FullPoseResultBuilder(path).build();
-  let renderer = await new PoseRenderer()
+  // 渲染運算結果
+  let renderBlazeposeTfjs = await new PoseRenderer()
     .withCircleRadius(5)
     .renderResult(path, results.BlazeposeTfjs);
-  renderer.savePNG(`${BLAZEPOSE_TFJS_PATH}${parsed.name}.png`, true);
+  let renderMovenetML = await new PoseRenderer()
+    .withCircleRadius(5)
+    .renderResult(path, results.MovenetML);
+  let renderMovenetSL = await new PoseRenderer()
+    .withCircleRadius(5)
+    .renderResult(path, results.MovenetSL);
+  let renderMovenetST = await new PoseRenderer()
+    .withCircleRadius(5)
+    .renderResult(path, results.MovenetST);
+  let renderPosenetMobileNetV1 = await new PoseRenderer()
+    .withCircleRadius(5)
+    .renderResult(path, results.PosenetMobileNetV1);
+  let renderPosenetResNet50 = await new PoseRenderer()
+    .withCircleRadius(5)
+    .renderResult(path, results.PosenetResNet50);
+
+  // 將渲染過的圖片進行儲存
+  renderBlazeposeTfjs.savePNG(`${BLAZEPOSE_TFJS_PATH}${parsed.name}.png`, true);
+  renderMovenetML.savePNG(`${MOVENET_ML_PATH}${parsed.name}.png`, true);
+  renderMovenetSL.savePNG(`${MOVENET_SL_PATH}${parsed.name}.png`, true);
+  renderMovenetST.savePNG(`${MOVENET_ST_PATH}${parsed.name}.png`, true);
+  renderPosenetMobileNetV1.savePNG(
+    `${POSENET_MOBILENET_V1_PATH}${parsed.name}.png`,
+    true
+  );
+  renderPosenetResNet50.savePNG(
+    `${POSENET_RESNET50_PATH}${parsed.name}.png`,
+    true
+  );
 });
