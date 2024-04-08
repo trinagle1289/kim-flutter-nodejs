@@ -1,6 +1,8 @@
 import * as fs from "node:fs";
 import * as path_lib from "node:path";
 
+export { TmpDir, ResourceDir };
+
 /** 基底資料夾類別 */
 class BaseDirectory {
   /** 資料夾路徑 */
@@ -66,11 +68,11 @@ class BaseDirectory {
 }
 
 /** 暫存資料夾 (位於 tmp/) */
-export class TmpDir extends BaseDirectory {
+class TmpDir extends BaseDirectory {
   /** 建立暫存資料夾
    * @param _path 資料夾路徑
    * @param toClean 是否清理資料夾
-   * @param showLog 是否顯示輸出資訊
+   * @param showLog 是否顯示 log 資訊
    */
   public constructor(
     _path: string = "./tmp",
@@ -85,7 +87,9 @@ export class TmpDir extends BaseDirectory {
     }
     if (toClean) this.cleanFolder(showLog);
   }
-  /** 刪除資料夾內容 */
+  /** 刪除資料夾內容
+   * @param showLog 是否顯示 log 資料
+   */
   public cleanFolder(showLog: boolean = false): void {
     if (showLog) console.log("Deleting All TMP Files.");
     super.cleanFolder(showLog);
@@ -93,7 +97,7 @@ export class TmpDir extends BaseDirectory {
 }
 
 /** 資源資料夾 */
-export class ResourceDir extends BaseDirectory {
+class ResourceDir extends BaseDirectory {
   public cleanFolder(showLog?: boolean): void {
     if (showLog) console.log("The resource folder will not delete its files.");
   }

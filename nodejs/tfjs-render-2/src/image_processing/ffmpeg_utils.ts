@@ -1,9 +1,11 @@
 import ffmpeg from "ffmpeg";
 
-/**
- * 建立影片幀
+/** 建立影片幀
  * @param videoPath 影片路徑
  * @param outputPath 輸出路徑
+ * @param videoSize 影片尺寸
+ * @param videoFrame 影片幀率
+ * @param videoCodec 影片編解碼器
  */
 export async function createVideoFrames(
   videoPath: string,

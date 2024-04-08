@@ -3,6 +3,8 @@ import * as fs from "node:fs";
 import * as canvasLib from "canvas";
 import { Pose } from "@tensorflow-models/pose-detection";
 
+export { PoseRenderer };
+
 /** 圖片渲染器 */
 abstract class ImageRenderer {
   /** 影像Buffer */
@@ -120,7 +122,7 @@ abstract class ImageRenderer {
 }
 
 /** 姿勢渲染器 */
-export class PoseRenderer extends ImageRenderer {
+class PoseRenderer extends ImageRenderer {
   public async renderResult(
     sourceImgPath: string,
     result: Pose[]

@@ -2,8 +2,10 @@ import * as pose_detection from "@tensorflow-models/pose-detection";
 import { SupportedModels } from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-node-gpu";
 
+export { PoseDetectorBuilder, PoseDetector };
+
 /** 姿勢偵測器建構器 */
-export class PoseDetectorBuilder {
+class PoseDetectorBuilder {
   /** 模型設定 */
   private _modelCfg:
     | pose_detection.PosenetModelConfig
@@ -17,13 +19,19 @@ export class PoseDetectorBuilder {
   /** 偵測器 */
   public detector!: pose_detection.PoseDetector;
 
-  /** 設定模型 */
+  /** 設定模型
+   * @param model 模型
+   * @returns this 物件
+   */
   public withModel(model: pose_detection.SupportedModels): this {
     this.modelType = model;
     return this;
   }
 
-  /** 進行模型設定 */
+  /** 進行模型設定
+   * @param cfg 設定資訊
+   * @returns this 物件
+   */
   public withConfig(
     cfg:
       | pose_detection.PosenetModelConfig
@@ -36,7 +44,9 @@ export class PoseDetectorBuilder {
     return this;
   }
 
-  /** 進行建構 */
+  /** 進行建構
+   * @returns PoseDetector 物件
+   */
   public async build(): Promise<PoseDetector> {
     this.detector = await pose_detection.createDetector(
       this.modelType,
@@ -47,7 +57,7 @@ export class PoseDetectorBuilder {
 }
 
 /** 姿勢偵測器 */
-export class PoseDetector {
+class PoseDetector {
   /** 模型種類 */
   public modelType: SupportedModels;
   /** 偵測器 */
