@@ -16,8 +16,8 @@ export async function createVideoFrames(
   let video = await new ffmpeg(videoPath);
   // 設定影片
   video.setVideoSize(videoSize, true, true);
-  if (videoFrame != null) video.setVideoFrameRate(videoFrame);
-  if (videoCodec != null) video.setVideoCodec(videoCodec);
+  if (videoFrame > 0) video.setVideoFrameRate(videoFrame);
+  if (videoCodec != "") video.setVideoCodec(videoCodec);
   // 儲存影片
   await video.save(outputPath);
 }
