@@ -30,7 +30,7 @@ class BaseDirectory {
    * _parsedPath: 經由 path.parse 轉換過的路徑，有著更多資訊
    * _idx: 索引值
    */
-  public async handleAllFiles(
+  public async handleAllFilesFuture(
     callback: (
       _fullPath: string,
       _parsedPath: path_lib.ParsedPath,
@@ -43,6 +43,28 @@ class BaseDirectory {
       let _path = path_lib.join(this._path, f); // 組合資料夾和檔案路徑
       let _parsedPath = path_lib.parse(_path);
       await callback(_path, _parsedPath, _idx);
+    }
+  }
+
+  /** 處理全部檔案
+   * @param callback 對單個檔案的操作
+   * _fullPath: 檔案完整路徑
+   * _parsedPath: 經由 path.parse 轉換過的路徑，有著更多資訊
+   * _idx: 索引值
+   */
+  public handleAllFiles(
+    callback: (
+      _fullPath: string,
+      _parsedPath: path_lib.ParsedPath,
+      _idx: number
+    ) => void
+  ): void {
+    let _files = fs.readdirSync(this._path);
+    for (let _idx = 0; _idx < _files.length; _idx++) {
+      let f = _files[_idx];
+      let _path = path_lib.join(this._path, f); // 組合資料夾和檔案路徑
+      let _parsedPath = path_lib.parse(_path);
+      callback(_path, _parsedPath, _idx);
     }
   }
 
