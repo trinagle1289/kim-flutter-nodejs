@@ -1,3 +1,8 @@
+# 虛擬環境
+venv/
+# 暫存資料夾
+tmp*/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
