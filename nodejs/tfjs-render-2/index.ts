@@ -1,7 +1,7 @@
-const VIDEO_TAG = "A1-A3";
+const VIDEO_TAG = "A4_2-A2";
 const VIDEO_PATH = `../../resources/video/20240401/${VIDEO_TAG}.mp4`;
 const VIDEO_SIZE = "1080x1920";
-const VIDEO_FRAME = 1;
+const VIDEO_FRAME = 0;
 const OUTPUT_PATH = `tmp_render/${VIDEO_TAG}/`;
 
 const BLAZEPOSE_TFJS_PATH = `${OUTPUT_PATH}BlazePose TFjs/`;
@@ -19,13 +19,14 @@ import { FullPoseResultBuilder } from "./src/tf_models/model_result.js";
 import { PoseRenderer } from "./src/image_processing/img_renderer.js";
 
 // 1. 建立暫存資料夾，並將影片轉換成多張圖片
-let tmpdir = new TmpDir("tmp", true, true);
+let tmpdir = new TmpDir(`tmp/${VIDEO_TAG}`, false, true);
 await createVideoFrames(
   VIDEO_PATH,
   `${tmpdir.DirPath}${VIDEO_TAG}(%03d).png`,
   VIDEO_SIZE,
   VIDEO_FRAME
 );
+console.log(`Finish creating frames from ${VIDEO_PATH}`);
 
 // 2. 建立輸出資料夾
 let outputPath = [
@@ -43,9 +44,12 @@ outputPath.forEach((val) => {
     console.log(`Create Folder in ${path}`);
   }
 });
+console.log(`Finish creating folders at ${outputPath}`);
 
 // 3. 將暫存資料夾中的圖片進行根據姿勢模型進行渲染，並將結果儲存於輸出資料夾中
 await tmpdir.handleAllFilesFuture(async (path, parsed) => {
+  console.log(`Rendering image: ${parsed.name}`);
+
   // 取得所有模型的運算結果
   let results = await new FullPoseResultBuilder(path).build();
   // 渲染運算結果
@@ -81,4 +85,5 @@ await tmpdir.handleAllFilesFuture(async (path, parsed) => {
     `${POSENET_RESNET50_PATH}${parsed.name}.png`,
     true
   );
+  console.log(`Finish Saving Image: ${parsed.name}`);
 });
