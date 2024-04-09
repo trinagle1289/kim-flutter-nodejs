@@ -1,0 +1,2 @@
+Creating Video from Images using OpenCV-Python | TheAILearner
+https://theailearner.com/2018/10/15/creating-video-from-images-using-opencv-python/
