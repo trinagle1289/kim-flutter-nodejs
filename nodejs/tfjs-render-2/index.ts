@@ -49,7 +49,6 @@ console.log(`Finish creating folders at ${outputPath}`);
 // 3. 將暫存資料夾中的圖片進行根據姿勢模型進行渲染，並將結果儲存於輸出資料夾中
 await tmpdir.handleAllFilesFuture(async (path, parsed) => {
   console.log(`Rendering image: ${parsed.name}`);
-
   // 取得所有模型的運算結果
   let results = await new FullPoseResultBuilder(path).build();
   // 渲染運算結果
@@ -71,6 +70,7 @@ await tmpdir.handleAllFilesFuture(async (path, parsed) => {
   let renderPosenetResNet50 = await new PoseRenderer()
     .withCircleRadius(5)
     .renderResult(path, results.PosenetResNet50);
+  console.log(`Finish Rendering Image: ${parsed.name}`);
 
   // 將渲染過的圖片進行儲存
   renderBlazeposeTfjs.savePNG(`${BLAZEPOSE_TFJS_PATH}${parsed.name}.png`, true);
@@ -85,5 +85,4 @@ await tmpdir.handleAllFilesFuture(async (path, parsed) => {
     `${POSENET_RESNET50_PATH}${parsed.name}.png`,
     true
   );
-  console.log(`Finish Saving Image: ${parsed.name}`);
 });
