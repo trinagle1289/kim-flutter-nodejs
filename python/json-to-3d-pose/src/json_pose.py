@@ -7,8 +7,6 @@
 import json
 import math
 from abc import ABCMeta, abstractmethod
-
-import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -22,6 +20,8 @@ class PoseDataBase(metaclass=ABCMeta):
     hasKpt3D: bool = False
     # json 資料
     json_data: list = []
+    # 關鍵點名稱
+    kpt_name: list = []
     # 關節對照字典
     joints_dict: dict = {
         "left_shoulder": ["left_elbow", "left_hip"],
@@ -46,6 +46,9 @@ class PoseDataBase(metaclass=ABCMeta):
         # 檢查是否擁有 3D 關鍵點
         if list(self.json_data[0][0].keys()).count("keypoints3D") > 0:
             self.hasKpt3D = True
+        # 寫入關鍵點名稱
+        for kpt in self.get_kpts(0, 0):
+            self.kpt_name.append(kpt["name"])
         pass
 
     def __len__(self) -> int:
@@ -115,7 +118,7 @@ class PoseDataBase(metaclass=ABCMeta):
         """
         return len(self.json_data[idx_frame])
 
-    def get_kpts(self, idx_frame: int, idx_pose: int) -> dict:
+    def get_kpts(self, idx_frame: int, idx_pose: int) -> list:
         """取得影像幀中的關鍵點資訊
 
         Args:
@@ -123,11 +126,11 @@ class PoseDataBase(metaclass=ABCMeta):
             idx_pose (int): 第 n 個姿勢
 
         Returns:
-            dict: 關鍵點資訊字典
+            list: 關鍵點資訊列表
         """
         return self.json_data[idx_frame][idx_pose]["keypoints"]
-    
-    def get_kpts_3d(self, idx_frame: int, idx_pose: int) -> dict:
+
+    def get_kpts_3d(self, idx_frame: int, idx_pose: int) -> list:
         """取得影像幀中的 3D 關鍵點資訊
 
         Args:
@@ -135,7 +138,7 @@ class PoseDataBase(metaclass=ABCMeta):
             idx_pose (int): 第 n 個姿勢
 
         Returns:
-            dict: 3D 關鍵點資訊字典
+            dict: 3D 關鍵點資訊列表
         """
         return self.json_data[idx_frame][idx_pose]["keypoints3D"]
 
@@ -185,6 +188,58 @@ class PoseDataBase(metaclass=ABCMeta):
                 idx = i
                 break
         return idx
+
+    ### 分隔區: 下面函式會使用基底函式
+
+    def get_kpts_dict(self, idx_frame: int, idx_pose: int) -> dict:
+        """取得影像幀中的關鍵點資訊(dict格式)
+
+        Args:
+            idx_frame (int): 第 n 個影像幀
+            idx_pose (int): 第 n 個姿勢
+
+        Returns:
+            dict: 關鍵點資訊字典
+        """
+        kpt_dict = {}
+        for kpt in self.get_kpts(idx_frame, idx_pose):
+            kpt_dict.update(
+                {
+                    kpt["name"]: {
+                        "x": kpt["x"],
+                        "y": kpt["y"],
+                        "z": kpt["z"],
+                        "score": kpt["score"],
+                    }
+                }
+            )
+
+        return kpt_dict
+    
+    def get_kpts_3d_dict(self, idx_frame: int, idx_pose: int) -> dict:
+        """取得影像幀中的 3D 關鍵點資訊(dict格式)
+
+        Args:
+            idx_frame (int): 第 n 個影像幀
+            idx_pose (int): 第 n 個姿勢
+
+        Returns:
+            dict: 3D 關鍵點資訊字典
+        """
+        kpt_dict = {}
+        for kpt in self.get_kpts_3d(idx_frame, idx_pose):
+            kpt_dict.update(
+                {
+                    kpt["name"]: {
+                        "x": kpt["x"],
+                        "y": kpt["y"],
+                        "z": kpt["z"],
+                        "score": kpt["score"],
+                    }
+                }
+            )
+
+        return kpt_dict
 
     ### 分隔區: 以下為抽象函式
 
@@ -337,10 +392,4 @@ class PoseData(PoseDataBase):
     def get_lhc_score(self, idx_pose: int) -> int:
         score = 0
         return score
-
-
-# In[7]:
-
-
-
 
