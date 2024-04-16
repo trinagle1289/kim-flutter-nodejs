@@ -8,7 +8,15 @@ import json
 import math
 from abc import ABCMeta, abstractmethod
 import numpy as np
-import kpt_special_data
+
+
+# In[ ]:
+
+
+if __name__ == "__main__":
+    import kpt_special_data
+else:
+    import src.kpt_special_data as kpt_special_data
 
 
 # In[2]:
@@ -416,7 +424,7 @@ class PoseData3D(PoseDataBase):
         for i in range(self.get_number_of_frames()):
             labels.append(self.get_lhc_label(i, 0))
         return labels
-    
+
     def get_lhc_score(self, idx_pose: int) -> int:
         score = 0
         return score
