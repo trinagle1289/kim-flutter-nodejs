@@ -42,7 +42,7 @@ class ConnectionList:
 # In[2]:
 
 
-blazepose_connection_lst = ConnectionList(
+blazepose_connection = ConnectionList(
     left=[
         # 頭部
         ["nose", "left_eye"],  # 0, 2
