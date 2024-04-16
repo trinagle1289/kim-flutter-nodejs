@@ -1,77 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import json
 import math
 from abc import ABCMeta, abstractmethod
 import numpy as np
+import kpt_special_data
 
 
-# In[3]:
-
-
-# 左邊關鍵點連接列表
-LEFT_KPT_CONNECTION_LIST = [
-    # 頭部
-    ["nose", "left_eye"],  # 0, 2
-    ["left_eye", "left_ear"],  # 2, 7
-    # 手部
-    ["left_shoulder", "left_elbow"],  # 11, 13
-    ["left_elbow", "left_wrist"],  # 13, 15
-    ["left_wrist", "left_pinky"],  # 15, 17
-    ["left_wrist", "left_index"],  # 15, 19
-    ["left_wrist", "left_thumb"],  # 15, 21
-    ["left_pinky", "left_index"],  # 17, 19
-    # 腰部、腳
-    ["left_shoulder", "left_hip"],  # 11, 23
-    ["left_hip", "left_knee"],  # 23, 25
-    ["left_knee", "left_ankle"],  # 25, 27
-    ["left_ankle", "left_heel"],  # 27, 29
-    ["left_ankle", "left_foot_index"],  # 27, 31
-    ["left_heel", "left_foot_index"],  # 29, 31
-]
-
-# 右邊關鍵點連接列表
-RIGHT_KPT_CONNECTION_LIST = [
-    # 頭部
-    ["nose", "right_eye"],  # 0, 5
-    ["right_eye", "right_ear"],  # 5, 8
-    # 手部
-    ["right_shoulder", "right_elbow"],  # 12, 14
-    ["right_elbow", "right_wrist"],  # 14, 16
-    ["right_wrist", "right_pinky"],  # 16, 18
-    ["right_wrist", "right_index"],  # 16, 20
-    ["right_wrist", "right_thumb"],  # 16, 22
-    ["right_pinky", "right_index"],  # 18, 20
-    # 腰部、腳
-    ["right_shoulder", "right_hip"],  # 12, 24
-    ["right_hip", "right_knee"],  # 24, 26
-    ["right_knee", "right_ankle"],  # 26, 28
-    ["right_ankle", "right_heel"],  # 28, 30
-    ["right_ankle", "right_foot_index"],  # 28, 32
-    ["right_heel", "right_foot_index"],  # 30, 32
-]
-
-# 中間關鍵點連接列表
-CENTER_KPT_CONNECTION_LIST = [
-    ["mouth_left", "mouth_right"],  # 9, 10
-    ["left_shoulder", "right_shoulder"],  # 11, 12
-    ["left_hip", "right_hip"],  # 23, 24
-]
-
-_left_and_right_np_lst = np.append(
-    LEFT_KPT_CONNECTION_LIST, RIGHT_KPT_CONNECTION_LIST, axis=0
-)
-_full_np_lst = np.append(_left_and_right_np_lst, CENTER_KPT_CONNECTION_LIST, axis=0)
-
-# 全關鍵點連接列表
-FULL_KPT_CONNECTION_LIST = _full_np_lst.tolist()
-
-
-# In[ ]:
+# In[2]:
 
 
 def angles_to_lhc_label(angles: dict) -> str:
@@ -104,12 +44,10 @@ def angles_to_lhc_label(angles: dict) -> str:
     return label
 
 
-# In[ ]:
+# In[3]:
 
 
-def get_angle_in_points(
-    self, pt1: np.ndarray, pt2: np.ndarray, cenPt: np.ndarray
-) -> float:
+def get_angle_in_points(pt1: np.ndarray, pt2: np.ndarray, cenPt: np.ndarray) -> float:
     """從三個點之間取得角度
     中心點為 cenPt
     (使用餘弦定理)
@@ -289,20 +227,82 @@ class PoseDataBase(metaclass=ABCMeta):
 
         return kpt_dict
 
-    def get_connection_list(self, idx_frame: int, idx_pose: int, is_3d: bool = False):
-        left_list = []
-        center_list = []
-        right_list = []
+    def get_pos_list(self, idx_frame: int, idx_pose: int, is_3d: bool = False) -> list:
+        """取得座標點列表
+
+        Args:
+            idx_frame (int): 第 n 個影像幀
+            idx_pose (int): 第 n 個姿勢
+            connect_lst (connect_list.ConnectionList): _description_
+            is_3d (bool, optional): 是否為 3D 關鍵點(keypoints3D 標籤). Defaults to False.
+
+        Returns:
+            tuple[list, list, list]: tuple列表(左側, 中間, 右側)
+        """
+
+        pos_lst = []  # 座標列表
+        # 將座標資料存入到列表中
+        for kpt in self.get_kpts(idx_frame, idx_pose, is_3d):
+            x, y = kpt["x"], kpt["y"]
+            if not is_3d:
+                pos_lst.append([x, y])
+            if is_3d:
+                z = kpt["z"]
+                pos_lst.append([x, y, z])
+
+        return pos_lst
+
+    def get_pos_connection_list(
+        self,
+        idx_frame: int,
+        idx_pose: int,
+        connect_lst: kpt_special_data.ConnectionList,
+        is_3d: bool = False,
+    ) -> tuple[list, list, list]:
+        """取得座標點連接列表
+
+        Args:
+            idx_frame (int): 第 n 個影像幀
+            idx_pose (int): 第 n 個姿勢
+            connect_lst (connect_list.ConnectionList): _description_
+            is_3d (bool, optional): 是否為 3D 關鍵點(keypoints3D 標籤). Defaults to False.
+
+        Returns:
+            tuple[list, list, list]: tuple列表(左側, 中間, 右側)
+        """
+
+        def get_pos(kpts: dict, pts: list[str, str]) -> list:
+            """根據關鍵點和兩個座標點名稱取得連線列表
+
+            Args:
+                kpts (dict): 關鍵點
+                pts (list[str, str]): 兩個座標點名稱
+
+            Returns:
+                list: 連線列表
+            """
+            d1 = kpts[pts[0]]
+            d2 = kpts[pts[1]]
+            pos = []
+            if not is_3d:
+                pos = [[d1["x"], d1["y"]], [d2["x"], d2["y"]]]
+            else:
+                pos = [[d1["x"], d1["y"], d1["z"]], [d2["x"], d2["y"], d2["z"]]]
+            return pos
+
+        left = []
+        center = []
+        right = []
 
         kpts = self.get_kpts_dict(idx_frame, idx_pose, is_3d)
-        for pt1, pt2 in LEFT_KPT_CONNECTION_LIST:
-            left_list.append([kpts[pt1], kpts[pt2]])
-        for pt1, pt2 in CENTER_KPT_CONNECTION_LIST:
-            center_list.append([kpts[pt1], kpts[pt2]])
-        for pt1, pt2 in RIGHT_KPT_CONNECTION_LIST:
-            right_list.append([kpts[pt1], kpts[pt2]])
+        for pts in connect_lst.left_kpt:
+            left.append(get_pos(kpts, pts))
+        for pts in connect_lst.center_kpt:
+            center.append(get_pos(kpts, pts))
+        for pts in connect_lst.right_kpt:
+            right.append(get_pos(kpts, pts))
 
-        return (left_list, center_list, right_list)
+        return (left, center, right)
 
     ### 分隔區: 以下為抽象函式
 
