@@ -159,6 +159,18 @@ class PoseDataBase(metaclass=ABCMeta):
         """
         return len(self.json_data[idx_frame])
 
+    def get_kpt_score(self, idx_frame: int, idx_pose: int) -> float:
+        """取得關鍵點置信度
+
+        Args:
+            idx_frame (int): 第 n 個影像幀
+            idx_pose (int): 第 n 個姿勢
+
+        Returns:
+            float: 關鍵點置信度
+        """
+        return self.json_data[idx_frame][idx_pose]["score"]
+
     def get_kpts(self, idx_frame: int, idx_pose: int, is_3d: bool = False) -> list:
         """取得影像幀中的關鍵點資訊
 
