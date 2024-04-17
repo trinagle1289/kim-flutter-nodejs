@@ -51,7 +51,7 @@ def get_pose_line_chart(
 
 def get_dots_in_scatter(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
-    data_range: list[float, float],
+    data_range: list[float, float] = None,
     is_3d: bool = False,
     dot_size: int = 5,
     color: str = "#f00",
@@ -81,15 +81,17 @@ def get_dots_in_scatter(
     if not is_3d:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
-        ax.set_xlim(data_range)
-        ax.set_ylim(data_range)
+        if data_range is not None:
+            ax.set_xlim(data_range)
+            ax.set_ylim(data_range)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_zlabel("y")
-        ax.set_xlim(data_range)
-        ax.set_ylim(data_range)
-        ax.set_zlim(data_range)
+        if data_range is not None:
+            ax.set_xlim(data_range)
+            ax.set_ylim(data_range)
+            ax.set_zlim(data_range)
 
     # 繪製多組線條
     x = pos[:, 0]
@@ -108,7 +110,7 @@ def get_dots_in_scatter(
 
 def get_line_plot(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
-    data_range: list[float, float],
+    data_range: list[float, float] = None,
     is_3d: bool = False,
     color: str = "#00f",
     ax: plt.Axes = None,
@@ -136,15 +138,17 @@ def get_line_plot(
     if not is_3d:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
-        ax.set_xlim(data_range)
-        ax.set_ylim(data_range)
+        if data_range is not None:
+            ax.set_xlim(data_range)
+            ax.set_ylim(data_range)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_zlabel("y")
-        ax.set_xlim(data_range)
-        ax.set_ylim(data_range)
-        ax.set_zlim(data_range)
+        if data_range is not None:
+            ax.set_xlim(data_range)
+            ax.set_ylim(data_range)
+            ax.set_zlim(data_range)
 
     # 繪製多組線條
     for line in pos:
