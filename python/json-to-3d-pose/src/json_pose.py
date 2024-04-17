@@ -272,7 +272,7 @@ class PoseDataBase(metaclass=ABCMeta):
         Args:
             idx_frame (int): 第 n 個影像幀
             idx_pose (int): 第 n 個姿勢
-            connect_lst (connect_list.ConnectionList): _description_
+            connect_lst (connect_list.ConnectionList): 兩點連接的資料列表
             is_3d (bool, optional): 是否為 3D 關鍵點(keypoints3D 標籤). Defaults to False.
 
         Returns:
