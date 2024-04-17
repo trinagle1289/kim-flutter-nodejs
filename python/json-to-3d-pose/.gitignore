@@ -1,5 +1,7 @@
 # python 虛擬環境
 venv/
+# 輸出結果
+output*/
 
 *.bundle.*
 lib/
