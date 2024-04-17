@@ -1,6 +1,6 @@
 // 常數
 const VIDEO_TAG = "A1-A3";
-const VIDEO_PATH = `../../resources/video/20240401/${VIDEO_TAG}.mp4`;
+const VIDEO_PATH = `../../resources/video/front/20240417-2/${VIDEO_TAG}.mp4`;
 const VIDEO_SIZE = "1080x1920";
 const VIDEO_FRAME_RATE = 0;
 const OUTPUT_PATH = `./tmp2/`;
