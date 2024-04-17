@@ -400,7 +400,7 @@ class PoseDataBase(metaclass=ABCMeta):
 
 class PoseData3D(PoseDataBase):
     def get_kpt_pos(self, idx_frame: int, idx_pose: int, kpt_name: str) -> np.ndarray:
-        kpt = self.get_kpts_3d(idx_frame, idx_pose)[self.get_kpt_idx(kpt_name)]
+        kpt = self.get_kpts(idx_frame, idx_pose, True)[self.get_kpt_idx(kpt_name)]
         pos = np.array([kpt["x"], kpt["y"], kpt["z"]])
         return pos
 
