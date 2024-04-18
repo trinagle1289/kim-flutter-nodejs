@@ -185,7 +185,7 @@ def draw_lines(
             ax.plot(x, y, color=color)
         else:  # 3D 格式
             z = line[:, 2]  # z 座標點
-            ax.plot(x, z, -y, color=color)
+            ax.plot(x, z, y, color=color)
 
     return ax
 
