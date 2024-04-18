@@ -8,6 +8,27 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# In[ ]:
+
+
+def set_plot_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
+    """設定圖表資料範圍
+
+    Args:
+        data_range (list[float, float]): 資料範圍
+        ax (plt.Axes): 座標資料
+
+    Returns:
+        plt.Axes: 座標資料
+    """
+    ax.set_xlim(data_range)
+    ax.set_ylim(data_range)
+    if ax.name == "3d":
+        ax.set_zlim(data_range)
+
+    return ax
+
+
 # In[2]:
 
 
@@ -50,8 +71,7 @@ def get_pose_line_chart(
 
 
 def get_dots_in_scatter(
-    positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
-    data_range: list[float, float] = None,
+    positions: list[list[float, float]] | list[list[float, float, float]],
     is_3d: bool = False,
     dot_size: int = 5,
     color: str = "#f00",
@@ -60,10 +80,9 @@ def get_dots_in_scatter(
     """在散佈圖中取得多個點
 
     Args:
-        x (list): 點列表(x 軸)
-        y (list): 點列表(y 軸)
-        z (list, optional): 點列表(z 軸). Defaults to None.
-        dot_size (int, optional): 散佈圖點大小. Defaults to 5.
+        positions (list[list[list[float, float]]] | list[list[list[float, float, float]]]): 點座標陣列
+        is_3d (bool, optional): 是否為 3D 座標. Defaults to False.
+        dot_size (int, optional): 點大小. Defaults to 5.
         color (str, optional): 顏色(16位元rgb). Defaults to "#f00".
         ax (plt.Axes, optional): 圖表坐標. Defaults to None.
 
@@ -74,28 +93,20 @@ def get_dots_in_scatter(
     if ax is None:
         ax = plt.gca()
 
-    # 取得座標點位置
+    # 轉換座標點格式
     pos = np.array(positions)
 
-    # 表格資料設定
+    # 設定標籤
     if not is_3d:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
-        if data_range is not None:
-            ax.set_xlim(data_range)
-            ax.set_ylim(data_range)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_zlabel("y")
-        if data_range is not None:
-            ax.set_xlim(data_range)
-            ax.set_ylim(data_range)
-            ax.set_zlim(data_range)
 
-    # 繪製多組線條
-    x = pos[:, 0]
-    y = pos[:, 1]
+    # 繪製多個點
+    x, y = pos[:, 0], pos[:, 1] # 點的 x, y 座標
     if not is_3d:  # 2D 格式
         ax.scatter(x, y, color=color, s=dot_size)
     else:  # 3D 格式
@@ -110,7 +121,6 @@ def get_dots_in_scatter(
 
 def get_line_plot(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
-    data_range: list[float, float] = None,
     is_3d: bool = False,
     color: str = "#00f",
     ax: plt.Axes = None,
@@ -134,21 +144,14 @@ def get_line_plot(
     # 取得座標點位置
     pos = np.array(positions)
 
-    # 表格資料設定
+    # 設定標籤
     if not is_3d:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
-        if data_range is not None:
-            ax.set_xlim(data_range)
-            ax.set_ylim(data_range)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_zlabel("y")
-        if data_range is not None:
-            ax.set_xlim(data_range)
-            ax.set_ylim(data_range)
-            ax.set_zlim(data_range)
 
     # 繪製多組線條
     for line in pos:
