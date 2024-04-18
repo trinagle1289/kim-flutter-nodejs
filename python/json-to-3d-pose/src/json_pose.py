@@ -123,10 +123,10 @@ class PoseDataBase(metaclass=ABCMeta):
                 # 判別是否有 keypoints3D 標籤
                 if list(self.json_data[i][0].keys()).count("keypoints3D") > 0:
                     self.has_kpt_3d = True
+                # 寫入關鍵點名稱
+                for kpt in self.get_kpts(i, 0, False):
+                    self.kpt_name.append(kpt["name"])
                 break
-        # 寫入關鍵點名稱
-        for kpt in self.get_kpts(0, 0, False):
-            self.kpt_name.append(kpt["name"])
         pass
 
     def __len__(self) -> int:
