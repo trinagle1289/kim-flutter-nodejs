@@ -49,6 +49,9 @@ def angles_to_lhc_label(angles: dict) -> str:
         label = "A2"
     else:
         label = "A1"
+
+    if angles is None:
+        label = ""
     return label
 
 
@@ -88,7 +91,7 @@ class PoseDataBase(metaclass=ABCMeta):
     """儲存影片中姿勢資料的類別"""
 
     # 是否擁有 3D 關鍵點
-    hasKpt3D: bool = False
+    has_kpt_3d: bool = False
     # json 資料
     json_data: list = []
     # 關鍵點名稱
@@ -115,8 +118,12 @@ class PoseDataBase(metaclass=ABCMeta):
         with open(json_file_path) as f:
             self.json_data = json.load(f)
         # 檢查是否擁有 3D 關鍵點
-        if list(self.json_data[0][0].keys()).count("keypoints3D") > 0:
-            self.hasKpt3D = True
+        for i in range(self.get_number_of_frames()):
+            if self.get_number_of_poses(i) > 0:  # 判別影像幀是否有姿勢存在
+                # 判別是否有 keypoints3D 標籤
+                if list(self.json_data[i][0].keys()).count("keypoints3D") > 0:
+                    self.has_kpt_3d = True
+                break
         # 寫入關鍵點名稱
         for kpt in self.get_kpts(0, 0, False):
             self.kpt_name.append(kpt["name"])
@@ -417,12 +424,13 @@ class PoseData3D(PoseDataBase):
         return pos
 
     def get_angles(self, idx_frame: int, idx_pose: int) -> dict:
-        angles: dict = {}
-        for center, side in self.joints_dict.items():
-            pt1 = self.get_kpt_pos(idx_frame, idx_pose, side[0])
-            pt2 = self.get_kpt_pos(idx_frame, idx_pose, side[1])
-            cenPt = self.get_kpt_pos(idx_frame, idx_pose, center)
-            angles.update({center: get_angle_in_points(pt1, pt2, cenPt)})
+        if self.get_number_of_poses(idx_frame) > 0:
+            angles: dict = {}
+            for center, side in self.joints_dict.items():
+                pt1 = self.get_kpt_pos(idx_frame, idx_pose, side[0])
+                pt2 = self.get_kpt_pos(idx_frame, idx_pose, side[1])
+                cenPt = self.get_kpt_pos(idx_frame, idx_pose, center)
+                angles.update({center: get_angle_in_points(pt1, pt2, cenPt)})
         return angles
 
     def get_lhc_label(self, idx_frame: int, idx_pose: int) -> str:
@@ -452,12 +460,13 @@ class PoseData(PoseDataBase):
         return pos
 
     def get_angles(self, idx_frame: int, idx_pose: int) -> dict:
-        angles: dict = {}
-        for center, side in self.joints_dict.items():
-            pt1 = self.get_kpt_pos(idx_frame, idx_pose, side[0])
-            pt2 = self.get_kpt_pos(idx_frame, idx_pose, side[1])
-            cenPt = self.get_kpt_pos(idx_frame, idx_pose, center)
-            angles.update({center: get_angle_in_points(pt1, pt2, cenPt)})
+        if self.get_number_of_poses(idx_frame) > 0:
+            angles: dict = {}
+            for center, side in self.joints_dict.items():
+                pt1 = self.get_kpt_pos(idx_frame, idx_pose, side[0])
+                pt2 = self.get_kpt_pos(idx_frame, idx_pose, side[1])
+                cenPt = self.get_kpt_pos(idx_frame, idx_pose, center)
+                angles.update({center: get_angle_in_points(pt1, pt2, cenPt)})
         return angles
 
     def get_lhc_label(self, idx_frame: int, idx_pose: int) -> str:
