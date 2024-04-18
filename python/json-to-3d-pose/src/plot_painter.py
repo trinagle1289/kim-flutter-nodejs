@@ -111,7 +111,7 @@ def draw_dots(
         ax.scatter(x, y, color=color, s=dot_size)
     else:  # 3D 格式
         z = pos[:, 2]  # z 座標點
-        ax.scatter(x, z, -y, color=color, s=dot_size)
+        ax.scatter(x, z, y, color=color, s=dot_size)
 
     return ax
 
