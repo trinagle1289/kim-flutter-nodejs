@@ -209,13 +209,11 @@ class PoseDataBase(metaclass=ABCMeta):
         """
         # 回傳結果
         idx = -1
-        # 直接擷取第一幀影像第一個姿勢的資料來參考
-        kpts = self.json_data[0][0]["keypoints"]
-        # 尋找索引值
-        for i in range(len(kpts)):
-            if kpts[i]["name"] == kpt_name:
-                idx = i
-                break
+
+        # 如果找到 kpt_name 物件，就直接在 self.kpt_name 找到其索引值
+        if self.kpt_name.count(kpt_name) > 0:
+            idx = self.kpt_name.index(kpt_name)
+
         return idx
 
     ### 分隔區: 下面函式會使用基底函式
