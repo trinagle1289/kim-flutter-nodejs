@@ -32,7 +32,10 @@ await tmpDir.handleAllFilesFuture(async (path, parsed) => {
   console.log(`Handling file: ${parsed.name}`);
   let imgTensor = tfn.node.decodePng(fs.readFileSync(path));
   let result = await model.estimatePoses(imgTensor);
+  imgTensor.dispose();
   poses.push(result);
 });
 fs.writeFileSync(JSON_PATH, JSON.stringify(poses));
 console.log(`Finish saving json data.`);
+
+console.log(poses);
