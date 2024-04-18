@@ -11,7 +11,7 @@ import numpy as np
 # In[ ]:
 
 
-def set_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
+def set_square_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
     """設定圖表資料範圍
 
     Args:
@@ -25,6 +25,31 @@ def set_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
     ax.set_ylim(data_range)
     if ax.name == "3d":
         ax.set_zlim(data_range)
+
+    return ax
+
+
+# In[ ]:
+
+
+def set_data_range(
+    x: list[float, float], y: list[float, float], z: list[float, float], ax: plt.Axes
+) -> plt.Axes:
+    """設定圖表資料範圍
+
+    Args:
+        x (list[float, float]): x 軸範圍
+        y (list[float, float]): y 軸範圍
+        z (list[float, float]): z 軸範圍
+        ax (plt.Axes): 座標資料
+
+    Returns:
+        plt.Axes: 座標資料
+    """
+    ax.set_xlim(x)
+    ax.set_ylim(y)
+    if ax.name == "3d":
+        ax.set_zlim(z)
 
     return ax
 
