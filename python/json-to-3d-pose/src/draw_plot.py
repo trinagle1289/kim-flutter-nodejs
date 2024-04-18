@@ -11,7 +11,7 @@ import numpy as np
 # In[ ]:
 
 
-def set_plot_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
+def set_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
     """設定圖表資料範圍
 
     Args:
@@ -32,7 +32,7 @@ def set_plot_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axe
 # In[2]:
 
 
-def get_pose_line_chart(
+def draw_pose_result_line_chart(
     labels: list[str], data_type: str = None, ax: plt.Axes = None
 ) -> plt.Axes:
     """
@@ -70,14 +70,14 @@ def get_pose_line_chart(
 # In[3]:
 
 
-def get_dots_in_scatter(
+def draw_dots(
     positions: list[list[float, float]] | list[list[float, float, float]],
     is_3d: bool = False,
     dot_size: int = 5,
     color: str = "#f00",
     ax: plt.Axes = None,
 ) -> plt.Axes:
-    """在散佈圖中取得多個點
+    """繪製多個點
 
     Args:
         positions (list[list[list[float, float]]] | list[list[list[float, float, float]]]): 點座標陣列
@@ -119,13 +119,13 @@ def get_dots_in_scatter(
 # In[4]:
 
 
-def get_line_plot(
+def draw_lines(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
     is_3d: bool = False,
-    color: str = "#00f",
+    color: str = "#000",
     ax: plt.Axes = None,
 ) -> plt.Axes:
-    """在折線圖中繪製多條線
+    """繪製多組線條
 
     Args:
         positions (list[list[list[float, float]]] | list[list[list[float, float, float]]]): 座標點列表，存放多組的兩個點(用於連線)
