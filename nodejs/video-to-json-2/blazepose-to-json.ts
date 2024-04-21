@@ -37,5 +37,3 @@ await tmpDir.handleAllFilesFuture(async (path, parsed) => {
 });
 fs.writeFileSync(JSON_PATH, JSON.stringify(poses));
 console.log(`Finish saving json data.`);
-
-console.log(poses);
