@@ -1,5 +1,5 @@
 numpy
 
-# 開發用
+# For Dev
 jupyter
 pandas
