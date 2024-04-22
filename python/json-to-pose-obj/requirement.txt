@@ -1,2 +1,5 @@
 numpy
+
+# 開發用
 jupyter
+pandas
