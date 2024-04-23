@@ -59,3 +59,17 @@ blazepose_lines = classes.LineConnections(
     ],
 )
 
+
+# In[ ]:
+
+
+# 關節角度對照關鍵點(通用)
+joint_dict: dict = {
+    "left_shoulder": ["left_elbow", "left_hip"],
+    "right_shoulder": ["right_elbow", "right_hip"],
+    "left_hip": ["left_shoulder", "left_knee"],
+    "right_hip": ["right_shoulder", "right_knee"],
+    "left_knee": ["left_hip", "left_ankle"],
+    "right_knee": ["right_hip", "right_ankle"],
+}
+
