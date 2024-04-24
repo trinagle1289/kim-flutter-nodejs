@@ -7,16 +7,22 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# 格式參考
+from matplotlib.pyplot import Axes
+from mpl_toolkits.mplot3d import Axes3D
+
 
 # In[ ]:
 
 
-def set_square_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.Axes:
+def set_square_data_range(
+    data_range: list[float, float], ax: Axes | Axes3D
+) -> plt.Axes:
     """設定圖表資料範圍
 
     Args:
         data_range (list[float, float]): 資料範圍
-        ax (plt.Axes): 座標資料
+        ax (Axes | Axes3D): 座標資料
 
     Returns:
         plt.Axes: 座標資料
@@ -33,7 +39,10 @@ def set_square_data_range(data_range: list[float, float], ax: plt.Axes) -> plt.A
 
 
 def set_data_range(
-    x: list[float, float], y: list[float, float], z: list[float, float], ax: plt.Axes
+    x: list[float, float],
+    y: list[float, float],
+    z: list[float, float],
+    ax: Axes | Axes3D,
 ) -> plt.Axes:
     """設定圖表資料範圍
 
@@ -41,7 +50,7 @@ def set_data_range(
         x (list[float, float]): x 軸範圍
         y (list[float, float]): y 軸範圍
         z (list[float, float]): z 軸範圍
-        ax (plt.Axes): 座標資料
+        ax (Axes | Axes3D): 座標資料
 
     Returns:
         plt.Axes: 座標資料
@@ -58,17 +67,22 @@ def set_data_range(
 
 
 def draw_pose_result_line_chart(
-    labels: list[str], data_type: str = None, ax: plt.Axes = None
+    labels: list[str], data_type: str = None, ax: Axes = None
 ) -> plt.Axes:
-    """
-    取得姿勢結果折線圖
-    labels: 姿勢標籤列表
-    data_type: 所代表的模型
-    ax: Matplotlib 座標資料
-    """
-    POSE_LABEL = ["A1", "A2", "A3", "A4", "A5"]
-    data = []
+    """取得姿勢結果折線圖
 
+    Args:
+        labels (list[str]): 姿勢標籤列表
+        data_type (str, optional): 所代表的模型. Defaults to None.
+        ax (Axes, optional): 座標資料. Defaults to None.
+
+    Returns:
+        plt.Axes: 座標資料
+    """
+
+    POSE_LABEL = ["A1", "A2", "A3", "A4", "A5"]
+
+    data = []
     # 將標籤以數值的形式存入到 data 中
     for lab in labels:
         if lab == "A1":
@@ -89,6 +103,7 @@ def draw_pose_result_line_chart(
     ax.set_ylabel("pose label")
     ax.set_yticks(list(range(5)), POSE_LABEL)
     ax.plot(range(len(data)), data, label=data_type)
+
     return ax
 
 
@@ -100,7 +115,7 @@ def draw_dots(
     is_3d: bool = False,
     dot_size: int = 5,
     color: str = "#f00",
-    ax: plt.Axes = None,
+    ax: Axes | Axes3D = None,
 ) -> plt.Axes:
     """繪製多個點
 
@@ -131,7 +146,7 @@ def draw_dots(
         ax.set_zlabel("y")
 
     # 繪製多個點
-    x, y = pos[:, 0], pos[:, 1] # 點的 x, y 座標
+    x, y = pos[:, 0], pos[:, 1]  # 點的 x, y 座標
     if not is_3d:  # 2D 格式
         ax.scatter(x, y, color=color, s=dot_size)
     else:  # 3D 格式
@@ -148,26 +163,24 @@ def draw_lines(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
     is_3d: bool = False,
     color: str = "#000",
-    ax: plt.Axes = None,
-) -> plt.Axes:
+    ax: Axes | Axes3D = None,
+) -> Axes | Axes3D:
     """繪製多組線條
 
     Args:
         positions (list[list[list[float, float]]] | list[list[list[float, float, float]]]): 座標點列表，存放多組的兩個點(用於連線)
-        data_range (list[float, float]): 資料顯示區間
         is_3d (bool, optional): 是否為 3D 座標. Defaults to False.
-        color (str, optional): 顏色(16位元rgb). Defaults to "#00f".
-        ax (plt.Axes, optional): 圖表座標. Defaults to None.
+        color (str, optional): 顏色(16位元rgb). Defaults to "#000".
+        ax (Axes | Axes3D, optional): 圖表座標. Defaults to None.
 
     Returns:
-        plt.Axes: 圖表座標
+        Axes | Axes3D: 圖表座標
     """
 
     if ax is None:
         ax = plt.gca()
 
-    # 取得座標點位置
-    pos = np.array(positions)
+    pos = np.array(positions)  # 取得座標點位置
 
     # 設定標籤
     if not is_3d:

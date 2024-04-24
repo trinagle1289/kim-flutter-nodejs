@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import numpy as np
@@ -10,8 +10,8 @@ import numpy as np
 # In[ ]:
 
 
-class ConnectionList:
-    """連接列表"""
+class LineConnections:
+    """線條連接點"""
 
     left_kpt: list[list[str]] = []  # 左邊關鍵點連接列表
     right_kpt: list[list[str]] = []  # 右邊關鍵點連接列表
@@ -22,7 +22,6 @@ class ConnectionList:
         self, left: list[list[str]], right: list[list[str]], center: list[list[str]]
     ) -> None:
         """初始化物件
-
         Args:
             left (list[list[str]]): 左邊連接列表
             right (list[list[str]]): 右邊連接列表
@@ -31,18 +30,15 @@ class ConnectionList:
         self.left_kpt = left
         self.right_kpt = right
         self.center_kpt = center
-
         lr_kpt = np.append(left, right, axis=0)
         full_kpt = np.append(lr_kpt, center, axis=0)
-
         self.full_kpt = full_kpt.tolist()
-        pass
 
 
-# In[2]:
+# In[ ]:
 
 
-blazepose_connection = ConnectionList(
+blazepose_lines = LineConnections(
     left=[
         # 頭部
         ["nose", "left_eye"],  # 0, 2
@@ -87,4 +83,18 @@ blazepose_connection = ConnectionList(
         ["left_hip", "right_hip"],  # 23, 24
     ],
 )
+
+
+# In[ ]:
+
+
+# 關節角度對照關鍵點(通用)
+joint_dict: dict = {
+    "left_shoulder": ["left_elbow", "left_hip"],
+    "right_shoulder": ["right_elbow", "right_hip"],
+    "left_hip": ["left_shoulder", "left_knee"],
+    "right_hip": ["right_shoulder", "right_knee"],
+    "left_knee": ["left_hip", "left_ankle"],
+    "right_knee": ["right_hip", "right_ankle"],
+}
 
