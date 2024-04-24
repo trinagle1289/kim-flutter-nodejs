@@ -7,7 +7,11 @@
 import json
 import numpy as np
 import math
-from values import joint_dict, LineConnections, blazepose_lines
+
+if __name__ == "__main__":
+    from values import joint_dict, LineConnections, blazepose_lines
+else:
+    from src.json_to_pose.values import joint_dict, LineConnections, blazepose_lines
 
 
 # In[2]:
