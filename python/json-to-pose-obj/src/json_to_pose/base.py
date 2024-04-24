@@ -354,7 +354,7 @@ class PoseAnalyzer:
             str: LHC 姿勢標籤
 
         """
-        joint_angles = self.get_all_joint_angles(idx_img, idx_pose, get_3d)
+        joint_angles = self.get_pose_joint_angles(idx_img, idx_pose, get_3d)
         return angles_to_lhc_label(joint_angles)
 
     def get_pose_line_postions(
