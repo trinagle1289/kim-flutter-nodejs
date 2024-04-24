@@ -248,7 +248,7 @@ class Pose:
 
     def get_pose_kpt_positions(
         self, idx_img: int, idx_pose: int, get_3d: bool = False
-    ) -> list:
+    ) -> list[float, float, float] | list[float, float]:
         """取得圖片中姿勢的所有關鍵點座標
 
         Args:
@@ -267,8 +267,29 @@ class Pose:
                 positions.append([kpt["x"], kpt["y"]])
             else:
                 positions.append([kpt["x"], kpt["y"], kpt["z"]])
-
         return positions
+
+    # 將資料整理成列表
+
+    def get_all_pose_kpt_positions(
+        self, get_3d: bool = False
+    ) -> list[list[float, float, float]] | list[list[float, float]]:
+        """取得所有圖片中姿勢的關鍵點座標
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[list[float, float, float]] | list[list[float, float]]: 取得所有圖片中姿勢的關鍵點座標
+        """
+        pose_kpt_positions = []
+
+        for i in range(self.get_image_count()):
+            if self.get_pose_count(i) > 0:
+                pose_kpt_positions.append(self.get_pose_kpt_positions(i, 0, get_3d))
+            else:
+                pose_kpt_positions.append([])
+        return pose_kpt_positions
 
 
 # In[5]:
@@ -456,7 +477,9 @@ class PoseAnalyzer:
         line_positions = []
         for i in range(self.pose.get_image_count()):
             if self.pose.get_pose_count(i) > 0:
-                line_positions.append(self.get_pose_line_postions(i, 0, line_type))
+                line_positions.append(
+                    self.get_pose_line_postions(i, 0, line_type, get_3d)
+                )
             else:
                 line_positions.append([])
 
