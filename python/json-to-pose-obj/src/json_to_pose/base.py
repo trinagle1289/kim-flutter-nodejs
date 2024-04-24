@@ -246,7 +246,7 @@ class Pose:
 
         return position
 
-    def get_all_kpt_positions(
+    def get_pose_kpt_positions(
         self, idx_img: int, idx_pose: int, get_3d: bool = False
     ) -> list:
         """取得圖片中姿勢的所有關鍵點座標
