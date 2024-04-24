@@ -14,6 +14,80 @@ else:
     from src.json_to_pose.values import joint_dict, LineConnections, blazepose_lines
 
 
+# # 函式
+
+# In[ ]:
+
+
+def get_angle_by_3_points(pos1: list, pos2: list, center_pos: list) -> float:
+    """
+    從三個座標點之間取得角度
+    中心點為 center_pos
+    (使用餘弦定理)
+
+    Args:
+        pos1 (list): 座標 1
+        pos2 (list): 座標 2
+        center_pos (list): 中心關鍵點(連接關鍵點 1和關鍵點 2)
+
+    Returns:
+        float: 角度(度數)
+    """
+    # 求角 A (對面為邊 a)
+    # a: pt1 pt2 距離
+    # b: pt1 cenPt 距離
+    # c: pt2 cenPt 距離
+
+    p1 = np.array(pos1)
+    p2 = np.array(pos2)
+    center_pt = np.array(center_pos)
+
+    a = np.linalg.norm(p1 - p2)
+    b = np.linalg.norm(p1 - center_pt)
+    c = np.linalg.norm(p2 - center_pt)
+
+    angleA = math.degrees(math.acos((b * b + c * c - a * a) / (2 * b * c)))
+    return angleA
+
+
+# In[ ]:
+
+
+def angles_to_lhc_label(angles: dict) -> str:
+    """將角度轉換成 LHC 姿勢標籤
+
+    標籤描述:
+    A1: 站立
+    A2: 搬運高處物品
+    A3: 微彎腰
+    A4: 彎腰
+    A5: 蹲姿、跪姿、跪坐姿勢
+
+    Args:
+        angles (dict): 角度字典
+
+    Returns:
+        str: LHC 姿勢標籤
+    """
+    label = ""
+    if angles["right_knee"] < 90:
+        label = "A5"
+    elif angles["right_hip"] < 120:
+        label = "A4"
+    elif angles["right_hip"] < 160:
+        label = "A3"
+    elif angles["right_shoulder"] > 90:
+        label = "A2"
+    else:
+        label = "A1"
+
+    if angles is None:
+        label = ""
+    return label
+
+
+# # 類別
+
 # In[2]:
 
 
@@ -197,76 +271,6 @@ class Pose:
         return positions
 
 
-# In[3]:
-
-
-def get_angle_by_3_points(pos1: list, pos2: list, center_pos: list) -> float:
-    """
-    從三個座標點之間取得角度
-    中心點為 center_pos
-    (使用餘弦定理)
-
-    Args:
-        pos1 (list): 座標 1
-        pos2 (list): 座標 2
-        center_pos (list): 中心關鍵點(連接關鍵點 1和關鍵點 2)
-
-    Returns:
-        float: 角度(度數)
-    """
-    # 求角 A (對面為邊 a)
-    # a: pt1 pt2 距離
-    # b: pt1 cenPt 距離
-    # c: pt2 cenPt 距離
-
-    p1 = np.array(pos1)
-    p2 = np.array(pos2)
-    center_pt = np.array(center_pos)
-
-    a = np.linalg.norm(p1 - p2)
-    b = np.linalg.norm(p1 - center_pt)
-    c = np.linalg.norm(p2 - center_pt)
-
-    angleA = math.degrees(math.acos((b * b + c * c - a * a) / (2 * b * c)))
-    return angleA
-
-
-# In[4]:
-
-
-def angles_to_lhc_label(angles: dict) -> str:
-    """將角度轉換成 LHC 姿勢標籤
-
-    標籤描述:
-    A1: 站立
-    A2: 搬運高處物品
-    A3: 微彎腰
-    A4: 彎腰
-    A5: 蹲姿、跪姿、跪坐姿勢
-
-    Args:
-        angles (dict): 角度字典
-
-    Returns:
-        str: LHC 姿勢標籤
-    """
-    label = ""
-    if angles["right_knee"] < 90:
-        label = "A5"
-    elif angles["right_hip"] < 120:
-        label = "A4"
-    elif angles["right_hip"] < 160:
-        label = "A3"
-    elif angles["right_shoulder"] > 90:
-        label = "A2"
-    else:
-        label = "A1"
-
-    if angles is None:
-        label = ""
-    return label
-
-
 # In[5]:
 
 
@@ -310,10 +314,10 @@ class PoseAnalyzer:
 
     # 複合函式(有使用其他函式)
 
-    def get_all_joint_angles(
+    def get_pose_joint_angles(
         self, idx_img: int, idx_pose: int, get_3d: bool = False
     ) -> dict:
-        """取得全部的關節角度
+        """取得姿勢的所有關節角度
 
         Args:
             idx_img (int): 圖片索引值
@@ -353,7 +357,73 @@ class PoseAnalyzer:
         joint_angles = self.get_all_joint_angles(idx_img, idx_pose, get_3d)
         return angles_to_lhc_label(joint_angles)
 
-    def get_lhc_label_list(self, get_3d: bool = False) -> list[str]:
+    def get_pose_line_postions(
+        self,
+        idx_img: int,
+        idx_pose: int,
+        line_type: LineConnections = blazepose_lines,
+        get_3d: bool = False,
+    ) -> list[list, list, list]:
+        """取得組合線條的多組兩點座標
+
+        Args:
+            idx_img (int): 圖片索引值
+            idx_pose (int): 姿勢索引值
+            line_type (LineConnections, optional): 線條連接. Defaults to blazepose_lines.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[list, list, list]: 列表(存放左、中、右邊線條)
+        """
+
+        # 線條列表
+        left, center, right = [], [], []
+
+        for pt1, pt2 in line_type.left_kpt:
+            pos = [
+                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt1, get_3d),
+                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt2, get_3d),
+            ]
+            left.append(pos)
+
+        for pt1, pt2 in line_type.center_kpt:
+            pos = [
+                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt1, get_3d),
+                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt2, get_3d),
+            ]
+            center.append(pos)
+
+        for pt1, pt2 in line_type.right_kpt:
+            pos = [
+                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt1, get_3d),
+                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt2, get_3d),
+            ]
+            right.append(pos)
+
+        return [left, center, right]
+
+    # 將資料整理成列表
+
+    def get_all_joint_angles(self, get_3d: bool = False) -> list[dict]:
+        """取得關節角度列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[dict]: 關節角度列表
+        """
+        angles = []
+
+        for i in range(self.pose.get_image_count()):
+            if self.pose.get_pose_count(i) > 0:
+                angles.append(self.get_pose_joint_angles(i, 0, get_3d))
+            else:
+                angles.append([])
+
+        return angles
+
+    def get_all_lhc_labels(self, get_3d: bool = False) -> list[str]:
         """取得 LHC 身體姿勢標籤列表
 
         Args:
@@ -371,48 +441,24 @@ class PoseAnalyzer:
 
         return labels
 
-    def get_line_postions(
-        self,
-        idx_img: int,
-        idx_pose: int,
-        line: LineConnections = blazepose_lines,
-        get_3d: bool = False,
-    ) -> list[list, list, list]:
-        """取得組合線條的多組兩點座標
+    def get_all_line_positions(
+        self, line_type: LineConnections = blazepose_lines, get_3d: bool = False
+    ) -> list[list[list, list, list]]:
+        """取得全部的線條所需座標點列表
 
         Args:
-            idx_img (int): 圖片索引值
-            idx_pose (int): 姿勢索引值
-            line (LineConnections, optional): 線條連接. Defaults to blazepose_lines.
+            line_type (LineConnections, optional): 線條種類. Defaults to blazepose_lines.
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
 
         Returns:
-            list[list, list, list]: 列表(存放左、中、右邊線條)
+            list[list[list, list, list]]: 全部的線條所需座標點列表
         """
+        line_positions = []
+        for i in range(self.pose.get_image_count()):
+            if self.pose.get_pose_count(i) > 0:
+                line_positions.append(self.get_pose_line_postions(i, 0, line_type))
+            else:
+                line_positions.append([])
 
-        # 線條列表
-        left, center, right = [], [], []
-
-        for pt1, pt2 in line.left_kpt:
-            pos = [
-                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt1, get_3d),
-                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt2, get_3d),
-            ]
-            left.append(pos)
-
-        for pt1, pt2 in line.center_kpt:
-            pos = [
-                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt1, get_3d),
-                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt2, get_3d),
-            ]
-            center.append(pos)
-
-        for pt1, pt2 in line.right_kpt:
-            pos = [
-                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt1, get_3d),
-                self.pose.get_kpt_pos_by_name(idx_img, idx_pose, pt2, get_3d),
-            ]
-            right.append(pos)
-
-        return [left, center, right]
+        return line_positions
 
