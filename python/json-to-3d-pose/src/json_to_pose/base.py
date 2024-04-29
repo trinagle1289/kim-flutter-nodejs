@@ -16,7 +16,7 @@ else:
 
 # # 函式
 
-# In[ ]:
+# In[2]:
 
 
 def get_angle_by_3_points(pos1: list, pos2: list, center_pos: list) -> float:
@@ -50,7 +50,7 @@ def get_angle_by_3_points(pos1: list, pos2: list, center_pos: list) -> float:
     return angleA
 
 
-# In[ ]:
+# In[3]:
 
 
 def angles_to_lhc_label(angles: dict) -> str:
@@ -88,7 +88,7 @@ def angles_to_lhc_label(angles: dict) -> str:
 
 # # 類別
 
-# In[2]:
+# In[4]:
 
 
 class Pose:
@@ -332,6 +332,91 @@ class PoseAnalyzer:
         )
 
         return get_angle_by_3_points(pos1, pos2, center_pos)
+
+    def get_shoulder_hip_staggered_angle(
+        self, idx_img: int, idx_pose: int, get_3d: bool = False
+    ) -> float:
+        """取得肩臀交錯角度(3D)
+
+        Args:
+            idx_img (int): 圖片索引值
+            idx_pose (int): 姿勢索引值
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            float: 肩臀交錯角度(3D)
+        """
+        # 取得四個關鍵點(兩肩膀和兩臀部)座標
+        shoulder_l = np.array(
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_shoulder", get_3d)
+        )
+        shoulder_r = np.array(
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_shoulder", get_3d)
+        )
+        hip_l = np.array(
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", get_3d)
+        )
+        hip_r = np.array(
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", get_3d)
+        )
+
+        # 取得肩膀和臀部向量
+        shoulder_vec = shoulder_l - shoulder_r
+        hip_vec = hip_l - hip_r
+
+        # 取得肩膀和臀部向量長度
+        shoulder_norm = np.linalg.norm(shoulder_vec)
+        hip_norm = np.linalg.norm(hip_vec)
+
+        # 計算角度
+        angle = np.degrees(
+            np.arccos(np.dot(shoulder_vec, hip_vec) / (shoulder_norm * hip_norm))
+        )
+        angle = angle if angle < 180 - angle else 180 - angle
+
+        return angle
+
+    def get_shoulder_hip_staggered_angle_xz(self, idx_img: int, idx_pose: int) -> float:
+        """取得肩臀交錯角度(xz軸)
+
+        Args:
+            idx_img (int): 圖片索引值
+            idx_pose (int): 姿勢索引值
+
+        Returns:
+            float: 肩臀交錯角度(xz軸)
+        """
+        # 取得兩組關鍵點(肩膀和臀部)座標
+        shoulder_pos = [
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_shoulder", True),
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_shoulder", True),
+        ]
+        hip_pos = [
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", True),
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", True),
+        ]
+
+        # 取得四個關鍵點(兩肩膀和兩臀部)座標
+        shoulder_l = np.array([shoulder_pos[0][0], shoulder_pos[0][2]])
+        shoulder_r = np.array([shoulder_pos[1][0], shoulder_pos[1][2]])
+        hip_l = np.array([hip_pos[0][0], hip_pos[0][2]])
+        hip_r = np.array([hip_pos[1][0], hip_pos[1][2]])
+
+        # 取得肩膀和臀部向量
+        shoulder_vec = shoulder_l - shoulder_r
+        hip_vec = hip_l - hip_r
+
+        # 取得肩膀和臀部向量長度
+        shoulder_norm = np.linalg.norm(shoulder_vec)
+        hip_norm = np.linalg.norm(hip_vec)
+
+        # 計算角度
+        angle = np.degrees(
+            np.arccos(np.dot(shoulder_vec, hip_vec) / (shoulder_norm * hip_norm))
+        )
+        angle = angle if angle < 180 - angle else 180 - angle
+
+        return angle
 
     # 複合函式(有使用其他函式)
 
