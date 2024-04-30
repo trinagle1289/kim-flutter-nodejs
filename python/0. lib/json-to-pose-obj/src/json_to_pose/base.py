@@ -594,13 +594,8 @@ class PoseAnalyzer:
                 angles.append(-1)
         return angles
 
-    def get_all_pose_shoulder_hip_staggered_angle_xz(
-        self, get_3d: bool = False
-    ) -> list[float]:
+    def get_all_pose_shoulder_hip_staggered_angle_xz(self) -> list[float]:
         """取得所有影像中身體姿勢的肩臀交錯角度(xz軸)
-
-        Args:
-            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
 
         Returns:
             list[float]: 所有影像中身體姿勢的肩臀交錯角度
