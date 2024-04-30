@@ -56,3 +56,26 @@ def transYAxis(data: list, val: float) -> list:
 
     return np_data.tolist()
 
+
+# In[ ]:
+
+
+def kpt_pos_to_plot_pos(kpt_pos: list) -> list:
+    """關鍵點座標轉換成圖表座標
+
+    Args:
+        kpt_pos (list): 關鍵點座標
+
+    Returns:
+        list: 圖表座標
+    """
+    kpt = np.array(kpt_pos)
+    add_y = 0
+
+    if kpt.shape == 2:  # 二維陣列
+        add_y = kpt[:, 1].max()
+    elif kpt.shape == 3:  # 三維陣列
+        add_y = kpt[:, :, 1].max()
+
+    return transYAxis(scaleYAxis(kpt, -1), add_y)
+
