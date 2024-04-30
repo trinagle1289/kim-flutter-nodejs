@@ -333,10 +333,11 @@ class PoseAnalyzer:
 
         return get_angle_by_3_points(pos1, pos2, center_pos)
 
-    def get_shoulder_hip_staggered_angle(
+    def get_pose_shoulder_hip_staggered_angle(
         self, idx_img: int, idx_pose: int, get_3d: bool = False
     ) -> float:
-        """取得肩臀交錯角度(3D)
+        """取得肩臀交錯角度
+        計算兩個向量 左肩右肩、左臀右臀 的夾角
 
         Args:
             idx_img (int): 圖片索引值
@@ -344,7 +345,7 @@ class PoseAnalyzer:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
 
         Returns:
-            float: 肩臀交錯角度(3D)
+            float: 肩臀交錯角度
         """
         # 取得四個關鍵點(兩肩膀和兩臀部)座標
         shoulder_l = np.array(
@@ -372,12 +373,13 @@ class PoseAnalyzer:
         angle = np.degrees(
             np.arccos(np.dot(shoulder_vec, hip_vec) / (shoulder_norm * hip_norm))
         )
-        angle = angle if angle < 180 - angle else 180 - angle
 
         return angle
 
-    def get_shoulder_hip_staggered_angle_xz(self, idx_img: int, idx_pose: int) -> float:
+    def get_pose_shoulder_hip_staggered_angle_xz(self, idx_img: int, idx_pose: int) -> float:
         """取得肩臀交錯角度(xz軸)
+        計算兩個向量 左肩右肩、左臀右臀 的夾角
+        必須使用到三維座標進行計算，但忽略 y 軸座標，只計算 xz 軸
 
         Args:
             idx_img (int): 圖片索引值
@@ -414,7 +416,6 @@ class PoseAnalyzer:
         angle = np.degrees(
             np.arccos(np.dot(shoulder_vec, hip_vec) / (shoulder_norm * hip_norm))
         )
-        angle = angle if angle < 180 - angle else 180 - angle
 
         return angle
 
