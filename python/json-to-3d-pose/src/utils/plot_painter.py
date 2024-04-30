@@ -164,7 +164,6 @@ def draw_lines(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
     is_3d: bool = False,
     color: str = "#000",
-    label: str = "",
     ax: Axes | Axes3D = None,
 ) -> Axes | Axes3D:
     """繪製多組線條
@@ -197,10 +196,10 @@ def draw_lines(
     for line in pos:
         x, y = line[:, 0], line[:, 1]  # x, y 座標點
         if not is_3d:  # 2D 格式
-            ax.plot(x, y, color=color, label=label)
+            ax.plot(x, y, color=color)
         else:  # 3D 格式
             z = line[:, 2]  # z 座標點
-            ax.plot(x, z, y, color=color, label=label)
+            ax.plot(x, z, y, color=color)
 
     return ax
 
