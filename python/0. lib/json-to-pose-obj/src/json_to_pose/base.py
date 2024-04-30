@@ -86,9 +86,39 @@ def angles_to_lhc_label(angles: dict) -> str:
     return label
 
 
+# In[4]:
+
+
+def get_angle_between_two_lines_position(
+    line1: list[list[float, float], list[float, float]],
+    line2: list[list[float, float], list[float, float]],
+) -> float:
+    """取得兩條線座標之間的角度
+
+    Args:
+        line1 (list[list[float, float], list[float, float]]): 線條 1的兩點座標
+        line2 (list[list[float, float], list[float, float]]): 線條 2的兩點座標
+
+    Returns:
+        float: 角度(度數)
+    """
+    pos1a = np.array(line1[0])
+    pos1b = np.array(line1[1])
+    pos2a = np.array(line2[0])
+    pos2b = np.array(line2[1])
+
+    vec1 = pos1a - pos1b
+    vec2 = pos2a - pos2b
+
+    norm1 = np.linalg.norm(vec1)
+    norm2 = np.linalg.norm(vec2)
+
+    return np.rad2deg(np.arccos(np.dot(vec1, vec2) / (norm1 * norm2)))
+
+
 # # 類別
 
-# In[4]:
+# In[5]:
 
 
 class Pose:
@@ -292,7 +322,7 @@ class Pose:
         return pose_kpt_positions
 
 
-# In[5]:
+# In[6]:
 
 
 class PoseAnalyzer:
@@ -348,35 +378,23 @@ class PoseAnalyzer:
             float: 肩臀交錯角度
         """
         # 取得四個關鍵點(兩肩膀和兩臀部)座標
-        shoulder_l = np.array(
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_shoulder", get_3d)
-        )
-        shoulder_r = np.array(
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_shoulder", get_3d)
-        )
-        hip_l = np.array(
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", get_3d)
-        )
-        hip_r = np.array(
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", get_3d)
-        )
+        shoulder_pos = [
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_shoulder", get_3d),
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_shoulder", get_3d),
+        ]
+        hip_pos = [
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", get_3d),
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", get_3d),
+        ]
 
-        # 取得肩膀和臀部向量
-        shoulder_vec = shoulder_l - shoulder_r
-        hip_vec = hip_l - hip_r
-
-        # 取得肩膀和臀部向量長度
-        shoulder_norm = np.linalg.norm(shoulder_vec)
-        hip_norm = np.linalg.norm(hip_vec)
-
-        # 計算角度
-        angle = np.degrees(
-            np.arccos(np.dot(shoulder_vec, hip_vec) / (shoulder_norm * hip_norm))
-        )
+        # 計算兩肩膀和兩臀部的交錯角度
+        angle = get_angle_between_two_lines_position(shoulder_pos, hip_pos)
 
         return angle
 
-    def get_pose_shoulder_hip_staggered_angle_xz(self, idx_img: int, idx_pose: int) -> float:
+    def get_pose_shoulder_hip_staggered_angle_xz(
+        self, idx_img: int, idx_pose: int
+    ) -> float:
         """取得肩臀交錯角度(xz軸)
         計算兩個向量 左肩右肩、左臀右臀 的夾角
         必須使用到三維座標進行計算，但忽略 y 軸座標，只計算 xz 軸
@@ -390,32 +408,20 @@ class PoseAnalyzer:
         """
         # 取得兩組關鍵點(肩膀和臀部)座標
         shoulder_pos = [
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_shoulder", True),
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_shoulder", True),
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_shoulder", True)[
+                0::2
+            ],
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_shoulder", True)[
+                0::2
+            ],
         ]
         hip_pos = [
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", True),
-            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", True),
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", True)[0::2],
+            self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", True)[0::2],
         ]
-
-        # 取得四個關鍵點(兩肩膀和兩臀部)座標
-        shoulder_l = np.array([shoulder_pos[0][0], shoulder_pos[0][2]])
-        shoulder_r = np.array([shoulder_pos[1][0], shoulder_pos[1][2]])
-        hip_l = np.array([hip_pos[0][0], hip_pos[0][2]])
-        hip_r = np.array([hip_pos[1][0], hip_pos[1][2]])
-
-        # 取得肩膀和臀部向量
-        shoulder_vec = shoulder_l - shoulder_r
-        hip_vec = hip_l - hip_r
-
-        # 取得肩膀和臀部向量長度
-        shoulder_norm = np.linalg.norm(shoulder_vec)
-        hip_norm = np.linalg.norm(hip_vec)
-
+        
         # 計算角度
-        angle = np.degrees(
-            np.arccos(np.dot(shoulder_vec, hip_vec) / (shoulder_norm * hip_norm))
-        )
+        angle = get_angle_between_two_lines_position(shoulder_pos, hip_pos)
 
         return angle
 
