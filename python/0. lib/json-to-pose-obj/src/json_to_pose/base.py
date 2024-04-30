@@ -366,8 +366,7 @@ class PoseAnalyzer:
     def get_pose_shoulder_hip_staggered_angle(
         self, idx_img: int, idx_pose: int, get_3d: bool = False
     ) -> float:
-        """取得肩臀交錯角度
-        計算兩個向量 左肩右肩、左臀右臀 的夾角
+        """取得身體姿勢的肩臀交錯角度
 
         Args:
             idx_img (int): 圖片索引值
@@ -395,8 +394,7 @@ class PoseAnalyzer:
     def get_pose_shoulder_hip_staggered_angle_xz(
         self, idx_img: int, idx_pose: int
     ) -> float:
-        """取得肩臀交錯角度(xz軸)
-        計算兩個向量 左肩右肩、左臀右臀 的夾角
+        """取得身體姿勢的肩臀交錯角度(xz軸)
         必須使用到三維座標進行計算，但忽略 y 軸座標，只計算 xz 軸
 
         Args:
@@ -419,7 +417,7 @@ class PoseAnalyzer:
             self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "left_hip", True)[0::2],
             self.pose.get_kpt_pos_by_name(idx_img, idx_pose, "right_hip", True)[0::2],
         ]
-        
+
         # 計算角度
         angle = get_angle_between_two_lines_position(shoulder_pos, hip_pos)
 
@@ -576,4 +574,42 @@ class PoseAnalyzer:
                 line_positions.append([])
 
         return line_positions
+
+    def get_all_pose_shoulder_hip_staggered_angle(
+        self, get_3d: bool = False
+    ) -> list[float]:
+        """取得所有影像中身體姿勢的肩臀交錯角度
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[float]: 所有影像中身體姿勢的肩臀交錯角度
+        """
+        angles = []
+        for i in range(self.pose.get_image_count()):
+            if self.pose.get_pose_count > 0:
+                angles.append(self.get_pose_shoulder_hip_staggered_angle(i, 0, get_3d))
+            else:
+                angles.append(-1)
+        return angles
+
+    def get_all_pose_shoulder_hip_staggered_angle_xz(
+        self, get_3d: bool = False
+    ) -> list[float]:
+        """取得所有影像中身體姿勢的肩臀交錯角度(xz軸)
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[float]: 所有影像中身體姿勢的肩臀交錯角度
+        """
+        angles = []
+        for i in range(self.pose.get_image_count()):
+            if self.pose.get_pose_count > 0:
+                angles.append(self.get_pose_shoulder_hip_staggered_angle_xz(i, 0))
+            else:
+                angles.append(-1)
+        return angles
 
