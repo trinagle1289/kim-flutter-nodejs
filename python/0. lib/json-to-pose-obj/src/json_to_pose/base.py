@@ -333,7 +333,7 @@ class PoseAnalyzer:
 
         return get_angle_by_3_points(pos1, pos2, center_pos)
 
-    def get_shoulder_hip_staggered_angle(
+    def get_pose_shoulder_hip_staggered_angle(
         self, idx_img: int, idx_pose: int, get_3d: bool = False
     ) -> float:
         """取得肩臀交錯角度
@@ -376,7 +376,7 @@ class PoseAnalyzer:
 
         return angle
 
-    def get_shoulder_hip_staggered_angle_xz(self, idx_img: int, idx_pose: int) -> float:
+    def get_pose_shoulder_hip_staggered_angle_xz(self, idx_img: int, idx_pose: int) -> float:
         """取得肩臀交錯角度(xz軸)
         計算兩個向量 左肩右肩、左臀右臀 的夾角
         必須使用到三維座標進行計算，但忽略 y 軸座標，只計算 xz 軸
