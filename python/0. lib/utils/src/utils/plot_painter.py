@@ -115,6 +115,7 @@ def draw_dots(
     is_3d: bool = False,
     dot_size: int = 5,
     color: str = "#f00",
+    label: str = "",
     ax: Axes | Axes3D = None,
 ) -> plt.Axes:
     """繪製多個點
@@ -148,10 +149,10 @@ def draw_dots(
     # 繪製多個點
     x, y = pos[:, 0], pos[:, 1]  # 點的 x, y 座標
     if not is_3d:  # 2D 格式
-        ax.scatter(x, y, color=color, s=dot_size)
+        ax.scatter(x, y, color=color, s=dot_size, label=label)
     else:  # 3D 格式
         z = pos[:, 2]  # z 座標點
-        ax.scatter(x, z, y, color=color, s=dot_size)
+        ax.scatter(x, z, y, color=color, s=dot_size, label=label)
 
     return ax
 
@@ -163,6 +164,7 @@ def draw_lines(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
     is_3d: bool = False,
     color: str = "#000",
+    label: str = "",
     ax: Axes | Axes3D = None,
 ) -> Axes | Axes3D:
     """繪製多組線條
@@ -195,10 +197,10 @@ def draw_lines(
     for line in pos:
         x, y = line[:, 0], line[:, 1]  # x, y 座標點
         if not is_3d:  # 2D 格式
-            ax.plot(x, y, color=color)
+            ax.plot(x, y, color=color, label=label)
         else:  # 3D 格式
             z = line[:, 2]  # z 座標點
-            ax.plot(x, z, y, color=color)
+            ax.plot(x, z, y, color=color, label=label)
 
     return ax
 
