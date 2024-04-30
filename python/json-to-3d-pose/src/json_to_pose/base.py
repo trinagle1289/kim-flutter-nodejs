@@ -588,7 +588,7 @@ class PoseAnalyzer:
         """
         angles = []
         for i in range(self.pose.get_image_count()):
-            if self.pose.get_pose_count() > 0:
+            if self.pose.get_pose_count(i) > 0:
                 angles.append(self.get_pose_shoulder_hip_staggered_angle(i, 0, get_3d))
             else:
                 angles.append(-1)
@@ -602,7 +602,7 @@ class PoseAnalyzer:
         """
         angles = []
         for i in range(self.pose.get_image_count()):
-            if self.pose.get_pose_count() > 0:
+            if self.pose.get_pose_count(i) > 0:
                 angles.append(self.get_pose_shoulder_hip_staggered_angle_xz(i, 0))
             else:
                 angles.append(-1)
