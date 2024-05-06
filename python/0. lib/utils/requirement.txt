@@ -1,7 +1,0 @@
-# python=3.11
-matplotlib
-numpy
-
-# for dev
-jupyter
-pandas
