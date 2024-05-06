@@ -10,6 +10,8 @@ import numpy as np
 # 格式參考
 from matplotlib.pyplot import Axes
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.collections import LineCollection
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
 
 # In[ ]:
@@ -164,6 +166,7 @@ def draw_lines(
     positions: list[list[list[float, float]]] | list[list[list[float, float, float]]],
     is_3d: bool = False,
     color: str = "#000",
+    label: str = "",
     ax: Axes | Axes3D = None,
 ) -> Axes | Axes3D:
     """繪製多組線條
@@ -177,29 +180,24 @@ def draw_lines(
     Returns:
         Axes | Axes3D: 圖表座標
     """
-
     if ax is None:
         ax = plt.gca()
 
     pos = np.array(positions)  # 取得座標點位置
+    colors = [color] * pos.shape[0] # 設定顏色這列
 
-    # 設定標籤
+    # 設定標籤和設定線條集合
     if not is_3d:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
+        lines = LineCollection(pos, colors=colors, label=label)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_zlabel("y")
-
-    # 繪製多組線條
-    for line in pos:
-        x, y = line[:, 0], line[:, 1]  # x, y 座標點
-        if not is_3d:  # 2D 格式
-            ax.plot(x, y, color=color)
-        else:  # 3D 格式
-            z = line[:, 2]  # z 座標點
-            ax.plot(x, z, y, color=color)
+        lines = Line3DCollection(pos, colors=colors, label=label)
+    
+    ax.add_collection(lines)
 
     return ax
 
