@@ -1,3 +1,5 @@
+# 機器模型
+models/BlazePose/*.task
 # python 虛擬環境
 venv/
 # 輸出結果
