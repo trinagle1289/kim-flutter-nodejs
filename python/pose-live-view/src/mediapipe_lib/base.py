@@ -132,6 +132,8 @@ class PoseResult:
     def __init__(self, result: PoseLandmarkerResult):
         self.result = result
 
+    # 基礎函式
+
     def get_kpt_pos_by_index(
         self, idx: int, get_3d: bool = False
     ) -> list[float, float] | list[float, float, float]:
@@ -185,7 +187,29 @@ class PoseResult:
 
         return position
 
-    pass
+    # 資料列表函式
+
+    def get_all_kpt_positions(self, get_3d: bool = False) -> list[list[float, float]]:
+        """取得全部關鍵點
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[list[float, float]]: 全部關鍵點列表
+        """
+        positions = []
+
+        if not get_3d:
+            for kpt in self.result.pose_landmarks[0]:
+                kpt: Landmark
+                positions.append([kpt.x, kpt.y])
+        else:
+            for kpt in self.result.pose_world_landmarks[0]:
+                kpt: NormalizedLandmark
+                positions.append([kpt.x, kpt.y, kpt.z])
+
+        return positions
 
 
 # 姿勢結果分析器
