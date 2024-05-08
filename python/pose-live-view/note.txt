@@ -1,0 +1,2 @@
+[CanvasAgg 演示 — Matplotlib 3.8.4 文檔](https://matplotlib.org/stable/gallery/user_interfaces/canvasagg.html)
+[python - Save plot to numpy array - Stack Overflow](https://stackoverflow.com/questions/7821518/save-plot-to-numpy-array)
