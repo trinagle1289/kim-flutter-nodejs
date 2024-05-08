@@ -184,20 +184,32 @@ def draw_lines(
         ax = plt.gca()
 
     pos = np.array(positions)  # 取得座標點位置
-    colors = [color] * pos.shape[0] # 設定顏色這列
+    colors = [color] * pos.shape[0]  # 設定顏色陣列
 
     # 設定標籤和設定線條集合
     if not is_3d:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         lines = LineCollection(pos, colors=colors, label=label)
+        ax.add_collection(lines)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_zlabel("y")
-        lines = Line3DCollection(pos, colors=colors, label=label)
-    
-    ax.add_collection(lines)
+
+        # 取得三維座標點
+        x = pos[:, :, 0]
+        y = pos[:, :, 1]
+        z = pos[:, :, 2]
+
+        # 將舊的三維座標點映射在新的物件上
+        new_pos = pos.copy()
+        new_pos[:, :, 0] = x
+        new_pos[:, :, 1] = z
+        new_pos[:, :, 2] = y
+
+        lines = Line3DCollection(new_pos, colors=colors, label=label)
+        ax.add_collection3d(lines)
 
     return ax
 
