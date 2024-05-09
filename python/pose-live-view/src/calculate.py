@@ -84,6 +84,9 @@ def draw_circles_by_landmarks(
     Returns:
         np.ndarray: 繪製完成的圖片
     """
+    if len(landmarks) <= 0:  # 沒有資料則傳回原始圖片
+        return np_img
+
     drawed_img = np_img.copy()
     h, w, _ = drawed_img.shape
     for kpt in landmarks[0]:
@@ -125,6 +128,9 @@ def draw_bones_in_plot_by_pose_lanmark_result(
 
     if ax is None:  # 沒有表格座標
         ax = plt.gca()
+
+    if len(pose_lanmark_result.pose_world_landmarks) <= 0:  # 沒有資料則回傳原始表格座標
+        return ax
 
     # 轉換成表格座標
     kpts, left, center, right = poselandmarker_result_to_plot_pos(
