@@ -6,8 +6,12 @@
 
 from mediapipe.tasks.python.vision.pose_landmarker import PoseLandmarkerResult
 
-from mediapipe_lib.base import PoseResult, ResultAnalyzer
-from utils.process_data import translate_multi_kpt_to_plot_pos
+if __name__ == "__main__":
+    from mediapipe_lib.base import PoseResult, ResultAnalyzer
+    from utils.process_data import translate_multi_kpt_to_plot_pos
+else:
+    from src.mediapipe_lib.base import PoseResult, ResultAnalyzer
+    from src.utils.process_data import translate_multi_kpt_to_plot_pos
 
 
 # 將姿勢座標結果轉換成表格座標
