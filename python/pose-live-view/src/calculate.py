@@ -23,6 +23,7 @@ if __name__ == "__main__":
 else:
     from src.mediapipe_lib.base import PoseResult, ResultAnalyzer
     from src.utils.process_data import translate_multi_kpt_to_plot_pos
+    from src.utils.plot_painter import draw_dots, draw_lines
 
 
 # ##### 將姿勢座標結果轉換成表格座標
