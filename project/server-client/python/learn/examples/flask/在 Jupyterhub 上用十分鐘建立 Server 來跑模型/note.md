@@ -1,0 +1,2 @@
+* [在 Jupyterhub 上用十分鐘建立 Server 來跑模型. Build an AI App — 0: use Ngrok and… | by Abby Yeh | Taiwan AI Academy | Medium](https://medium.com/ai-academy-taiwan/%E5%9C%A8-jupyterhub-%E4%B8%8A%E7%94%A8%E5%8D%81%E5%88%86%E9%90%98%E5%BB%BA%E7%AB%8B-server-%E4%BE%86%E8%B7%91%E6%A8%A1%E5%9E%8B-5888e3dbf1ea#52fc)
+* [leafinity/cartoon_server at jupyter-sync-server](https://github.com/leafinity/cartoon_server/tree/jupyter-sync-server)
