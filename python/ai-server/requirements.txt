@@ -4,6 +4,7 @@ requests
 celery
 numpy
 pillow # Image processing
+Flask-SQLAlchemy
 
 # DEV
 jupyter
