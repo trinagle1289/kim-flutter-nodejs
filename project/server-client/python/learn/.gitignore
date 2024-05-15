@@ -1,7 +1,7 @@
-# virtual environment
+########## Python Venv ##########
 venv/
 
-########## jupyter notebook ##########
+########## Jupyter Notebook ##########
 *.bundle.*
 lib/
 node_modules/

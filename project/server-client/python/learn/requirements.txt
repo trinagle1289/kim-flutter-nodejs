@@ -5,6 +5,7 @@ celery
 numpy
 pillow # Image processing
 Flask-SQLAlchemy
+opencv-python
 
 # DEV
 jupyter
