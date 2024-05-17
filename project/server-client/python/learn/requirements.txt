@@ -1,5 +1,6 @@
 # python=3.11
 flask
+flask-cors
 requests
 celery
 numpy
