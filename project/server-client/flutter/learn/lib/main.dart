@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MainApp());
@@ -15,7 +17,7 @@ class MainApp extends StatelessWidget {
         body: Center(
           child: TextButton(
               onPressed: () {
-                startToTest();
+                testing();
               },
               child: const Text('test')),
         ),
@@ -25,9 +27,17 @@ class MainApp extends StatelessWidget {
 }
 
 /// 開始測試
-void startToTest() async {
-  var path = 'http://127.0.0.1:5000/success';
-  var response = await Dio().get(path);
-  // debugPrint(response.toString());
-  
+void testing() async {
+  var client = http.Client();
+  try {
+    var url = Uri.http('10.0.2.2:5000', '/success');
+    var response = await client.get(url);
+    var json_data = jsonDecode(response.body);
+    debugPrint(json_data['method']);
+    // var decodeResponse = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
+  } catch (e) {
+    debugPrint('error in ${e.toString()}');
+  } finally {
+    client.close();
+  }
 }
