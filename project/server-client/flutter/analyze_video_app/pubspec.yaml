@@ -7,14 +7,18 @@ environment:
   sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
+  chunked_uploader: ^1.1.0
+  dio: ^5.4.3+1
+  file_picker: ^8.0.3
   flutter:
     sdk: flutter
   http: ^1.2.1
+  image_picker: ^1.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
