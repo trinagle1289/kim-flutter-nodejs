@@ -1,0 +1,17 @@
+# python=3.11
+
+# server
+flask
+flask-cors
+
+# analyze video
+opencv-python # process image
+mediapipe # machine model
+numpy # calculate
+
+# draw analyzed data
+matplotlib
+
+# dev
+jupyter
+pandas
