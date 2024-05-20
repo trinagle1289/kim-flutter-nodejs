@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:chunked_uploader/chunked_uploader.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:format/format.dart';
 
 /// 伺服器 IP(包含通訊埠)
