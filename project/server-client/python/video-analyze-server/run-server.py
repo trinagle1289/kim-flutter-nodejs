@@ -7,11 +7,12 @@ PORT = 8022
 app = Flask(__name__)
 
 
-@app.route("/analyze/<int:video_id>", methods=["POST"])
+@app.route("/analyze/<video_id>", methods=["POST", "GET"])
 @cross_origin()
-def analyze_video(video_id: int):
-
-    pass
+def analyze_video(video_id: str):
+    data = f"Video id is: {video_id}"
+    response = app.response_class(response=data, status=200, content_type="text/plain")
+    return response
 
 
 if __name__ == "__main__":

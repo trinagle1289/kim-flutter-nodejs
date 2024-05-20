@@ -1,13 +1,26 @@
 import 'dart:io';
 
-import 'package:chunked_uploader/chunked_uploader.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:dio/dio.dart';
+import 'package:chunked_uploader/chunked_uploader.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:format/format.dart';
 
-// Android To DevCP Local IP:
-var serverIp = "10.0.2.2:5000";
+/// 伺服器 IP(包含通訊埠)
+var serverIp = "10.0.2.2:8022"; // Android 到本地開發機器的 IP
+/// 伺服器用於分析檔案的路徑
+var serverFilePath = "/analyze/test_video"; // 需要將資料上傳至相應路徑才可順利運行
 
+/// 連線設定
+var options = BaseOptions(
+    baseUrl: Uri.http(serverIp).toString(), // 連接網址
+    headers: {
+      "Connection": "keep-alive", // 保持連線
+      "Content-Type": "multipart/form-data", // 傳輸多格式資料
+    });
+
+/// 主程式
 void main() => runApp(const MainApp());
 
 /// 主要介面
@@ -48,32 +61,57 @@ class PoseResultState extends State<PoseResult> {
 
   /// 傳輸影片
   void uploadVideo() async {
-    // // 設定要抓的影片資料
-    // var video = await ImagePicker().pickVideo(source: ImageSource.gallery);
-    // if (video == null) {
-    //   debugPrint("Cannot get video");
-    //   return;
-    // }
+    // 傳輸影片物件
+    var video = (await FilePicker.platform
+            .pickFiles(type: FileType.video, withReadStream: true))!
+        .files
+        .single;
 
-    // // 設定傳輸資料
-    // var formData = FormData.fromMap({
-    //   'file': await MultipartFile.fromFile(video.path, filename: video.name)
-    // });
+    // 設定讀取串流的物件
+    Stream<List<int>> readStream = video.readStream!;
 
-    // // 建立 Dio 和 ChunkedUploader 物件
-    // var dio = Dio(BaseOptions(baseUrl: Uri.http(serverIp).toString()));
-    // var uploader = ChunkedUploader(dio);
+    // 當未選擇影片時
+    if (video.path == null) {
+      debugPrint("No video file selected.");
+      return;
+    }
 
-    // // 傳輸資料
-    // debugPrint("File Path: ${video.path}");
-    // var response = await uploader.upload(fileDataStream: , fileName: fileName, fileSize: fileSize, path: path)
+    // 建立 Dio 和 ChunkedUploader 物件
+    var dio = Dio(options);
+    var uploader = ChunkedUploader(dio);
 
-    // var response = await dio.get("/success");
-    // if (response.statusCode == 200) {
-    //   debugPrint("Status Code: ${response.statusCode}");
-    //   debugPrint("response: ${response.data}");
-    // } else {
-    //   debugPrint("Error Code: ${response.statusCode}");
-    // }
+    // 傳輸資料
+    var reloadTimes = 3; // 設定重新傳輸資料的次數
+    for (var i = 0; i < reloadTimes; i++) {
+      try {
+        // 取得伺服器回應
+        var response = await uploader.upload(
+          fileDataStream: readStream,
+          fileName: video.name,
+          fileSize: video.size,
+          path: serverFilePath,
+          onUploadProgress: (p0) {
+            debugPrint("upload progress: {0:.2f}%".format(p0 * 100));
+          },
+        );
+        debugPrint("response: ${response.toString()}");
+        setState(() {
+          httpResponse = response.toString();
+        });
+        break; // 成功運行時，則離開此迴圈
+      } catch (e) {
+        // 重新建立讀取串流的物件
+        readStream = File(video.path!).openRead();
+
+        if (i + 1 < reloadTimes) {
+          // 有時會出現斷線的狀況，會等待 1 秒後才會重新傳輸
+          debugPrint("Error: ${e.toString()}");
+          await Future.delayed(const Duration(seconds: 1));
+        } else {
+          // 運行最後一次時，顯示傳輸失敗訊息
+          debugPrint("Upload Failed...");
+        }
+      }
+    }
   }
 }
