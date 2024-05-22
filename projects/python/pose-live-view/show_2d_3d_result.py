@@ -3,7 +3,7 @@
 
 # #### 常數
 
-# In[10]:
+# In[1]:
 
 
 MODEL = "./models/BlazePose/pose_landmarker_full.task"
@@ -13,7 +13,7 @@ VIDEO = "../../resources/video/side/20240401/A1-A5_3.mp4"
 
 # #### 套件
 
-# In[11]:
+# In[2]:
 
 
 # view result
@@ -49,7 +49,7 @@ from src.mediapipe_lib.base import PoseLandmarkerLiveStream, PoseResult, ResultA
 
 # #### 忽略警告
 
-# In[12]:
+# In[3]:
 
 
 import warnings
@@ -59,7 +59,7 @@ warnings.filterwarnings("ignore")
 
 # #### 變數
 
-# In[13]:
+# In[4]:
 
 
 is_3d = True
@@ -83,7 +83,7 @@ front_view = (30, 0, 0)  # 正面視角
 
 # ##### 取得一個 3D 姿勢圖表的圖片
 
-# In[14]:
+# In[5]:
 
 
 def get_a_3d_pose_plot_image(
@@ -152,7 +152,7 @@ def get_a_3d_pose_plot_image(
 
 # ##### 取得一個 3D 肩臀線條的圖片
 
-# In[15]:
+# In[6]:
 
 
 def get_shoulder_and_hip_plot_image(
@@ -229,15 +229,57 @@ def get_shoulder_and_hip_plot_image(
 
 # ##### 在原始圖片上繪製資料
 
-# In[ ]:
+# In[7]:
 
 
+def draw_result_in_image(img: cv2.typing.MatLike, result: PoseLandmarkerResult):
+    IS_3D = True  # 使用 3D 姿勢
 
+    # 建立分析器
+    pose_result = PoseResult(result)
+    analyzer = ResultAnalyzer(pose_result)
+
+    result_img = img.copy()
+    if len(result.pose_landmarks) > 0:
+        ### 繪製關鍵點
+        result_img = draw_circles_by_landmarks(result_img, result.pose_landmarks)
+
+        ### 繪製額外加分項目的測試
+        # 軀幹是否扭轉
+        if analyzer.check_if_trunk_is_twisted(IS_3D):
+            cv2.circle(result_img, (30, 30), 20, (0, 0, 0), -1)
+            cv2.circle(result_img, (30, 30), 18, (255, 255, 255), -1)
+            cv2.putText(
+                result_img, "A", (30, 30), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2
+            )
+        # 手是否遠離身體
+        if analyzer.check_if_hands_at_a_distance(IS_3D):
+            cv2.circle(result_img, (30, 80), 20, (0, 0, 0), -1)
+            cv2.circle(result_img, (30, 80), 18, (255, 255, 255), -1)
+            cv2.putText(
+                result_img, "B", (30, 80), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2
+            )
+        # 手臂是否抬起，水平位置且位於肩膀和手肘間
+        if analyzer.check_if_arms_raised(IS_3D):
+            cv2.circle(result_img, (30, 130), 20, (0, 0, 0), -1)
+            cv2.circle(result_img, (30, 130), 18, (255, 255, 255), -1)
+            cv2.putText(
+                result_img, "C", (30, 130), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2
+            )
+        # 手是否高過肩膀
+        if analyzer.check_if_hands_above_shoulder(IS_3D):
+            cv2.circle(result_img, (30, 180), 20, (0, 0, 0), -1)
+            cv2.circle(result_img, (30, 180), 18, (255, 255, 255), -1)
+            cv2.putText(
+                result_img, "D", (30, 180), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2
+            )
+
+    return result_img
 
 
 # ##### 取得分析結果
 
-# In[16]:
+# In[8]:
 
 
 def get_analyze_result_image(
@@ -328,7 +370,7 @@ def get_analyze_result_image(
 
 # ##### 直播版
 
-# In[17]:
+# In[9]:
 
 
 cap = cv2.VideoCapture(STREAM_ID)
@@ -363,19 +405,20 @@ while cap.isOpened():
     # 轉換 mp 圖形為 numpy
     np_img = np.array(mp_img.numpy_view())
 
-    # 繪製影像中的關鍵點
-    img_2d = draw_circles_by_landmarks(
-        np_img, result.pose_landmarks, 3, (0, 255, 0), -1
-    )
+    # # 繪製影像中的關鍵點
+    # img_2d = draw_circles_by_landmarks(
+    #     np_img, result.pose_landmarks, 3, (0, 255, 0), -1
+    # )
 
-    # 有扭轉的狀況下，左上角繪製綠紅點
-    if len(result.pose_world_landmarks) > 0:
-        if analyzer.get_pose_shoulder_hip_staggered_angle(is_3d) > 15:
-            cv2.circle(img_2d, (30, 30), 15, (0, 255, 0), -1)
-            cv2.circle(img_2d, (30, 30), 10, (0, 0, 255), -1)
-            pass
+    # # 有扭轉的狀況下，左上角繪製綠紅點
+    # if len(result.pose_world_landmarks) > 0:
+    #     if analyzer.get_pose_shoulder_hip_staggered_angle(is_3d) > 15:
+    #         cv2.circle(img_2d, (30, 30), 15, (0, 255, 0), -1)
+    #         cv2.circle(img_2d, (30, 30), 10, (0, 0, 255), -1)
+    #         pass
 
     # 取得圖表圖片
+    img_2d = draw_result_in_image(np_img, result)
     img_analyze = get_analyze_result_image(result)
 
     # 組合圖片
@@ -395,7 +438,7 @@ cv2.destroyAllWindows()
 
 # ##### 影片版
 
-# In[18]:
+# In[ ]:
 
 
 # cap = cv2.VideoCapture(VIDEO)
@@ -470,7 +513,7 @@ cv2.destroyAllWindows()
 # cv2.destroyAllWindows()
 
 
-# In[19]:
+# In[ ]:
 
 
 # # 關閉物件
