@@ -435,7 +435,7 @@ class ResultAnalyzer:
         right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
 
         result = False
-        return NotImplementedError
+        return result
 
     def check_if_arms_raised(self, get_3d: bool = False) -> bool:
         """檢查手臂是否需抬舉，手的水平位於手肘與肩膀之間
@@ -446,7 +446,7 @@ class ResultAnalyzer:
         Returns:
             bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
         """
-        RAISED_ANGLE = 30  # 判斷抬舉的角度
+        RAISED_ANGLE = 45  # 判斷抬舉的角度
 
         result = False  # 判斷結果
 
