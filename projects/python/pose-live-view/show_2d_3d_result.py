@@ -3,7 +3,7 @@
 
 # #### 常數
 
-# In[1]:
+# In[10]:
 
 
 MODEL = "./models/BlazePose/pose_landmarker_full.task"
@@ -13,7 +13,7 @@ VIDEO = "../../resources/video/side/20240401/A1-A5_3.mp4"
 
 # #### 套件
 
-# In[2]:
+# In[11]:
 
 
 # view result
@@ -49,7 +49,7 @@ from src.mediapipe_lib.base import PoseLandmarkerLiveStream, PoseResult, ResultA
 
 # #### 忽略警告
 
-# In[3]:
+# In[12]:
 
 
 import warnings
@@ -59,7 +59,7 @@ warnings.filterwarnings("ignore")
 
 # #### 變數
 
-# In[4]:
+# In[13]:
 
 
 is_3d = True
@@ -81,9 +81,9 @@ front_view = (30, 0, 0)  # 正面視角
 
 # #### 函式
 
-# 取得一個 3D 姿勢圖表的圖片
+# ##### 取得一個 3D 姿勢圖表的圖片
 
-# In[5]:
+# In[14]:
 
 
 def get_a_3d_pose_plot_image(
@@ -150,9 +150,9 @@ def get_a_3d_pose_plot_image(
     return rgb
 
 
-# 取得一個 3D 肩臀線條的圖片
+# ##### 取得一個 3D 肩臀線條的圖片
 
-# In[6]:
+# In[15]:
 
 
 def get_shoulder_and_hip_plot_image(
@@ -166,7 +166,7 @@ def get_shoulder_and_hip_plot_image(
     Args:
         result (PoseLandmarkerResult): 姿勢座標結果
         figsize (tuple[float, float], optional): 圖表大小. Defaults to (6.4, 4.8).
-        view (tuple[float, float, float], optional): 圖表視角. Defaults to (30, -60, 0).
+        view (tuple[float, float, float], optional): 圖表視角. Defaults to (90, 0, 0).
         range (tuple[list, list, list], optional): 圖表資料範圍. Defaults to ([1, -1], [1, -1], [2, 0]).
 
     Returns:
@@ -227,91 +227,175 @@ def get_shoulder_and_hip_plot_image(
     return rgb
 
 
+# ##### 在原始圖片上繪製資料
+
+# In[ ]:
+
+
+
+
+
+# ##### 取得分析結果
+
+# In[16]:
+
+
+def get_analyze_result_image(
+    result: PoseLandmarkerResult, figsize: tuple[float, float] = (6.4, 4.8)
+) -> cv2.typing.MatLike:
+    """取得分析結果圖片
+    包含 3D 姿勢圖表以及 3D 肩臀線條
+
+    Args:
+        result (PoseLandmarkerResult): 姿勢座標結果
+        figsize (tuple[float, float], optional): 圖表大小. Defaults to (6.4, 4.8).
+
+    Returns:
+        cv2.typing.MatLike: 分析結果圖片
+    """
+    DATA_VIEW_RANGE = ([-1, 1], [-1, 1], [0, 2])  # 顯示資料區間
+    AX0_VIEW_INIT = (30, -60, 0)  # 座標 0 初始視角
+    AX1_VIEW_INIT = (90, 0, 0)  # 座標 1 初始視角
+
+    IS_3D = True  # 使用 3D 姿勢
+
+    # 建立分析器
+    pose_result = PoseResult(result)
+    analyzer = ResultAnalyzer(pose_result)
+
+    # 建立圖表和 3D 視圖
+    fig = plt.figure(figsize=figsize)
+    ax_0: Axes3D = fig.add_subplot(121, projection="3d")
+    ax_1: Axes3D = fig.add_subplot(122, projection="3d")
+
+    # 設定圖表資訊
+    set_data_range(DATA_VIEW_RANGE[0], DATA_VIEW_RANGE[1], DATA_VIEW_RANGE[2], ax_0)
+    ax_0.view_init(AX0_VIEW_INIT[0], AX0_VIEW_INIT[1], AX0_VIEW_INIT[2])
+    ax_0.set_xlabel("x")
+    ax_0.set_ylabel("z")
+    ax_0.set_zlabel("y")
+    set_data_range(DATA_VIEW_RANGE[0], DATA_VIEW_RANGE[1], DATA_VIEW_RANGE[2], ax_1)
+    ax_1.view_init(AX1_VIEW_INIT[0], AX1_VIEW_INIT[1], AX1_VIEW_INIT[2])
+    ax_1.set_xlabel("x")
+    ax_1.set_ylabel("z")
+    ax_1.set_zlabel("y")
+
+    # 如果能抓到骨架
+    if len(result.pose_world_landmarks) > 0:
+        # 繪製座標 0
+        ax_0.set_title(f"Pose Label: {analyzer.get_lhc_label(IS_3D)}")
+        draw_bones_in_plot_by_pose_lanmark_result(result, ax=ax_0)
+        ax_0.legend()
+
+        # 繪製座標 1
+        ax_1.set_title(
+            f"Staggered Angle: {analyzer.get_pose_shoulder_hip_staggered_angle(IS_3D):.2f}"
+        )
+        # 取得肩膀臀部座標
+        shoulder = np.array(
+            [
+                pose_result.get_kpt_pos_by_name("left_shoulder", IS_3D),
+                pose_result.get_kpt_pos_by_name("right_shoulder", IS_3D),
+            ]
+        )
+        hip = np.array(
+            [
+                pose_result.get_kpt_pos_by_name("left_hip", IS_3D),
+                pose_result.get_kpt_pos_by_name("right_hip", IS_3D),
+            ]
+        )
+        ax_1.plot(shoulder[:, 0], shoulder[:, 2], shoulder[:, 1], label="shoulder")
+        ax_1.plot(hip[:, 0], hip[:, 2], hip[:, 1], label="hip")
+        ax_1.legend()
+
+    else:
+        ax_0.set_title("NO DATA")
+        ax_1.set_title("NO DATA")
+
+    # 固定圖表內容
+    canvas = FigureCanvasAgg(fig)
+    canvas.draw()
+    plt.close(fig)
+
+    # 將圖表 buffer 轉換成 numpy 格式
+    rgba = np.asarray(canvas.buffer_rgba())
+    rgb = cv2.cvtColor(rgba, cv2.COLOR_RGBA2BGR)
+
+    return rgb
+
+
 # #### 主程式
 
 # ##### 直播版
 
-# In[7]:
+# In[17]:
 
 
-# cap = cv2.VideoCapture(STREAM_ID)
+cap = cv2.VideoCapture(STREAM_ID)
 
-# # 相機資訊
-# cam_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-# cam_heigh = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+# 相機資訊
+cam_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+cam_heigh = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-# # 輸出圖表資訊
-# fig_width = int(cam_width * 0.7) / 100  # 寬度
-# fig_heigh = int(cam_heigh) / 100  # 長度
+# 輸出圖表資訊
+fig_width = int(cam_width * 0.7) / 100  # 寬度
+fig_heigh = int(cam_heigh) / 100  # 長度
 
-# live = PoseLandmarkerLiveStream(MODEL)
-# while cap.isOpened():
-#     # 抓取影像
-#     ret, frame = cap.read()
-#     if not ret:
-#         print("Can't receive frame (stream end?). Exiting ...")
+live = PoseLandmarkerLiveStream(MODEL)
+while cap.isOpened():
+    # 抓取影像
+    ret, frame = cap.read()
+    if not ret:
+        print("Can't receive frame (stream end?). Exiting ...")
 
-#     # 偵測模型以及監聽其結果
-#     live.detect_async(frame, int(time.time() * 1000))
-#     mp_img = live.current_image
-#     result = live.result
+    # 偵測模型以及監聽其結果
+    live.detect_async(frame, int(time.time() * 1000))
+    mp_img = live.current_image
+    result = live.result
 
-#     # 姿勢分析器
-#     pose_result = PoseResult(result)
-#     analyzer = ResultAnalyzer(pose_result)
+    # 姿勢分析器
+    pose_result = PoseResult(result)
+    analyzer = ResultAnalyzer(pose_result)
 
-#     if mp_img is None:  # 抓不到圖片
-#         continue
+    if mp_img is None:  # 抓不到圖片
+        continue
 
-#     # 轉換 mp 圖形為 numpy
-#     np_img = np.array(mp_img.numpy_view())
+    # 轉換 mp 圖形為 numpy
+    np_img = np.array(mp_img.numpy_view())
 
-#     # 繪製影像中的關鍵點
-#     img_2d = draw_circles_by_landmarks(
-#         np_img, result.pose_landmarks, 3, (0, 255, 0), -1
-#     )
+    # 繪製影像中的關鍵點
+    img_2d = draw_circles_by_landmarks(
+        np_img, result.pose_landmarks, 3, (0, 255, 0), -1
+    )
 
-#     # 有扭轉的狀況下，左上角繪製綠紅點
-#     if len(result.pose_world_landmarks) > 0:
-#         if analyzer.get_pose_shoulder_hip_staggered_angle(is_3d) > 15:
-#             cv2.circle(img_2d, (30, 30), 15, (0, 255, 0), -1)
-#             cv2.circle(img_2d, (30, 30), 10, (0, 0, 255), -1)
-#             pass
+    # 有扭轉的狀況下，左上角繪製綠紅點
+    if len(result.pose_world_landmarks) > 0:
+        if analyzer.get_pose_shoulder_hip_staggered_angle(is_3d) > 15:
+            cv2.circle(img_2d, (30, 30), 15, (0, 255, 0), -1)
+            cv2.circle(img_2d, (30, 30), 10, (0, 0, 255), -1)
+            pass
 
-#     # 取得圖表圖片
-#     img_default = get_a_3d_pose_plot_image(
-#         result=result,
-#         figsize=(fig_width, fig_heigh),
-#         view=default_view,
-#         range=(range_x, range_y, range_z),
-#         dot_size=5,
-#         colors=(c_kpts, c_left, c_center, c_right),
-#     )
-#     img_shoulder_hip = get_shoulder_and_hip_plot_image(
-#         result=result,
-#         figsize=(fig_width, fig_heigh),
-#         view=top_view,
-#         range=(range_x, range_y, range_z),
-#     )
+    # 取得圖表圖片
+    img_analyze = get_analyze_result_image(result)
 
-#     # 組合圖片
-#     img_all = np.concatenate((img_2d, img_default, img_shoulder_hip), axis=1)
+    # 組合圖片
+    img_all = np.concatenate((img_2d, img_analyze), axis=1)
 
-#     cv2.imshow("result", img_all)
+    cv2.imshow("result", img_all)
 
-#     # 按 Q 離開
-#     if cv2.waitKey(1) == ord("q"):
-#         break
+    # 按 Q 離開
+    if cv2.waitKey(1) == ord("q"):
+        break
 
-# # 關閉物件
-# live.close()
-# cap.release()
-# cv2.destroyAllWindows()
+# 關閉物件
+live.close()
+cap.release()
+cv2.destroyAllWindows()
 
 
 # ##### 影片版
 
-# In[10]:
+# In[18]:
 
 
 # cap = cv2.VideoCapture(VIDEO)
@@ -386,11 +470,11 @@ def get_shoulder_and_hip_plot_image(
 # cv2.destroyAllWindows()
 
 
-# In[ ]:
+# In[19]:
 
 
-# 關閉物件
-cap.release()
-cv2.destroyAllWindows()
-# live.close()
+# # 關閉物件
+# cap.release()
+# cv2.destroyAllWindows()
+# # live.close()
 
