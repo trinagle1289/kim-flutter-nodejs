@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ##### 套件
+# #### 套件
 
-# In[3]:
+# In[ ]:
 
 
-import mediapipe as mp
+from enum import Enum
 import numpy as np
 import cv2
 
+# 使用 MediaPipe 套件
+import mediapipe as mp
 from mediapipe.tasks.python.core.base_options import BaseOptions
 from mediapipe.tasks.python.vision.core.vision_task_running_mode import (
     VisionTaskRunningMode,
@@ -19,12 +21,12 @@ from mediapipe.tasks.python.vision.pose_landmarker import (
     PoseLandmarkerOptions,
     PoseLandmarkerResult,
 )
-
 from mediapipe.tasks.python.components.containers.landmark import (
     Landmark,
     NormalizedLandmark,
 )
 
+# 使用到子函式庫
 if __name__ == "__main__":
     from calculator import (
         angles_to_lhc_label,
@@ -55,9 +57,9 @@ else:
     )
 
 
-# ##### 類別
+# #### 類別
 
-# 姿勢地標直播類別
+# ##### 姿勢地標直播類別
 
 # In[ ]:
 
@@ -119,7 +121,7 @@ class PoseLandmarkerLiveStream:
         self.landmarker.close()
 
 
-# MediaPipe 姿勢物件結果
+# ##### MediaPipe 姿勢物件結果
 
 # In[ ]:
 
@@ -212,7 +214,7 @@ class PoseResult:
         return positions
 
 
-# 姿勢結果分析器
+# ##### 姿勢結果分析器
 
 # In[ ]:
 
@@ -394,6 +396,263 @@ class ResultAnalyzer:
             right.append(pos)
 
         return [left, center, right]
+
+    # 身體姿勢額外加分項目的判斷
+
+    def check_if_trunk_is_twisted(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否扭轉/側傾
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 軀幹是否扭轉/側傾
+        """
+        TWISTED_ANGLE = 15
+        return self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE
+
+    def check_if_hands_at_a_distance(self, get_3d: bool = False) -> bool:
+        """檢查手或重心是否遠離身體
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 手或重心是否遠離身體
+        """
+        # 左肩膀的位置
+        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
+        # 左手肘的位置
+        left_elbow = self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
+        # 左手腕的位置
+        left_wrist = self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
+
+        # 右肩膀的位置
+        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
+        # 右手肘的位置
+        right_elbow = self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
+        # 右手腕的位置
+        right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
+
+        result = False
+        return NotImplementedError
+
+    def check_if_arms_raised(self, get_3d: bool = False) -> bool:
+        """檢查手臂是否需抬舉，手的水平位於手肘與肩膀之間
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
+        """
+        RAISED_ANGLE = 30  # 判斷抬舉的角度
+
+        result = False  # 判斷結果
+
+        # 左肩膀角度
+        left_shoulder_angle = self.get_joint_angle_by_name("left_shoulder", get_3d)
+        # 右肩膀角度
+        right_shoulder_angle = self.get_joint_angle_by_name("right_shoulder", get_3d)
+
+        # 左肩膀的 y 軸位置
+        left_shoulder_y = (
+            self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)[1] * -1
+        )
+        # 左手肘的 y 軸位置
+        left_elbow_y = (
+            self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)[1] * -1
+        )
+        # 左手腕的 y 軸位置
+        left_wrist_y = (
+            self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)[1] * -1
+        )
+        left_result = False  # 表示左側是否達標
+
+        # 右肩膀的 y 軸位置
+        right_shoulder_y = (
+            self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)[1] * -1
+        )
+        # 右手肘的 y 軸位置
+        right_elbow_y = (
+            self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)[1] * -1
+        )
+        # 右手腕的 y 軸位置
+        right_wrist_y = (
+            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)[1] * -1
+        )
+        right_result = False  # 表示左側是否達標
+
+        ### 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+
+        # 判斷左手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
+        if left_shoulder_angle > RAISED_ANGLE:
+            if abs(left_shoulder_y - left_elbow_y) > abs(left_elbow_y - left_wrist_y):
+                left_result = True
+
+        # 判斷右手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
+        if right_shoulder_angle > RAISED_ANGLE:
+            if abs(right_shoulder_y - right_elbow_y) > abs(
+                right_elbow_y - right_wrist_y
+            ):
+                right_result = True
+
+        # 只要出現其中一種狀況，就表示為真
+        result = left_result or right_result
+
+        return result
+
+    def check_if_hands_above_shoulder(self, get_3d: bool = False) -> bool:
+        """檢查手是否會高過肩膀
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 手是否會高過肩膀
+        """
+        # 左手腕的 y 軸位置
+        left_wrist_y = (
+            self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)[1] * -1
+        )
+        # 左肩膀的 y 軸位置
+        left_shoulder_y = (
+            self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)[1] * -1
+        )
+
+        # 右手腕的 y 軸位置
+        right_wrist_y = (
+            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)[1] * -1
+        )
+        # 右肩膀的 y 軸位置
+        right_shoulder_y = (
+            self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)[1] * -1
+        )
+
+        # 只要出現其中一種狀況(左手腕比左肩膀高 或 右手腕比右肩膀高)，就表示為真
+        result = left_wrist_y > left_shoulder_y or right_wrist_y > right_shoulder_y
+
+        return result
+
+    pass
+
+
+# ##### LHC 額外加分分析
+
+# In[ ]:
+
+
+class Frequency(Enum):
+    """頻率枚舉"""
+
+    RARELY = 0
+    """幾乎沒有"""
+    OCCASIONALLY = 1
+    """偶爾"""
+    FREQUENTLY_OR_CONSTANTLY = 2
+    """通常"""
+
+
+# In[ ]:
+
+
+class LhcPoseListAnalyzer:
+    """LHC 身體姿勢列表分析器"""
+
+    result_analyzer_list: list[ResultAnalyzer] = []
+    """姿勢分析結果列表"""
+
+    def __init__(self, result_analyzer_list: list[ResultAnalyzer] = None):
+        self.result_analyzer_list = result_analyzer_list
+
+    # LHC 姿勢評級項目
+
+    def get_lhc_label_list(self, get_3d: bool = False) -> list[str]:
+        return [i.get_lhc_label(get_3d) for i in self.result_analyzer_list]
+
+    def get_lhc_body_posture_rating(self, parameter_list):
+        pass
+
+    def get_start_and_finish_poses(self, parameter_list) -> list[str, str]:
+        pass
+
+    # 身體姿勢額外加分項目
+
+    def get_frequency_of_trunk_is_twisted(self, get_3d: bool = False) -> Frequency:
+        # 取得檢查名單
+        check_list = [
+            result_analyzer.check_if_trunk_is_twisted(get_3d)
+            for result_analyzer in self.result_analyzer_list
+        ]
+
+        # 有做這件事情的達標率
+        rate = check_list.count(True) / len(check_list)
+
+        if rate > 1 / 3:
+            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
+        elif rate > 1 / 9:
+            frequency = Frequency.OCCASIONALLY
+        else:
+            frequency = Frequency.RARELY
+
+        return frequency
+
+    def get_frequency_of_hands_at_a_distance(self, get_3d: bool = False) -> Frequency:
+        # 取得檢查名單
+        check_list = [
+            result_analyzer.check_if_hands_at_a_distance(get_3d)
+            for result_analyzer in self.result_analyzer_list
+        ]
+
+        # 有做這件事情的達標率
+        rate = check_list.count(True) / len(check_list)
+
+        if rate > 1 / 3:
+            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
+        elif rate > 1 / 9:
+            frequency = Frequency.OCCASIONALLY
+        else:
+            frequency = Frequency.RARELY
+
+        return frequency
+
+    def get_frequency_of_arms_raised(self, get_3d: bool = False) -> Frequency:
+        # 取得檢查名單
+        check_list = [
+            result_analyzer.check_if_arms_raised(get_3d)
+            for result_analyzer in self.result_analyzer_list
+        ]
+
+        # 有做這件事情的達標率
+        rate = check_list.count(True) / len(check_list)
+
+        if rate > 1 / 3:
+            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
+        elif rate > 1 / 9:
+            frequency = Frequency.OCCASIONALLY
+        else:
+            frequency = Frequency.RARELY
+
+        return frequency
+
+    def get_frequency_of_hands_above_shoulder(self, get_3d: bool = False) -> Frequency:
+        # 取得檢查名單
+        check_list = [
+            result_analyzer.check_if_hands_above_shoulder(get_3d)
+            for result_analyzer in self.result_analyzer_list
+        ]
+
+        # 有做這件事情的達標率
+        rate = check_list.count(True) / len(check_list)
+
+        if rate > 1 / 3:
+            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
+        elif rate > 1 / 9:
+            frequency = Frequency.OCCASIONALLY
+        else:
+            frequency = Frequency.RARELY
+
+        return frequency
 
     pass
 
