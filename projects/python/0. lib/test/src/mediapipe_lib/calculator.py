@@ -10,6 +10,8 @@ import numpy as np
 import math
 
 
+# #### 函式
+
 # ##### 從三個座標點之間取得角度
 
 # In[ ]:
@@ -114,4 +116,31 @@ def get_angle_between_two_lines_position(
     norm2 = np.linalg.norm(vec2)
 
     return np.rad2deg(np.arccos(np.dot(vec1, vec2) / (norm1 * norm2)))
+
+
+# ##### 取得三角形重心座標
+
+# In[ ]:
+
+
+def get_triangle_gravity_position(
+    pos1: list[float, float, float],
+    pos2: list[float, float, float],
+    pos3: list[float, float, float],
+) -> list[float, float, float]:
+    """取得三角形重心座標
+
+    Args:
+        pos1 (list[float, float, float]): 座標 1
+        pos2 (list[float, float, float]): 座標 2
+        pos3 (list[float, float, float]): 座標 3
+
+    Returns:
+        list[float, float, float]: 重心座標
+    """
+    p1 = np.array(pos1)
+    p2 = np.array(pos2)
+    p3 = np.array(pos3)
+
+    return ((p1 + p2 + p3) / 3).tolist()
 
