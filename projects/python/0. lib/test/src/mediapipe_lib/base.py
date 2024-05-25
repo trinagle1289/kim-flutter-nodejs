@@ -268,9 +268,6 @@ class ResultAnalyzer:
 
         # 計算臀部中心座標
         center_hip: list[float] = ((np.array(left_hip) + right_hip) / 2).tolist()
-        print(f"left shoulder: {left_shoulder}")
-        print(f"right shoulder: {right_shoulder}")
-        print(f"center hip: {center_hip}")
         # 計算兩肩與臀部中心的重心座標
         gravity_position = get_triangle_gravity_position(
             left_shoulder, right_shoulder, center_hip
