@@ -231,6 +231,53 @@ class ResultAnalyzer:
 
     # 基礎函式
 
+    def get_center_position_by_2_hand(self, get_3d: bool = False) -> list[float]:
+        """取得雙手的中心點(使用雙手腕計算)
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[float]: 雙手中心點座標
+        """
+        left_hand = np.array(self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d))
+        right_hand = np.array(
+            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
+        )
+        hand_center = (left_hand + right_hand) / 2
+        return hand_center.tolist()
+
+    def get_body_gravity_position(self, get_3d: bool = False) -> list[float]:
+        """取得身體重心座標
+
+        計算方式:
+        1. 計算兩臀部中心座標
+        2. 計算兩肩與臀部中心這三點的重心座標
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[float]: 身體重心座標
+        """
+        # 取得所需關鍵點座標
+        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
+        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
+        left_hip = self.pose_result.get_kpt_pos_by_name("left_hip", get_3d)
+        right_hip = self.pose_result.get_kpt_pos_by_name("right_hip", get_3d)
+
+        # 計算臀部中心座標
+        center_hip: list[float] = ((np.array(left_hip) + right_hip) / 2).tolist()
+        print(f"left shoulder: {left_shoulder}")
+        print(f"right shoulder: {right_shoulder}")
+        print(f"center hip: {center_hip}")
+        # 計算兩肩與臀部中心的重心座標
+        gravity_position = get_triangle_gravity_position(
+            left_shoulder, right_shoulder, center_hip
+        )
+
+        return gravity_position
+
     def get_joint_angle_by_name(
         self, center_joint_name: str, get_3d: bool = False
     ) -> float:
@@ -273,6 +320,44 @@ class ResultAnalyzer:
 
         return get_angle_by_3_points(pos1, pos2, center_pos)
 
+    def get_line_positions(
+        self, line_type: LineConnections = blazepose_line, get_3d: bool = False
+    ) -> list[list, list, list]:
+        """取得組合線條的多組兩點座標
+
+        Args:
+            line_type (LineConnections, optional): 線條連接種類. Defaults to blazepose_line.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[list, list, list]: 線條座標列表(分別存放左、中、右邊的線條座標資訊)
+        """
+        # 線條列表
+        left, center, right = [], [], []
+
+        for pt1, pt2 in line_type.left_kpt:
+            pos = [
+                self.pose_result.get_kpt_pos_by_name(pt1, get_3d),
+                self.pose_result.get_kpt_pos_by_name(pt2, get_3d),
+            ]
+            left.append(pos)
+
+        for pt1, pt2 in line_type.center_kpt:
+            pos = [
+                self.pose_result.get_kpt_pos_by_name(pt1, get_3d),
+                self.pose_result.get_kpt_pos_by_name(pt2, get_3d),
+            ]
+            center.append(pos)
+
+        for pt1, pt2 in line_type.right_kpt:
+            pos = [
+                self.pose_result.get_kpt_pos_by_name(pt1, get_3d),
+                self.pose_result.get_kpt_pos_by_name(pt2, get_3d),
+            ]
+            right.append(pos)
+
+        return [left, center, right]
+
     def get_pose_shoulder_hip_staggered_angle(self, get_3d: bool = False) -> float:
         """取得身體姿勢的肩臀交錯角度
 
@@ -311,6 +396,20 @@ class ResultAnalyzer:
         return get_angle_between_two_lines_position(shoulder, hip)
 
     # 複合函式(有使用到基礎函式)
+
+    def get_hand_and_body_gravity_distance(self, get_3d: bool = False) -> float:
+        """取得雙手中心和身體重心間的距離
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            float: 雙手中心和身體重心間的距離
+        """
+        center_hand = np.array(self.get_center_position_by_2_hand(get_3d))
+        body_gravity = np.array(self.get_body_gravity_position(get_3d))
+        dist = np.linalg.norm(center_hand - body_gravity)
+        return dist
 
     def get_all_joint_angles_by_name(self, get_3d: bool = False) -> dict:
         """使用名稱取得姿勢的所有關節角度
@@ -360,90 +459,6 @@ class ResultAnalyzer:
         """
         angle_name_dict = self.get_all_joint_angles_by_name(get_3d)
         return angles_to_lhc_label(angle_name_dict)
-
-    def get_line_positions(
-        self, line_type: LineConnections = blazepose_line, get_3d: bool = False
-    ) -> list[list, list, list]:
-        """取得組合線條的多組兩點座標
-
-        Args:
-            line_type (LineConnections, optional): 線條連接種類. Defaults to blazepose_line.
-            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-
-        Returns:
-            list[list, list, list]: 線條座標列表(分別存放左、中、右邊的線條座標資訊)
-        """
-        # 線條列表
-        left, center, right = [], [], []
-
-        for pt1, pt2 in line_type.left_kpt:
-            pos = [
-                self.pose_result.get_kpt_pos_by_name(pt1, get_3d),
-                self.pose_result.get_kpt_pos_by_name(pt2, get_3d),
-            ]
-            left.append(pos)
-
-        for pt1, pt2 in line_type.center_kpt:
-            pos = [
-                self.pose_result.get_kpt_pos_by_name(pt1, get_3d),
-                self.pose_result.get_kpt_pos_by_name(pt2, get_3d),
-            ]
-            center.append(pos)
-
-        for pt1, pt2 in line_type.right_kpt:
-            pos = [
-                self.pose_result.get_kpt_pos_by_name(pt1, get_3d),
-                self.pose_result.get_kpt_pos_by_name(pt2, get_3d),
-            ]
-            right.append(pos)
-
-        return [left, center, right]
-
-    def get_center_position_by_2_hand(self, get_3d: bool = False) -> list[float]:
-        """取得雙手的中心點(使用雙手腕計算)
-
-        Args:
-            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-
-        Returns:
-            list[float]: 雙手中心點座標
-        """
-        left_hand = np.array(self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d))
-        right_hand = np.array(
-            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
-        )
-        hand_center = (left_hand + right_hand) / 2
-        return hand_center.tolist()
-
-    def get_body_gravity_position(self, get_3d: bool = False)->list[float]:
-        """取得身體重心座標
-        計算方式:
-        1. 計算兩臀部中心座標
-        2. 計算兩肩與臀部中心這三點的重心座標
-
-        Args:
-            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-
-        Returns:
-            list[float]: 身體重心座標
-        """
-        # 取得所需關鍵點座標
-        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
-        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
-        left_hip = self.pose_result.get_kpt_pos_by_name("left_hip", get_3d)
-        right_hip = self.pose_result.get_kpt_pos_by_name("right_hip", get_3d)
-
-        # 計算臀部中心座標
-        center_hip: list[float] = ((np.array(left_hip) + right_hip) / 2).tolist()
-        print(f"left shoulder: {left_shoulder}")    
-        print(f"right shoulder: {right_shoulder}")    
-        print(f"center hip: {center_hip}")    
-        # 計算兩肩與臀部中心的重心座標
-        gravity_position = get_triangle_gravity_position(
-            left_shoulder, right_shoulder, center_hip
-        )
-
-        return gravity_position
 
     # 身體姿勢額外加分項目的判斷
 
