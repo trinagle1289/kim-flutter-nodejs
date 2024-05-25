@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# #### 套件
+
 # In[1]:
 
 
@@ -14,13 +16,17 @@ from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
 
+# #### 函式
+
+# ##### 設定圖表資料範圍(方形)
+
 # In[ ]:
 
 
 def set_square_data_range(
     data_range: list[float, float], ax: Axes | Axes3D
 ) -> plt.Axes:
-    """設定圖表資料範圍
+    """設定圖表資料範圍(方形)
 
     Args:
         data_range (list[float, float]): 資料範圍
@@ -36,6 +42,8 @@ def set_square_data_range(
 
     return ax
 
+
+# ##### 設定圖表資料範圍
 
 # In[ ]:
 
@@ -64,6 +72,40 @@ def set_data_range(
 
     return ax
 
+
+# ##### 設定圖表標籤
+
+# In[ ]:
+
+
+def set_plot_labels(
+    x_label: str, y_label: str, z_label: str = "", ax: Axes | Axes3D = None
+) -> Axes | Axes3D:
+    """設定圖表標籤
+
+    Args:
+        x_label (str): x 軸標籤
+        y_label (str): y 軸標籤
+        z_label (str, optional): z 軸標籤. Defaults to "".
+        ax (Axes | Axes3D, optional): 圖表座標. Defaults to None.
+
+    Returns:
+        Axes | Axes3D: 圖表座標
+    """
+    # 取得當前使用 axes
+    if ax is None:
+        plt.gca()
+
+    # 設定標籤
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    if ax.name == "3d":
+        ax.set_zlabel(z_label)
+
+    return ax
+
+
+# ##### 取得姿勢結果折線圖
 
 # In[2]:
 
@@ -109,6 +151,8 @@ def draw_pose_result_line_chart(
     return ax
 
 
+# ##### 繪製多個點
+
 # In[3]:
 
 
@@ -139,15 +183,6 @@ def draw_dots(
     # 轉換座標點格式
     pos = np.array(positions)
 
-    # 設定標籤
-    if not is_3d:
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-    else:
-        ax.set_xlabel("x")
-        ax.set_ylabel("z")
-        ax.set_zlabel("y")
-
     # 繪製多個點
     x, y = pos[:, 0], pos[:, 1]  # 點的 x, y 座標
     if not is_3d:  # 2D 格式
@@ -158,6 +193,8 @@ def draw_dots(
 
     return ax
 
+
+# ##### 繪製多組線條
 
 # In[4]:
 
@@ -188,15 +225,9 @@ def draw_lines(
 
     # 設定標籤和設定線條集合
     if not is_3d:
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
         lines = LineCollection(pos, colors=colors, label=label)
         ax.add_collection(lines)
     else:
-        ax.set_xlabel("x")
-        ax.set_ylabel("z")
-        ax.set_zlabel("y")
-
         # 取得三維座標點
         x = pos[:, :, 0]
         y = pos[:, :, 1]
