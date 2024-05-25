@@ -32,6 +32,7 @@ if __name__ == "__main__":
         angles_to_lhc_label,
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
+        get_triangle_gravity_position,
     )
     from value import (
         KPT_IDX_DICT,
@@ -46,6 +47,7 @@ else:
         angles_to_lhc_label,
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
+        get_triangle_gravity_position,
     )
     from src.mediapipe_lib.value import (
         KPT_IDX_DICT,
@@ -397,11 +399,51 @@ class ResultAnalyzer:
 
         return [left, center, right]
 
-    def get_center_position_by_2_hand(self, get_3d: bool = False):
-        pass
+    def get_center_position_by_2_hand(self, get_3d: bool = False) -> list[float]:
+        """取得雙手的中心點(使用雙手腕計算)
 
-    def get_body_gravity_position(self, get_3d: bool = False):
-        pass
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[float]: 雙手中心點座標
+        """
+        left_hand = np.array(self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d))
+        right_hand = np.array(
+            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
+        )
+        hand_center = (left_hand + right_hand) / 2
+        return hand_center.tolist()
+
+    def get_body_gravity_position(self, get_3d: bool = False)->list[float]:
+        """取得身體重心座標
+        計算方式:
+        1. 計算兩臀部中心座標
+        2. 計算兩肩與臀部中心這三點的重心座標
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[float]: 身體重心座標
+        """
+        # 取得所需關鍵點座標
+        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
+        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
+        left_hip = self.pose_result.get_kpt_pos_by_name("left_hip", get_3d)
+        right_hip = self.pose_result.get_kpt_pos_by_name("right_hip", get_3d)
+
+        # 計算臀部中心座標
+        center_hip: list[float] = ((np.array(left_hip) + right_hip) / 2).tolist()
+        print(f"left shoulder: {left_shoulder}")    
+        print(f"right shoulder: {right_shoulder}")    
+        print(f"center hip: {center_hip}")    
+        # 計算兩肩與臀部中心的重心座標
+        gravity_position = get_triangle_gravity_position(
+            left_shoulder, right_shoulder, center_hip
+        )
+
+        return gravity_position
 
     # 身體姿勢額外加分項目的判斷
 
