@@ -394,8 +394,29 @@ class ResultAnalyzer:
 
     # 複合函式(有使用到基礎函式)
 
-    def get_hand_and_body_gravity_distance(self, get_3d: bool = False) -> float:
-        """取得雙手中心和身體重心間的距離
+    def get_a_hand_to_body_gravity_distance(
+        self, is_left: bool, get_3d: bool = False
+    ) -> float:
+        """取得單手到身體重心間的距離
+
+        Args:
+            is_left (bool): 是否為左手
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            float: 單手到身體重心間的距離
+        """
+        hand_kpt_name = "left_wrist" if is_left else "right_wrist"  # 手腕關鍵點名稱
+        # 手腕座標
+        hand = np.array(self.pose_result.get_kpt_pos_by_name(hand_kpt_name, get_3d))
+        gravity = np.array(self.get_body_gravity_position(get_3d))  # 重心座標
+        dist = np.linalg.norm(hand - gravity)  # 手腕到重心距離
+        return dist
+
+    def get_two_hands_center_to_body_gravity_distance(
+        self, get_3d: bool = False
+    ) -> float:
+        """取得雙手中心到身體重心間的距離
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -403,9 +424,9 @@ class ResultAnalyzer:
         Returns:
             float: 雙手中心和身體重心間的距離
         """
-        center_hand = np.array(self.get_center_position_by_2_hand(get_3d))
-        body_gravity = np.array(self.get_body_gravity_position(get_3d))
-        dist = np.linalg.norm(center_hand - body_gravity)
+        hand = np.array(self.get_center_position_by_2_hand(get_3d))  # 雙手中心座標
+        gravity = np.array(self.get_body_gravity_position(get_3d))  # 重心座標
+        dist = np.linalg.norm(hand - gravity)  # 雙手中心到重心距離
         return dist
 
     def get_all_joint_angles_by_name(self, get_3d: bool = False) -> dict:
@@ -480,21 +501,8 @@ class ResultAnalyzer:
         Returns:
             bool: 手或重心是否遠離身體
         """
-        # 左肩膀的位置
-        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
-        # 左手肘的位置
-        left_elbow = self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
-        # 左手腕的位置
-        left_wrist = self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
-
-        # 右肩膀的位置
-        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
-        # 右手肘的位置
-        right_elbow = self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
-        # 右手腕的位置
-        right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
-
         result = False
+
         return result
 
     def check_if_arms_raised(self, get_3d: bool = False) -> bool:
