@@ -24,9 +24,11 @@ def scaleYAxis(data: list, val: float) -> list:
     data_arr = np.array(data)
 
     layer_size = len(data_arr.shape)
+    if layer_size == 1:  # 單個座標
+        data_arr[1] *= val
     if layer_size == 2:  # 二維陣列
         data_arr[:, 1] *= val
-    elif layer_size == 3:  # 三維陣列
+    if layer_size == 3:  # 三維陣列
         data_arr[:, :, 1] *= val
 
     return data_arr.tolist()
