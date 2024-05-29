@@ -668,7 +668,10 @@ class LhcPoseListAnalyzer:
     """姿勢分析結果列表"""
 
     def __init__(self, analyzer_list: list[ResultAnalyzer] = None):
-        self.analyzer_list = analyzer_list
+        if analyzer_list is not None:
+            self.analyzer_list = analyzer_list
+        else:
+            self.analyzer_list = []
 
     # 基礎函式
 
