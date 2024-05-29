@@ -1,34 +1,52 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# ### 套件
+
 # In[1]:
 
 
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
-# 格式參考
+
+# In[ ]:
+
+
+from matplotlib.figure import Figure
 from matplotlib.pyplot import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import LineCollection
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
 
+# ### 函式
+
+# #### 圖表設定
+
+# ##### 設定圖表資料範圍(方形)
+
 # In[ ]:
 
 
 def set_square_data_range(
-    data_range: list[float, float], ax: Axes | Axes3D
-) -> plt.Axes:
-    """設定圖表資料範圍
+    data_range: list[float, float], ax: Axes | Axes3D = None
+) -> Axes | Axes3D:
+    """設定圖表資料範圍(方形)
 
     Args:
         data_range (list[float, float]): 資料範圍
-        ax (Axes | Axes3D): 座標資料
+        ax (Axes | Axes3D, optional): 座標資料. Defaults to None.
 
     Returns:
-        plt.Axes: 座標資料
+        Axes | Axes3D: 座標資料
     """
+
+    if ax is None:
+        ax = plt.gca()
+
     ax.set_xlim(data_range)
     ax.set_ylim(data_range)
     if ax.name == "3d":
@@ -37,26 +55,32 @@ def set_square_data_range(
     return ax
 
 
+# ##### 設定圖表資料範圍
+
 # In[ ]:
 
 
 def set_data_range(
     x: list[float, float],
     y: list[float, float],
-    z: list[float, float],
-    ax: Axes | Axes3D,
-) -> plt.Axes:
+    z: list[float, float] = [0, 0],
+    ax: Axes | Axes3D = None,
+) -> Axes | Axes3D:
     """設定圖表資料範圍
 
     Args:
         x (list[float, float]): x 軸範圍
         y (list[float, float]): y 軸範圍
-        z (list[float, float]): z 軸範圍
-        ax (Axes | Axes3D): 座標資料
+        z (list[float, float], optional): z 軸範圍. Defaults to [0, 0].
+        ax (Axes | Axes3D, optional): 座標資料. Defaults to None.
 
     Returns:
-        plt.Axes: 座標資料
+        Axes | Axes3D: 座標資料
     """
+    # 取得當前使用的座標
+    if ax is None:
+        ax = plt.gca()
+
     ax.set_xlim(x)
     ax.set_ylim(y)
     if ax.name == "3d":
@@ -65,13 +89,49 @@ def set_data_range(
     return ax
 
 
+# ##### 設定圖表標籤
+
+# In[ ]:
+
+
+def set_plot_labels(
+    x_label: str, y_label: str, z_label: str = "", ax: Axes | Axes3D = None
+) -> Axes | Axes3D:
+    """設定圖表標籤
+
+    Args:
+        x_label (str): x 軸標籤
+        y_label (str): y 軸標籤
+        z_label (str, optional): z 軸標籤. Defaults to "".
+        ax (Axes | Axes3D, optional): 圖表座標. Defaults to None.
+
+    Returns:
+        Axes | Axes3D: 圖表座標
+    """
+    # 取得當前使用的座標
+    if ax is None:
+        ax = plt.gca()
+
+    # 設定標籤
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    if ax.name == "3d":
+        ax.set_zlabel(z_label)
+
+    return ax
+
+
+# #### 繪製圖表
+
+# ##### 繪製姿勢結果折線圖
+
 # In[2]:
 
 
 def draw_pose_result_line_chart(
     labels: list[str], data_type: str = None, ax: Axes = None
 ) -> plt.Axes:
-    """取得姿勢結果折線圖
+    """繪製姿勢結果折線圖
 
     Args:
         labels (list[str]): 姿勢標籤列表
@@ -81,6 +141,9 @@ def draw_pose_result_line_chart(
     Returns:
         plt.Axes: 座標資料
     """
+    # 取得當前使用的座標
+    if ax is None:
+        ax = plt.gca()
 
     POSE_LABEL = ["A1", "A2", "A3", "A4", "A5"]
 
@@ -98,9 +161,6 @@ def draw_pose_result_line_chart(
         if lab == "A5":
             data.append(4)
 
-    if ax is None:
-        ax = plt.gca()
-
     ax.set_xlabel("time frame")
     ax.set_ylabel("pose label")
     ax.set_yticks(list(range(5)), POSE_LABEL)
@@ -108,6 +168,8 @@ def draw_pose_result_line_chart(
 
     return ax
 
+
+# ##### 繪製多個點
 
 # In[3]:
 
@@ -133,20 +195,12 @@ def draw_dots(
         plt.Axes: 圖表坐標
     """
 
+    # 取得當前使用的座標
     if ax is None:
         ax = plt.gca()
 
     # 轉換座標點格式
     pos = np.array(positions)
-
-    # 設定標籤
-    if not is_3d:
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-    else:
-        ax.set_xlabel("x")
-        ax.set_ylabel("z")
-        ax.set_zlabel("y")
 
     # 繪製多個點
     x, y = pos[:, 0], pos[:, 1]  # 點的 x, y 座標
@@ -158,6 +212,8 @@ def draw_dots(
 
     return ax
 
+
+# ##### 繪製多組線條
 
 # In[4]:
 
@@ -180,6 +236,7 @@ def draw_lines(
     Returns:
         Axes | Axes3D: 圖表座標
     """
+    # 取得當前使用的座標
     if ax is None:
         ax = plt.gca()
 
@@ -188,15 +245,9 @@ def draw_lines(
 
     # 設定標籤和設定線條集合
     if not is_3d:
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
         lines = LineCollection(pos, colors=colors, label=label)
         ax.add_collection(lines)
     else:
-        ax.set_xlabel("x")
-        ax.set_ylabel("z")
-        ax.set_zlabel("y")
-
         # 取得三維座標點
         x = pos[:, :, 0]
         y = pos[:, :, 1]
@@ -209,7 +260,33 @@ def draw_lines(
         new_pos[:, :, 2] = y
 
         lines = Line3DCollection(new_pos, colors=colors, label=label)
-        ax.add_collection3d(lines)
+        ax.add_collection(lines)
 
     return ax
+
+
+# ### 資料轉換
+
+# #### 將圖表轉換成圖片格式
+
+# In[ ]:
+
+
+def plot_to_opencv_img(fig: Figure) -> cv2.typing.MatLike:
+    """將圖表轉換成圖片格式
+
+    Args:
+        fig (Figure): 圖表物件
+
+    Returns:
+        cv2.typing.MatLike: opencv 圖片(RGBA 格式)
+    """
+
+    # 固定畫布內容
+    canvas = FigureCanvasAgg(fig)
+    canvas.draw()
+
+    # 將圖表 buffer 轉換成 numpy
+    rgba = np.asarray(canvas.buffer_rgba())
+    return rgba
 
