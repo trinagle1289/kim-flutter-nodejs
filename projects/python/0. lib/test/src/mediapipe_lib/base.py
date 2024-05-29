@@ -627,35 +627,28 @@ class Frequency(Enum):
 class LhcPoseListAnalyzer:
     """LHC 身體姿勢列表分析器"""
 
-    result_analyzer_list: list[ResultAnalyzer] = []
+    analyzer_list: list[ResultAnalyzer] = []
     """姿勢分析結果列表"""
 
-    def __init__(self, result_analyzer_list: list[ResultAnalyzer] = None):
-        self.result_analyzer_list = result_analyzer_list
+    def __init__(self, analyzer_list: list[ResultAnalyzer] = None):
+        self.analyzer_list = analyzer_list
 
-    # LHC 姿勢評級項目
+    # 基礎函式
 
-    def get_lhc_label_list(self, get_3d: bool = False) -> list[str]:
-        return [i.get_lhc_label(get_3d) for i in self.result_analyzer_list]
+    def __get_frequency_from_bool_list(bool_lst: list[bool]) -> Frequency:
+        """在 bool 列表中取得 True 出現的頻率
 
-    def get_lhc_body_posture_rating(self, parameter_list):
-        pass
+        Args:
+            bool_lst (list[bool]): bool 列表
 
-    def get_start_and_finish_poses(self, parameter_list) -> list[str, str]:
-        pass
+        Returns:
+            Frequency: 頻率
+        """
+        # 計算 True 在 bool 列表中的比率
+        rate = bool_lst.count(True) / len(bool_lst)
 
-    # 身體姿勢額外加分項目
-
-    def get_frequency_of_trunk_is_twisted(self, get_3d: bool = False) -> Frequency:
-        # 取得檢查名單
-        check_list = [
-            result_analyzer.check_if_trunk_is_twisted(get_3d)
-            for result_analyzer in self.result_analyzer_list
-        ]
-
-        # 有做這件事情的達標率
-        rate = check_list.count(True) / len(check_list)
-
+        # 進行頻率的分類
+        frequency = Frequency.RARELY
         if rate > 1 / 3:
             frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
         elif rate > 1 / 9:
@@ -663,64 +656,255 @@ class LhcPoseListAnalyzer:
         else:
             frequency = Frequency.RARELY
 
+        return frequency
+
+    # LHC 資料列表
+
+    def get_lhc_label_list(self, get_3d: bool = False) -> list[str]:
+        """取得 LHC 標籤列表
+
+        Args:
+            get_3d (bool, optional): 是否取得 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[str]: LHC 標籤列表
+        """
+        return [i.get_lhc_label(get_3d) for i in self.analyzer_list]
+
+    def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
+        """取得軀幹扭轉/側傾的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 軀幹扭轉/側傾的 bool 列表
+        """
+        return [i.check_if_trunk_is_twisted(get_3d) for i in self.analyzer_list]
+
+    def get_hands_at_a_distance_list(self, get_3d: bool = False) -> list[bool]:
+        """取得手或重心遠離身體的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 手或重心遠離身體的 bool 列表
+        """
+        return [i.check_if_hands_at_a_distance(get_3d) for i in self.analyzer_list]
+
+    def get_arms_raised_list(self, get_3d: bool = False) -> list[bool]:
+        """取得手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
+        """
+        return [i.check_if_arms_raised(get_3d) for i in self.analyzer_list]
+
+    def get_hands_above_shoulder_list(self, get_3d: bool = False) -> list[bool]:
+        """取得手會高過肩膀的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 手會高過肩膀的 bool 列表
+        """
+        return [i.check_if_hands_above_shoulder(get_3d) for i in self.analyzer_list]
+
+    # 取得身體姿勢額外加分項目的頻率
+
+    def get_frequency_of_trunk_is_twisted(self, get_3d: bool = False) -> Frequency:
+        """取得軀幹扭轉/側傾的頻率
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            Frequency: 頻率
+        """
+        check_list = self.get_trunk_is_twisted_list(get_3d)  # 取得檢查名單
+        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
         return frequency
 
     def get_frequency_of_hands_at_a_distance(self, get_3d: bool = False) -> Frequency:
-        # 取得檢查名單
-        check_list = [
-            result_analyzer.check_if_hands_at_a_distance(get_3d)
-            for result_analyzer in self.result_analyzer_list
-        ]
+        """取得手或重心遠離身體的頻率
 
-        # 有做這件事情的達標率
-        rate = check_list.count(True) / len(check_list)
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
 
-        if rate > 1 / 3:
-            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
-        elif rate > 1 / 9:
-            frequency = Frequency.OCCASIONALLY
-        else:
-            frequency = Frequency.RARELY
-
+        Returns:
+            Frequency: 頻率
+        """
+        check_list = self.get_hands_at_a_distance_list(get_3d)  # 取得檢查名單
+        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
         return frequency
 
     def get_frequency_of_arms_raised(self, get_3d: bool = False) -> Frequency:
-        # 取得檢查名單
-        check_list = [
-            result_analyzer.check_if_arms_raised(get_3d)
-            for result_analyzer in self.result_analyzer_list
-        ]
+        """取得手臂抬舉，手的水平位於手肘與肩膀之間的頻率
 
-        # 有做這件事情的達標率
-        rate = check_list.count(True) / len(check_list)
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
 
-        if rate > 1 / 3:
-            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
-        elif rate > 1 / 9:
-            frequency = Frequency.OCCASIONALLY
-        else:
-            frequency = Frequency.RARELY
-
+        Returns:
+            Frequency: 頻率
+        """
+        check_list = self.get_arms_raised_list(get_3d)  # 取得檢查名單
+        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
         return frequency
 
     def get_frequency_of_hands_above_shoulder(self, get_3d: bool = False) -> Frequency:
-        # 取得檢查名單
-        check_list = [
-            result_analyzer.check_if_hands_above_shoulder(get_3d)
-            for result_analyzer in self.result_analyzer_list
+        """取得手高過肩膀的頻率
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            Frequency: 頻率
+        """
+        check_list = self.get_hands_above_shoulder_list(get_3d)  # 取得檢查名單
+        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
+        return frequency
+
+    # LHC 身體姿勢結果
+
+    def get_start_and_finish_poses(self, get_3d: bool = False) -> list[str, str]:
+        """取得開始與結束姿勢的標籤
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[str, str]: 姿勢標籤[開始, 結束]
+        """
+        labels = self.get_lhc_label_list(get_3d)
+        return ["", ""]
+
+    def get_lhc_body_posture_rating_points(self, get_3d: bool = False) -> int:
+        """取得 LHC 姿勢評級分數(不包含額外加分項)
+
+        為求方便計算，
+        以下列表的 A3 跟 A2 將會合併為相同類型的姿勢，只顯示出 A2 字串
+
+        標籤    分數\n
+        A1-A1   0\n
+        A1-A2   3\n
+        A2-A2   5\n
+        A1-A4   7\n
+        A1-A5   9\n
+
+        A2-A4   10\n
+        A2-A5   13\n
+        A4-A5   15\n
+        A4-A4   18\n
+        A5-A5   20\n
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            int: 姿勢評級分數(不包含額外加分項)
+        """
+        # 取得開始與結束姿勢
+        start, end = self.get_start_and_finish_poses(get_3d)
+
+        # 將 A3 字串修改為 A2
+        if start == "A3":
+            start = "A2"
+        if end == "A3":
+            end = "A2"
+
+        # 設定分數
+        score = -1
+        if start == "A1" and end == "A1":
+            score = 0
+        if start == "A1" and end == "A2" or end == "A1" and start == "A2":
+            score = 3
+        if start == "A2" and end == "A2":
+            score = 5
+        if start == "A1" and end == "A4" or end == "A1" and start == "A4":
+            score = 7
+        if start == "A1" and end == "A5" or end == "A1" and start == "A5":
+            score = 9
+        if start == "A2" and end == "A4" or end == "A2" and start == "A4":
+            score = 10
+        if start == "A2" and end == "A5" or end == "A2" and start == "A5":
+            score = 13
+        if start == "A4" and end == "A4":
+            score = 15
+        if start == "A4" and end == "A5" or end == "A4" and start == "A5":
+            score = 18
+        if start == "A5" and end == "A5":
+            score = 20
+
+        return score
+
+    def get_lhc_body_posture_additional_points(self, get_3d: bool = False) -> float:
+        """取得身體姿勢額外加分分數
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            float: 額外加分分數
+        """
+        score = -1  # 總分數
+        extra_score_lst = np.array([0, 0, 0, 0])  # 額外分數列表
+
+        # 頻率列表
+        frequency_lst = [
+            self.get_frequency_of_trunk_is_twisted(get_3d),
+            self.get_frequency_of_hands_at_a_distance(get_3d),
+            self.get_frequency_of_arms_raised(get_3d),
+            self.get_frequency_of_hands_above_shoulder(get_3d),
         ]
 
-        # 有做這件事情的達標率
-        rate = check_list.count(True) / len(check_list)
+        # 軀幹扭轉/側傾的分數
+        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[0] = 1
+        elif frequency_lst is Frequency.OCCASIONALLY:
+            extra_score_lst[0] = 3
 
-        if rate > 1 / 3:
-            frequency = Frequency.FREQUENTLY_OR_CONSTANTLY
-        elif rate > 1 / 9:
-            frequency = Frequency.OCCASIONALLY
-        else:
-            frequency = Frequency.RARELY
+        # 手或重心遠離身體的分數
+        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[0] = 1
+        elif frequency_lst is Frequency.OCCASIONALLY:
+            extra_score_lst[0] = 3
 
-        return frequency
+        # 手臂抬舉，手的水平位於手肘與肩膀之間的分數
+        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[0] = 0.5
+        elif frequency_lst is Frequency.OCCASIONALLY:
+            extra_score_lst[0] = 1
+
+        # 手高過肩膀的分數
+        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[0] = 1
+        elif frequency_lst is Frequency.OCCASIONALLY:
+            extra_score_lst[0] = 2
+
+        score = extra_score_lst.sum()  # 設定額外加分的總和分數
+        # 如果總和大於 6，分數則訂為6
+        if score > 6:
+            score = 6
+
+        return score
+
+    def get_lhc_body_posture_total_points(self, get_3d: bool = False) -> float:
+        """取得身體姿勢分數(包含姿勢評級、額外加分)
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            float: 身體姿勢分數(包含姿勢評級、額外加分)
+        """
+        bp_rating_points = self.get_lhc_body_posture_rating_points(get_3d)
+        addtional_points = self.get_lhc_body_posture_additional_points(get_3d)
+        return bp_rating_points + addtional_points
 
     pass
 
