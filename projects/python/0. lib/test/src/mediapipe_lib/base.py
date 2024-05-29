@@ -10,7 +10,12 @@ from enum import Enum
 import numpy as np
 import cv2
 
-# 使用 MediaPipe 套件
+
+# ##### 使用 MediaPipe 套件
+
+# In[ ]:
+
+
 import mediapipe as mp
 from mediapipe.tasks.python.core.base_options import BaseOptions
 from mediapipe.tasks.python.vision.core.vision_task_running_mode import (
@@ -26,7 +31,12 @@ from mediapipe.tasks.python.components.containers.landmark import (
     NormalizedLandmark,
 )
 
-# 使用到子函式庫
+
+# ##### 使用到自訂函式庫
+
+# In[ ]:
+
+
 if __name__ == "__main__":
     from calculator import (
         angles_to_lhc_label,
@@ -394,9 +404,7 @@ class ResultAnalyzer:
 
     # 複合函式(有使用到基礎函式)
 
-    def get_a_hand_to_body_gravity_distance(
-        self, is_left: bool, get_3d: bool = False
-    ) -> float:
+    def get_a_hand_to_gravity_dist(self, is_left: bool, get_3d: bool = False) -> float:
         """取得單手到身體重心間的距離
 
         Args:
@@ -413,9 +421,7 @@ class ResultAnalyzer:
         dist = np.linalg.norm(hand - gravity)  # 手腕到重心距離
         return dist
 
-    def get_two_hands_center_to_body_gravity_distance(
-        self, get_3d: bool = False
-    ) -> float:
+    def get_two_hands_center_to_gravity_dist(self, get_3d: bool = False) -> float:
         """取得雙手中心到身體重心間的距離
 
         Args:
@@ -501,7 +507,38 @@ class ResultAnalyzer:
         Returns:
             bool: 手或重心是否遠離身體
         """
-        result = False
+        UPPER_ARM_RATIO = 1.2  # 上肢比率
+
+        result = False  # 判斷結果
+
+        # 取得關鍵點座標
+        left_wrist = np.array(self.pose_result.get_kpt_pos_by_name("left_wrist"))
+        left_elbow = np.array(self.pose_result.get_kpt_pos_by_name("left_elbow"))
+        right_wrist = np.array(self.pose_result.get_kpt_pos_by_name("right_wrist"))
+        right_elbow = np.array(self.pose_result.get_kpt_pos_by_name("right_elbow"))
+
+        # 左上臂長度
+        left_upper_arm_length = np.linalg.norm(left_wrist - left_elbow)
+        # 右上臂長度
+        right_upper_arm_length = np.linalg.norm(right_wrist - right_elbow)
+
+        # 左手到重心距離
+        left_hand_to_gravity_dist = self.get_a_hand_to_gravity_dist(True, get_3d)
+        # 右手到重心距離
+        right_hand_to_gravity_dist = self.get_a_hand_to_gravity_dist(False, get_3d)
+
+        # 左手到重心距離 大於 左上臂長度*上臂比率
+        left_result = False
+        if left_hand_to_gravity_dist > left_upper_arm_length * UPPER_ARM_RATIO:
+            left_result = True
+
+        # 右手到重心距離 大於 右上臂長度*上臂比率
+        right_result = False
+        if right_hand_to_gravity_dist > right_upper_arm_length * UPPER_ARM_RATIO:
+            right_result = True
+
+        # 只要其中一隻手符合，則都會被認定為真
+        result = left_result or right_result
 
         return result
 
