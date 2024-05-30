@@ -69,20 +69,25 @@ def angles_to_lhc_label(angles: dict) -> str:
     Returns:
         str: LHC 姿勢標籤
     """
-    label = ""
-    if angles["right_knee"] < 90:
+
+    label = ""  # 姿勢標籤
+
+    # 左右邊關節只要觸發其中一種條件，就可以直接定義姿勢標籤了
+    if angles["left_knee"] < 90 or angles["right_knee"] < 90:
         label = "A5"
-    elif angles["right_hip"] < 120:
+    elif angles["left_hip"] < 120 or angles["right_hip"] < 120:
         label = "A4"
-    elif angles["right_hip"] < 160:
+    elif angles["left_hip"] < 160 or angles["right_hip"] < 160:
         label = "A3"
-    elif angles["right_shoulder"] > 90:
+    elif angles["left_shoulder"] > 90 or angles["right_shoulder"] > 90:
         label = "A2"
     else:
         label = "A1"
 
+    # 如果無法取得角度
     if angles is None:
         label = ""
+
     return label
 
 
