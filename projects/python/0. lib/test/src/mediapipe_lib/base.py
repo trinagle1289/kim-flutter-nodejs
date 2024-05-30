@@ -10,6 +10,8 @@ from enum import Enum
 import numpy as np
 import cv2
 
+from typing import Self
+
 
 # ##### 使用 MediaPipe 套件
 
@@ -664,14 +666,30 @@ class Frequency(Enum):
 class LhcPoseListAnalyzer:
     """LHC 身體姿勢列表分析器"""
 
-    analyzer_list: list[ResultAnalyzer] = []
-    """姿勢分析結果列表"""
+    result_lst: list[PoseLandmarkerResult] = []
+    "姿勢分析結果列表"
 
-    def __init__(self, analyzer_list: list[ResultAnalyzer] = None):
-        if analyzer_list is not None:
-            self.analyzer_list = analyzer_list
+    def __init__(self, result_lst: list[PoseLandmarkerResult] = None):
+        if result_lst is not None:
+            self.result_lst = result_lst
         else:
-            self.analyzer_list = []
+            self.result_lst = []
+
+    # 特殊函式
+
+    def __add__(self, other: PoseLandmarkerResult) -> list[PoseLandmarkerResult]:
+        return self.result_lst + other
+
+    def __iadd__(self, other: PoseLandmarkerResult) -> Self:
+        self.result_lst = self.result_lst + other
+        return self
+
+    def __getitem__(self, idx: int) -> PoseLandmarkerResult:
+        return self.result_lst[idx]
+
+    def clean_data(self) -> None:
+        "清除姿勢分析結果列表"
+        self.result_lst = []
 
     # 基礎函式
 
@@ -709,7 +727,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[str]: LHC 標籤列表
         """
-        return [i.get_lhc_label(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).get_lhc_label(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
         """取得軀幹扭轉/側傾的 bool 列表
@@ -720,7 +741,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 軀幹扭轉/側傾的 bool 列表
         """
-        return [i.check_if_trunk_is_twisted(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_hands_at_a_distance_list(self, get_3d: bool = False) -> list[bool]:
         """取得手或重心遠離身體的 bool 列表
@@ -731,7 +755,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手或重心遠離身體的 bool 列表
         """
-        return [i.check_if_hands_at_a_distance(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_hands_at_a_distance(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_arms_raised_list(self, get_3d: bool = False) -> list[bool]:
         """取得手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
@@ -742,7 +769,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
         """
-        return [i.check_if_arms_raised(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_arms_raised(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_hands_above_shoulder_list(self, get_3d: bool = False) -> list[bool]:
         """取得手會高過肩膀的 bool 列表
@@ -753,7 +783,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手會高過肩膀的 bool 列表
         """
-        return [i.check_if_hands_above_shoulder(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_hands_above_shoulder(get_3d)
+            for result in self.result_lst
+        ]
 
     # 取得身體姿勢額外加分項目的頻率
 
