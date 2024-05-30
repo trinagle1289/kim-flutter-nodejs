@@ -687,13 +687,16 @@ class LhcPoseListAnalyzer:
     def __getitem__(self, idx: int) -> PoseLandmarkerResult:
         return self.result_lst[idx]
 
+    def __len__(self) -> int:
+        return len(self.result_lst)
+
     def clean_data(self) -> None:
         "清除姿勢分析結果列表"
         self.result_lst = []
 
     # 基礎函式
 
-    def __get_frequency_from_bool_list(bool_lst: list[bool]) -> Frequency:
+    def __get_frequency_from_bool_list(self, bool_lst: list[bool]) -> Frequency:
         """在 bool 列表中取得 True 出現的頻率
 
         Args:
