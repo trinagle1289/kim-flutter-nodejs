@@ -680,7 +680,7 @@ class LhcPoseListAnalyzer:
     def __add__(self, other: PoseLandmarkerResult) -> list[PoseLandmarkerResult]:
         return self.result_lst + other
 
-    def __iadd__(self, other: PoseLandmarkerResult) -> Self:
+    def __iadd__(self, other: list[PoseLandmarkerResult]) -> Self:
         self.result_lst = self.result_lst + other
         return self
 
