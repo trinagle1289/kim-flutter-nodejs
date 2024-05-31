@@ -10,6 +10,8 @@ from enum import Enum
 import numpy as np
 import cv2
 
+from typing import Self
+
 
 # ##### 使用 MediaPipe 套件
 
@@ -507,34 +509,55 @@ class ResultAnalyzer:
         Returns:
             bool: 手或重心是否遠離身體
         """
-        UPPER_ARM_RATIO = 1.2  # 上肢比率
+        # 手遠離身體時，整個手臂長 和 手到重心距離 的比率(臂長: 手到重心距離 = 1: RATE)
+        # 或是 手到重心距離 / 整個手臂長 = RATE
+        # 或是 手到重心距離 = 整個手臂長 * RATE
+        RATE = 0.8
 
         result = False  # 判斷結果
 
         # 取得關鍵點座標
-        left_wrist = np.array(self.pose_result.get_kpt_pos_by_name("left_wrist"))
-        left_elbow = np.array(self.pose_result.get_kpt_pos_by_name("left_elbow"))
-        right_wrist = np.array(self.pose_result.get_kpt_pos_by_name("right_wrist"))
-        right_elbow = np.array(self.pose_result.get_kpt_pos_by_name("right_elbow"))
+        left_wrist = np.array(
+            self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
+        )
+        left_elbow = np.array(
+            self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
+        )
+        left_shoulder = np.array(
+            self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
+        )
+        right_wrist = np.array(
+            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
+        )
+        right_elbow = np.array(
+            self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
+        )
+        right_shoulder = np.array(
+            self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
+        )
 
-        # 左上臂長度
-        left_upper_arm_length = np.linalg.norm(left_wrist - left_elbow)
-        # 右上臂長度
-        right_upper_arm_length = np.linalg.norm(right_wrist - right_elbow)
+        # 左臂長度
+        left_arm = np.linalg.norm(left_wrist - left_elbow) + np.linalg.norm(
+            left_elbow - left_shoulder
+        )
+        # 右臂長度
+        right_arm = np.linalg.norm(right_wrist - right_elbow) + np.linalg.norm(
+            right_elbow - right_shoulder
+        )
 
         # 左手到重心距離
-        left_hand_to_gravity_dist = self.get_a_hand_to_gravity_dist(True, get_3d)
+        left_hand_to_gravity = self.get_a_hand_to_gravity_dist(True, get_3d)
         # 右手到重心距離
-        right_hand_to_gravity_dist = self.get_a_hand_to_gravity_dist(False, get_3d)
+        right_hand_to_gravity = self.get_a_hand_to_gravity_dist(False, get_3d)
 
-        # 左手到重心距離 大於 左上臂長度*上臂比率
+        # 左手到重心距離 大於 左臂長度*比率
         left_result = False
-        if left_hand_to_gravity_dist > left_upper_arm_length * UPPER_ARM_RATIO:
+        if left_hand_to_gravity > left_arm * RATE:
             left_result = True
 
-        # 右手到重心距離 大於 右上臂長度*上臂比率
+        # 右手到重心距離 大於 右臂長度*比率
         right_result = False
-        if right_hand_to_gravity_dist > right_upper_arm_length * UPPER_ARM_RATIO:
+        if right_hand_to_gravity > right_arm * RATE:
             right_result = True
 
         # 只要其中一隻手符合，則都會被認定為真
@@ -664,18 +687,37 @@ class Frequency(Enum):
 class LhcPoseListAnalyzer:
     """LHC 身體姿勢列表分析器"""
 
-    analyzer_list: list[ResultAnalyzer] = []
-    """姿勢分析結果列表"""
+    result_lst: list[PoseLandmarkerResult] = []
+    "姿勢分析結果列表"
 
-    def __init__(self, analyzer_list: list[ResultAnalyzer] = None):
-        if analyzer_list is not None:
-            self.analyzer_list = analyzer_list
+    def __init__(self, result_lst: list[PoseLandmarkerResult] = None):
+        if result_lst is not None:
+            self.result_lst = result_lst
         else:
-            self.analyzer_list = []
+            self.result_lst = []
+
+    # 特殊函式
+
+    def __add__(self, other: PoseLandmarkerResult) -> list[PoseLandmarkerResult]:
+        return self.result_lst + other
+
+    def __iadd__(self, other: list[PoseLandmarkerResult]) -> Self:
+        self.result_lst = self.result_lst + other
+        return self
+
+    def __getitem__(self, idx: int) -> PoseLandmarkerResult:
+        return self.result_lst[idx]
+
+    def __len__(self) -> int:
+        return len(self.result_lst)
+
+    def clean_data(self) -> None:
+        "清除姿勢分析結果列表"
+        self.result_lst = []
 
     # 基礎函式
 
-    def __get_frequency_from_bool_list(bool_lst: list[bool]) -> Frequency:
+    def __get_frequency_from_bool_list(self, bool_lst: list[bool]) -> Frequency:
         """在 bool 列表中取得 True 出現的頻率
 
         Args:
@@ -709,7 +751,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[str]: LHC 標籤列表
         """
-        return [i.get_lhc_label(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).get_lhc_label(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
         """取得軀幹扭轉/側傾的 bool 列表
@@ -720,7 +765,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 軀幹扭轉/側傾的 bool 列表
         """
-        return [i.check_if_trunk_is_twisted(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_hands_at_a_distance_list(self, get_3d: bool = False) -> list[bool]:
         """取得手或重心遠離身體的 bool 列表
@@ -731,7 +779,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手或重心遠離身體的 bool 列表
         """
-        return [i.check_if_hands_at_a_distance(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_hands_at_a_distance(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_arms_raised_list(self, get_3d: bool = False) -> list[bool]:
         """取得手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
@@ -742,7 +793,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
         """
-        return [i.check_if_arms_raised(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_arms_raised(get_3d)
+            for result in self.result_lst
+        ]
 
     def get_hands_above_shoulder_list(self, get_3d: bool = False) -> list[bool]:
         """取得手會高過肩膀的 bool 列表
@@ -753,7 +807,10 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手會高過肩膀的 bool 列表
         """
-        return [i.check_if_hands_above_shoulder(get_3d) for i in self.analyzer_list]
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_hands_above_shoulder(get_3d)
+            for result in self.result_lst
+        ]
 
     # 取得身體姿勢額外加分項目的頻率
 

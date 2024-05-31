@@ -24,20 +24,20 @@ from mediapipe.tasks.python.vision.pose_landmarker import PoseLandmarkerResult
 
 if __name__ == "__main__":
     from calculate import (
-        poselandmarker_result_to_plot_pos,
+        line_3d_result_to_plot_pos,
         translate_multi_kpt_to_plot_pos,
     )
     from utils.cv_lib import draw_letter_badge
-    from utils.process_data import translate_a_kpt_to_plot_pos
+    from utils.positon_trans import translate_a_kpt_to_plot_pos
     from utils.plot_painter import draw_dots, draw_lines
     from mediapipe_lib.base import PoseResult, ResultAnalyzer
 else:
     from src.calculate import (
-        poselandmarker_result_to_plot_pos,
+        line_3d_result_to_plot_pos,
         translate_multi_kpt_to_plot_pos,
     )
     from src.utils.cv_lib import draw_letter_badge
-    from src.utils.process_data import translate_a_kpt_to_plot_pos
+    from src.utils.positon_trans import translate_a_kpt_to_plot_pos
     from src.utils.plot_painter import draw_dots, draw_lines
     from src.mediapipe_lib.base import PoseResult, ResultAnalyzer
 
@@ -177,7 +177,7 @@ def get_bones_plot_axes(
         left, center, right = analyzer.get_line_positions(get_3d=is_3d)
     else:
         # 轉換成表格座標
-        kpts, left, center, right = poselandmarker_result_to_plot_pos(result)
+        kpts, left, center, right = line_3d_result_to_plot_pos(result)
 
     # 繪製表格
     draw_lines(left, is_3d, colors[0], "left", ax)
