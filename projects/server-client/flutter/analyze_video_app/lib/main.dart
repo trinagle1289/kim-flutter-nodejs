@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -93,9 +94,10 @@ class PoseResultState extends State<PoseResult> {
             debugPrint("upload progress: {0:.2f}%".format(p0 * 100));
           },
         );
-        debugPrint("response: ${response.toString()}");
+        var result = jsonDecode(response.toString());
+        debugPrint(result.toString());
         setState(() {
-          httpResponse = response.toString();
+          httpResponse = "$result";
         });
         break; // 成功運行時，則離開此迴圈
       } catch (e) {
