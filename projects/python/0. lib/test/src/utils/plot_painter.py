@@ -249,7 +249,8 @@ def draw_pose_result_line_chart(
     data = []
     # 將標籤以數值的形式存入到 data 中
     for lab in labels:
-        data.append(POSE_LABEL_DICT[lab])
+        if lab == "A1" or lab == "A2" or lab == "A3" or lab == "A4" or lab == "A5":
+            data.append(POSE_LABEL_DICT[lab])
 
     # 設定標籤名稱
     ax.set_xlabel("time frame")
