@@ -13,7 +13,7 @@ import cv2
 from typing import Self
 
 
-# ##### 使用 MediaPipe 套件
+# ##### MediaPipe
 
 # In[ ]:
 
@@ -34,7 +34,7 @@ from mediapipe.tasks.python.components.containers.landmark import (
 )
 
 
-# ##### 使用到自訂函式庫
+# ##### Custom
 
 # In[ ]:
 
@@ -45,6 +45,8 @@ if __name__ == "__main__":
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
         get_triangle_gravity_position,
+        label_list_to_label_list_rule,
+        label_list_rule_to_label_list,
     )
     from value import (
         KPT_IDX_DICT,
@@ -60,6 +62,8 @@ else:
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
         get_triangle_gravity_position,
+        label_list_to_label_list_rule,
+        label_list_rule_to_label_list,
     )
     from src.mediapipe_lib.value import (
         KPT_IDX_DICT,
@@ -665,7 +669,7 @@ class ResultAnalyzer:
     pass
 
 
-# ##### LHC 額外加分分析
+# ##### 頻率枚舉
 
 # In[ ]:
 
@@ -680,6 +684,8 @@ class Frequency(Enum):
     FREQUENTLY_OR_CONSTANTLY = 2
     """通常"""
 
+
+# ##### LHC 身體姿勢列表分析器
 
 # In[ ]:
 
@@ -697,7 +703,6 @@ class LhcPoseListAnalyzer:
             self.result_lst = []
 
     # 特殊函式
-
     def __add__(self, other: PoseLandmarkerResult) -> list[PoseLandmarkerResult]:
         return self.result_lst + other
 
@@ -717,7 +722,7 @@ class LhcPoseListAnalyzer:
 
     # 基礎函式
 
-    def __get_frequency_from_bool_list(self, bool_lst: list[bool]) -> Frequency:
+    def get_frequency_from_bool_list(bool_lst: list[bool]) -> Frequency:
         """在 bool 列表中取得 True 出現的頻率
 
         Args:
@@ -728,7 +733,6 @@ class LhcPoseListAnalyzer:
         """
         # 計算 True 在 bool 列表中的比率
         rate = bool_lst.count(True) / len(bool_lst)
-
         # 進行頻率的分類
         frequency = Frequency.RARELY
         if rate > 1 / 3:
@@ -737,8 +741,28 @@ class LhcPoseListAnalyzer:
             frequency = Frequency.OCCASIONALLY
         else:
             frequency = Frequency.RARELY
-
         return frequency
+
+    def get_label_list_rule(self, get_3d: bool = False) -> list[list[str, int]]:
+        """取得姿勢標籤列表的出現規則
+
+        Args:
+            get_3d (bool, optional): 姿勢標籤列表. Defaults to False.
+
+        Returns:
+            list[list[str, int]]: 姿勢標籤列表的出現規則
+        """
+
+        # 姿勢標籤列表
+        labels = self.get_lhc_label_list(get_3d)
+        # 姿勢標籤列表的出現規則
+        result = label_list_to_label_list_rule(labels)
+
+        return result
+
+    def filter_label_list_in_fun_a(labels: list[str]) -> list[str]:
+
+        return
 
     # LHC 資料列表
 
@@ -824,7 +848,9 @@ class LhcPoseListAnalyzer:
             Frequency: 頻率
         """
         check_list = self.get_trunk_is_twisted_list(get_3d)  # 取得檢查名單
-        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
+        frequency = LhcPoseListAnalyzer.get_frequency_from_bool_list(
+            check_list
+        )  # 取得頻率
         return frequency
 
     def get_frequency_of_hands_at_a_distance(self, get_3d: bool = False) -> Frequency:
@@ -837,7 +863,9 @@ class LhcPoseListAnalyzer:
             Frequency: 頻率
         """
         check_list = self.get_hands_at_a_distance_list(get_3d)  # 取得檢查名單
-        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
+        frequency = LhcPoseListAnalyzer.get_frequency_from_bool_list(
+            check_list
+        )  # 取得頻率
         return frequency
 
     def get_frequency_of_arms_raised(self, get_3d: bool = False) -> Frequency:
@@ -850,7 +878,9 @@ class LhcPoseListAnalyzer:
             Frequency: 頻率
         """
         check_list = self.get_arms_raised_list(get_3d)  # 取得檢查名單
-        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
+        frequency = LhcPoseListAnalyzer.get_frequency_from_bool_list(
+            check_list
+        )  # 取得頻率
         return frequency
 
     def get_frequency_of_hands_above_shoulder(self, get_3d: bool = False) -> Frequency:
@@ -863,7 +893,9 @@ class LhcPoseListAnalyzer:
             Frequency: 頻率
         """
         check_list = self.get_hands_above_shoulder_list(get_3d)  # 取得檢查名單
-        frequency = self.__get_frequency_from_bool_list(check_list)  # 取得頻率
+        frequency = LhcPoseListAnalyzer.get_frequency_from_bool_list(
+            check_list
+        )  # 取得頻率
         return frequency
 
     # LHC 身體姿勢結果
@@ -907,13 +939,11 @@ class LhcPoseListAnalyzer:
         """
         # 取得開始與結束姿勢
         start, end = self.get_start_and_finish_poses(get_3d)
-
         # 將 A3 字串修改為 A2
         if start == "A3":
             start = "A2"
         if end == "A3":
             end = "A2"
-
         # 設定分數
         score = -1
         if start == "A1" and end == "A1":
@@ -950,7 +980,6 @@ class LhcPoseListAnalyzer:
         """
         score = -1  # 總分數
         extra_score_lst = np.array([0, 0, 0, 0])  # 額外分數列表
-
         # 頻率列表
         frequency_lst = [
             self.get_frequency_of_trunk_is_twisted(get_3d),
@@ -958,31 +987,26 @@ class LhcPoseListAnalyzer:
             self.get_frequency_of_arms_raised(get_3d),
             self.get_frequency_of_hands_above_shoulder(get_3d),
         ]
-
         # 軀幹扭轉/側傾的分數
         if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
             extra_score_lst[0] = 1
         elif frequency_lst is Frequency.OCCASIONALLY:
             extra_score_lst[0] = 3
-
         # 手或重心遠離身體的分數
         if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
             extra_score_lst[0] = 1
         elif frequency_lst is Frequency.OCCASIONALLY:
             extra_score_lst[0] = 3
-
         # 手臂抬舉，手的水平位於手肘與肩膀之間的分數
         if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
             extra_score_lst[0] = 0.5
         elif frequency_lst is Frequency.OCCASIONALLY:
             extra_score_lst[0] = 1
-
         # 手高過肩膀的分數
         if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
             extra_score_lst[0] = 1
         elif frequency_lst is Frequency.OCCASIONALLY:
             extra_score_lst[0] = 2
-
         score = extra_score_lst.sum()  # 設定額外加分的總和分數
         # 如果總和大於 6，分數則訂為6
         if score > 6:
