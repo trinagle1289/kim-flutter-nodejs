@@ -57,11 +57,18 @@ def angles_to_lhc_label(angles: dict) -> str:
     """將角度轉換成 LHC 姿勢標籤
 
     標籤描述:
-    A1: 站立
-    A2: 搬運高處物品
-    A3: 微彎腰
-    A4: 彎腰
-    A5: 蹲姿、跪姿、跪坐姿勢
+        A1: 站立
+        A2: 搬運高處物品
+        A3: 微彎腰
+        A4: 彎腰
+        A5: 蹲姿、跪姿、跪坐姿勢
+
+    醫師判斷規則:
+        A1: 膝蓋 90 - 180 度，腰部 160 - 180 度，肩膀 0 - 90 度
+        A2: 膝蓋 90 - 180 度，腰部 160 - 180 度，肩膀 90 - 180 度
+        A3: 膝蓋 90 - 180 度，腰部 120 - 160 度
+        A4: 膝蓋 90 - 180 度，腰部 0 - 120 度
+        A5: 膝蓋 0 - 90 度
 
     Args:
         angles (dict): 角度字典
@@ -72,11 +79,12 @@ def angles_to_lhc_label(angles: dict) -> str:
 
     label = ""  # 姿勢標籤
 
-    # 左右邊關節只要觸發其中一種條件，就可以直接定義姿勢標籤了
+    ### 左右邊關節只要觸發其中一種條件，就可以直接定義姿勢標籤了
     if angles["left_knee"] < 90 or angles["right_knee"] < 90:
         label = "A5"
     elif angles["left_hip"] < 120 or angles["right_hip"] < 120:
         label = "A4"
+    # 角度區間之後會設定為 120-150 度，否則站立判斷過於嚴格
     elif angles["left_hip"] < 160 or angles["right_hip"] < 160:
         label = "A3"
     elif angles["left_shoulder"] > 90 or angles["right_shoulder"] > 90:
@@ -148,4 +156,70 @@ def get_triangle_gravity_position(
     p3 = np.array(pos3)
 
     return ((p1 + p2 + p3) / 3).tolist()
+
+
+# ##### 將標籤列表轉換成標籤列表規則
+
+# In[ ]:
+
+
+def label_list_to_label_list_rule(labels: list[str]) -> list[list[str, int]]:
+    """將標籤列表轉換成標籤列表規則
+    
+    從標籤列表中找到規則
+
+    Args:
+        labels (list[str]): 標籤列表
+
+    Returns:
+        list[list[str, int]]: 標籤列表的規則
+    """
+
+    # 標籤列表的規則
+    result = []
+
+    buffer = None  # 暫存標籤資料
+    num = 1
+    for lab in labels:
+        # 初始化參數取得
+        if buffer is None:
+            buffer = lab
+        # 當目前項目等於暫存標籤名稱
+        if buffer == lab:
+            num += 1
+        # 當目前項目不等於暫存標籤名稱
+        if buffer != lab:
+            result.append([buffer, num])  # 添加資料到結果陣列
+            # 重置資料
+            buffer = lab
+            num = 1
+
+    result.append([buffer, num])  # 添加最後一項資料
+
+    return result
+
+
+# ##### 將標籤列表規則轉換成標籤列表
+
+# In[ ]:
+
+
+def label_list_rule_to_label_list(label_list_rule: list[list[str, int]]) -> list[str]:
+    """將標籤列表規則轉換成標籤列表
+
+    Args:
+        labels (list[list[str, int]]): 標籤列表的規則
+
+    Returns:
+        list[str]: 標籤列表
+    """
+
+    # 標籤列表
+    result = []
+
+    # 添加標籤到標籤列表
+    for label, num in label_list_rule:
+        result += [label] * int(num)
+
+    return result
 
