@@ -16,11 +16,8 @@ TEST_VIDEO = "../../../../resources/video/other/20240506/walk-and-turn.mp4"
 
 
 import mediapipe as mp
-import numpy as np
 import cv2
 
-
-# #### MediaPipe
 
 # In[ ]:
 
@@ -35,16 +32,10 @@ from mediapipe.tasks.python.vision.pose_landmarker import (
 )
 
 
-# #### 自定義函式
-
 # In[ ]:
 
 
-from src.mediapipe_lib.base import (
-    PoseResult,
-    ResultAnalyzer,
-    LhcPoseListAnalyzer,
-)
+from src.mediapipe_lib.base import LhcPoseListAnalyzer
 
 
 # ### 初始設定
@@ -101,13 +92,13 @@ def get_video_json_result(img_path: str) -> dict[str:str]:
     start_label, end_label = lhc_analyzer.get_start_and_finish_poses(is_3d)
     ### 額外加分結果
     # 身體扭轉的頻率
-    extra_1 = lhc_analyzer.get_frequency_of_trunk_is_twisted(is_3d).name
+    extra_1 = str(lhc_analyzer.get_frequency_of_trunk_is_twisted(is_3d).name)
     # 手遠離身體的頻率
-    extra_2 = lhc_analyzer.get_frequency_of_hands_at_a_distance(is_3d).name
+    extra_2 = str(lhc_analyzer.get_frequency_of_hands_at_a_distance(is_3d).name)
     # 手臂抬舉，手的水平位於手肘與肩膀之間的頻率
-    extra_3 = lhc_analyzer.get_frequency_of_hands_above_shoulder(is_3d).name
+    extra_3 = str(lhc_analyzer.get_frequency_of_hands_above_shoulder(is_3d).name)
     # 手高過肩膀的頻率
-    extra_4 = lhc_analyzer.get_frequency_of_arms_raised(is_3d).name
+    extra_4 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
 
     # 更新分析結果
     result.update(
