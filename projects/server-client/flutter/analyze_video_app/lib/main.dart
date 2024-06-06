@@ -51,6 +51,7 @@ class PoseResultState extends State<PoseResult> {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       OutlinedButton(
         onPressed: () {
+          startUpload();
           uploadVideo();
         },
         child: const Text("Test"),
@@ -59,22 +60,34 @@ class PoseResultState extends State<PoseResult> {
     ]);
   }
 
+  void startUpload() {
+    setState(() {
+      httpResponse = "Start Uploading";
+    });
+  }
+
   /// 傳輸影片
   void uploadVideo() async {
+    // 選擇檔案
+    var pickedFile = (await FilePicker.platform
+        .pickFiles(type: FileType.video, withReadStream: true));
+
+    // 未選擇檔案時，則不繼續執行動作
+    if (pickedFile == null) {
+      setState(() {
+        httpResponse = "No video file selected.";
+      });
+      debugPrint("No video file selected.");
+      return;
+    }
+
     // 傳輸影片物件
-    var video = (await FilePicker.platform
-            .pickFiles(type: FileType.video, withReadStream: true))!
-        .files
-        .single;
+    var video = pickedFile.files.single;
 
     // 設定讀取串流的物件
     Stream<List<int>> readStream = video.readStream!;
 
     // 當未選擇影片時
-    if (video.path == null) {
-      debugPrint("No video file selected.");
-      return;
-    }
 
     // 建立 Dio 和 ChunkedUploader 物件
     var dio = Dio(options);
