@@ -1,5 +1,5 @@
 ########## Model Path ##########
-model/*.task
+model/*/*.task
 
 ########## Python ##########
 
