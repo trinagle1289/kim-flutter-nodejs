@@ -6,8 +6,7 @@
 # In[ ]:
 
 
-MODEL_PTH = "model/pose_landmarker_full.task"
-TEST_VIDEO = "../../../../resources/video/other/20240506/walk-and-turn.mp4"
+MODEL_PTH = "../model/BlazePose/pose_landmarker_full.task"
 
 
 # ### 套件
@@ -35,7 +34,10 @@ from mediapipe.tasks.python.vision.pose_landmarker import (
 # In[ ]:
 
 
-from src.mediapipe_lib.base import LhcPoseListAnalyzer
+if __name__ == "__main__":
+    from mediapipe_lib.base import LhcPoseListAnalyzer
+else:
+    from src.mediapipe_lib.base import LhcPoseListAnalyzer
 
 
 # ### 初始設定
