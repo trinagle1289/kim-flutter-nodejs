@@ -8,6 +8,7 @@
 
 import mediapipe as mp
 import cv2
+import time
 
 
 # In[ ]:
@@ -53,7 +54,7 @@ landmarker = PoseLandmarker.create_from_options(options)
 # In[ ]:
 
 
-def get_video_json_result(img_path: str) -> dict[str:str]:
+def get_video_json_result(img_path: str) -> dict[str, str]:
 
     is_3d = True  # 表示 3D 姿勢
 
@@ -61,7 +62,7 @@ def get_video_json_result(img_path: str) -> dict[str:str]:
     lhc_analyzer = LhcPoseListAnalyzer([])
 
     # 初始化分析結果
-    result = {
+    json_result = {
         "start": "",
         "end": "",
         "extra 1": "",
@@ -79,9 +80,7 @@ def get_video_json_result(img_path: str) -> dict[str:str]:
             break
         # 取得模型結果，並存入到變數中
         mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-        result = landmarker.detect_for_video(
-            mp_img, int(cap.get(cv2.CAP_PROP_POS_MSEC))
-        )
+        result = landmarker.detect_for_video(mp_img, int(time.time() * 1000))
         lhc_analyzer += [result]
 
     ### 取得起始和結束的姿勢標籤
@@ -97,7 +96,7 @@ def get_video_json_result(img_path: str) -> dict[str:str]:
     extra_4 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
 
     # 更新分析結果
-    result.update(
+    json_result.update(
         {
             "start": start_label,
             "end": end_label,
@@ -108,5 +107,5 @@ def get_video_json_result(img_path: str) -> dict[str:str]:
         }
     )
 
-    return result
+    return json_result
 
