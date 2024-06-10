@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
-import 'dart:io';
-
-import 'record2.dart';
+import 'package:camera/camera.dart';
+import 'package:junior_app_20240607/kim-lhc/record2.dart';
 
 void main() {
   runApp(const record1());
@@ -15,100 +13,91 @@ class record1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: VideoPlayPage(),
+      home: CameraPage(),
     );
   }
 }
 
-class VideoPlayPage extends StatefulWidget {
-  const VideoPlayPage({Key? key}) : super(key: key);
+class CameraPage extends StatefulWidget {
+  const CameraPage({Key? key}) : super(key: key);
 
   @override
-  _VideoPlayPageState createState() => _VideoPlayPageState();
+  _CameraPageState createState() => _CameraPageState();
 }
 
-class _VideoPlayPageState extends State<VideoPlayPage> {
-  late VideoPlayerController _videoPlayerController;
-  bool _isVideoPlaying = false;
-  final String videoPath =
-      'data/data/com.example.junior_app_20240607/cache/body.mp4';
+class _CameraPageState extends State<CameraPage> {
+  bool _isLoading = true;
+  bool _isRecording = false;
+  late CameraController _cameraController;
 
   @override
   void initState() {
+    _initCamera();
     super.initState();
-    _initVideoPlayer();
   }
 
   @override
   void dispose() {
-    _videoPlayerController.dispose();
+    _cameraController.dispose();
     super.dispose();
   }
 
-  void _initVideoPlayer() {
-    _videoPlayerController = VideoPlayerController.file(File(videoPath))
-      ..initialize().then((_) {
-        setState(() {});
-      });
+  _initCamera() async {
+    final cameras = await availableCameras();
+    final front = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front);
+    final back = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back);
+    _cameraController = CameraController(back, ResolutionPreset.max);
+    await _cameraController.initialize();
+    setState(() => _isLoading = false);
   }
 
-  void _toggleVideo() {
-    if (_videoPlayerController.value.isPlaying) {
-      _videoPlayerController.pause();
+  _recordVideo() async {
+    if (_isRecording) {
+      final file = await _cameraController.stopVideoRecording();
+      setState(() => _isRecording = false);
+      debugPrint("Video Path: ${file.path}");
+      final route = MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => VideoPage(filePath: file.path),
+      );
+      Navigator.push(context, route);
     } else {
-      _videoPlayerController.play();
+      await _cameraController.prepareForVideoRecording();
+      await _cameraController.startVideoRecording();
+      setState(() => _isRecording = true);
     }
-    setState(() {
-      _isVideoPlaying = !_isVideoPlaying;
-    });
-  }
-
-  void _stopVideo() {
-    _videoPlayerController.pause();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => VideoPage(filePath: videoPath)),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    if (_isLoading) {
+      return Container(
+        color: Colors.white,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Center(
         child: Stack(
+          alignment: Alignment.bottomCenter,
           children: [
-            if (_videoPlayerController.value.isInitialized)
-              SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _videoPlayerController.value.size.width,
-                    height: _videoPlayerController.value.size.height,
-                    child: VideoPlayer(_videoPlayerController),
-                  ),
-                ),
-              )
-            else
-              const CircularProgressIndicator(),
-            Positioned(
-              bottom: 25,
-              left: 170,
+            CameraPreview(_cameraController),
+            Padding(
+              padding: const EdgeInsets.all(25),
               child: FloatingActionButton(
-                backgroundColor: _isVideoPlaying ? Colors.blue : Colors.red,
-                onPressed: () {
-                  if (_isVideoPlaying) {
-                    _stopVideo();
-                  } else {
-                    _toggleVideo();
-                  }
-                },
-                child: Icon(_isVideoPlaying ? Icons.stop : Icons.circle),
-                shape: const CircleBorder(),
+                backgroundColor:
+                    _isRecording ? Colors.red : Colors.blue, // 更改按鈕的背景顏色
+                child: Icon(_isRecording ? Icons.stop : Icons.circle),
+                onPressed: () => _recordVideo(),
+                shape: CircleBorder(), // 設置按鈕形狀為圓形
               ),
             ),
           ],
         ),
-      ),
-    );
+      );
+    }
   }
 }

@@ -5,7 +5,7 @@ import 'package:video_player/video_player.dart';
 import 'package:junior_app_20240607/kim-lhc/part1.dart';
 
 //變數posture1~8,sumofposture,totalposture
-int posture1 = 1;//表格內變數
+int posture1 = 1; //表格內變數
 int posture2 = 0;
 int posture3 = 0;
 int posture4 = 0;
@@ -14,13 +14,19 @@ int posture6 = 0;
 int posture7 = 0;
 int posture8 = 2;
 
-int sumofposture =
-    posture1 + posture2 + posture3 + posture4 + posture5 + posture6 + posture7 + posture8;
+int sumofposture = posture1 +
+    posture2 +
+    posture3 +
+    posture4 +
+    posture5 +
+    posture6 +
+    posture7 +
+    posture8;
 //additonl points
 
 int bodyposture = 10;
 //int totalbodyposture = sumofposture + bodyposture;
-int totalbodyposture =0;
+int totalbodyposture = 0;
 
 class VideoPage extends StatefulWidget {
   final String filePath;
@@ -46,7 +52,8 @@ class _VideoPageState extends State<VideoPage> {
   }
 
   void _initVideoPlayer() {
-    _videoPlayerController = VideoPlayerController.file(File('data/data/com.example.junior_app_20240607/cache/body.mp4'));
+    var videoPath = widget.filePath;
+    _videoPlayerController = VideoPlayerController.file(File(videoPath));
     _videoPlayerController.initialize().then((_) {
       setState(() {});
       _videoPlayerController.setLooping(true);
@@ -56,7 +63,6 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -65,9 +71,24 @@ class _VideoPageState extends State<VideoPage> {
           child: RichText(
             text: TextSpan(
               children: <TextSpan>[
-                TextSpan(text: 'Total body posture:', style: TextStyle(fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold)),
-                TextSpan(text: ' 13 ', style: TextStyle(fontSize: 20.0, color: Colors.blue, fontWeight: FontWeight.bold)),
-                TextSpan(text: 'point', style: TextStyle(fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: 'Total body posture:',
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: ' 13 ',
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold)),
+                TextSpan(
+                    text: 'point',
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -94,13 +115,13 @@ class _VideoPageState extends State<VideoPage> {
                     ),
                     child: _videoPlayerController.value.isInitialized
                         ? AspectRatio(
-                      aspectRatio:
-                      _videoPlayerController.value.aspectRatio * 1.5,
-                      child: Transform.scale(
-                        scale: 0.9,
-                        child: VideoPlayer(_videoPlayerController),
-                      ),
-                    )
+                            aspectRatio:
+                                _videoPlayerController.value.aspectRatio * 1.5,
+                            child: Transform.scale(
+                              scale: 0.9,
+                              child: VideoPlayer(_videoPlayerController),
+                            ),
+                          )
                         : CircularProgressIndicator(),
                   ),
                 ),
@@ -125,9 +146,24 @@ class _VideoPageState extends State<VideoPage> {
                       child: RichText(
                         text: TextSpan(
                           children: <TextSpan>[
-                            TextSpan(text: 'Body posture:', style: TextStyle(fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold)),
-                            TextSpan(text: '$bodyposture ', style: TextStyle(fontSize: 20.0, color: Colors.blue, fontWeight: FontWeight.bold)),
-                            TextSpan(text: 'point', style: TextStyle(fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: 'Body posture:',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: '$bodyposture ',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: 'point',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -176,8 +212,7 @@ class _VideoPageState extends State<VideoPage> {
                                   style: TextStyle(fontSize: 20)))),
                       DataColumn(
                           label: SizedBox(
-                              width: 50,
-                              child: Text(' $sumofposture Points'))),
+                              width: 50, child: Text(' $sumofposture Points'))),
                     ],
                     rows: [
                       DataRow(cells: [
@@ -185,64 +220,64 @@ class _VideoPageState extends State<VideoPage> {
                             width: 250,
                             child: Text(
                                 'Occasional twisting and/or lateral inclination'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture1'))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture1'))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Frequent/constant twisting and/or lateral inclination'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture2'))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture2'))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Load center occasionally at a distance from the body'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture3'))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture3'))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Load center frequently/constantly at a distance from the body'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture4 '))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture4 '))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands occasionally between elbow and shoulder'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture5 '))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture5 '))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands frequently/constantly between elbow and shoulder'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture6 '))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture6 '))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands occasionally above shoulder height'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture7'))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture7'))),
                       ]),
                       DataRow(cells: [
                         DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands frequently/constantly above shoulder height'))),
-                        DataCell(SizedBox(
-                            width: 50, child: Text('  +$posture8'))),
+                        DataCell(
+                            SizedBox(width: 50, child: Text('  +$posture8'))),
                       ]),
                     ],
                   ),
@@ -254,10 +289,12 @@ class _VideoPageState extends State<VideoPage> {
               mainAxisAlignment: MainAxisAlignment.center, // 主軸方向置中
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20, right: 10), // 調整按鈕間距
+                  padding:
+                      const EdgeInsets.only(bottom: 20, right: 10), // 調整按鈕間距
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push( // 點擊按鈕時導航到第二個畫面
+                      Navigator.push(
+                        // 點擊按鈕時導航到第二個畫面
                         context,
                         MaterialPageRoute(builder: (context) => record1()),
                       );
@@ -268,8 +305,10 @@ class _VideoPageState extends State<VideoPage> {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
-                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF8EC0E4)),
-                      minimumSize: MaterialStateProperty.all<Size>(const Size(170, 50)), // 調整按鈕的最小尺寸
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Color(0xFF8EC0E4)),
+                      minimumSize: MaterialStateProperty.all<Size>(
+                          const Size(170, 50)), // 調整按鈕的最小尺寸
                     ),
                     child: const Text(
                       'Re-record',
@@ -278,10 +317,11 @@ class _VideoPageState extends State<VideoPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20, left: 10), // 調整按鈕間距
+                  padding:
+                      const EdgeInsets.only(bottom: 20, left: 10), // 調整按鈕間距
                   child: ElevatedButton(
                     onPressed: () {
-                      totalbodyposture=13;
+                      totalbodyposture = 13;
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Lhc_Part1()),
@@ -293,8 +333,10 @@ class _VideoPageState extends State<VideoPage> {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
-                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF8EC0E4)),
-                      minimumSize: MaterialStateProperty.all<Size>(const Size(170, 50)), // 調整按鈕的最小尺寸
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Color(0xFF8EC0E4)),
+                      minimumSize: MaterialStateProperty.all<Size>(
+                          const Size(170, 50)), // 調整按鈕的最小尺寸
                     ),
                     child: const Text(
                       'Save',
@@ -304,7 +346,6 @@ class _VideoPageState extends State<VideoPage> {
                 ),
               ],
             ),
-
           ],
         ),
       ),
