@@ -87,8 +87,6 @@ class PoseResultState extends State<PoseResult> {
     // 設定讀取串流的物件
     Stream<List<int>> readStream = video.readStream!;
 
-    // 當未選擇影片時
-
     // 建立 Dio 和 ChunkedUploader 物件
     var dio = Dio(options);
     var uploader = ChunkedUploader(dio);
