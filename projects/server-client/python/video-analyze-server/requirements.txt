@@ -15,3 +15,6 @@ matplotlib
 # dev
 jupyter
 pandas
+
+# exe
+pyinstaller
