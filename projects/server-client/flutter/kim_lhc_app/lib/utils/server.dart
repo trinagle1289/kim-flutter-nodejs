@@ -10,7 +10,7 @@ var serverFilePath = "/analyze/test_video"; // 需要將資料上傳至相應路
 
 /// 上傳檔案到伺服器
 Future<String> uploadToServer(String filePath) async {
-  var result = "";
+  var result = "None";
 
   // dio 初始設定
   var options = Dio(
