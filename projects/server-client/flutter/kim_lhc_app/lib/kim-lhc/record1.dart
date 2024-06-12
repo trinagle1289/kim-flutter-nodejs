@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:kim_lhc_app/kim-lhc/record2.dart';
+
 import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const Record1());
@@ -45,6 +50,21 @@ class _CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
+  /// 複製檔案至暫存區
+  Future<XFile> _copyFileToTempDir(XFile file, String newFileName) async {
+    // 取得暫存資料夾路徑
+    Directory tmpDir = await getTemporaryDirectory();
+    // 設定檔案路徑
+    String filePath = path.join(tmpDir.path, newFileName);
+
+    // 複製檔案至暫存資料夾
+    File newFile = File(file.path).copySync(filePath);
+    // 設定輸出物件
+    XFile newXFile = XFile(newFile.path);
+
+    return newXFile;
+  }
+
   /// 初始化相機
   void _initCamera() async {
     final cameras = await availableCameras(); // 可用相機
@@ -69,14 +89,17 @@ class _CameraPageState extends State<CameraPage> {
       setState(() => _isRecording = true);
     } else {
       // 停止錄影並儲存檔案
-      final file = await _cameraController.stopVideoRecording();
+      var cacheVideo = await _cameraController.stopVideoRecording();
+      // 將檔案複製到暫存資料夾區域
+      var tmpVideo =
+          await _copyFileToTempDir(cacheVideo, "${cacheVideo.name}.mp4");
+
       setState(() => _isRecording = false);
-      debugPrint("Video Path: ${file.path}");
 
       // 切換畫面
       final route = MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => VideoPage(filePath: file.path),
+        builder: (_) => VideoPage(filePath: tmpVideo.path),
       );
       if (mounted) {
         Navigator.push(context, route);
