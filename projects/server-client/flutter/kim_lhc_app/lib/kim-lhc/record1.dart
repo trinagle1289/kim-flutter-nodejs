@@ -6,6 +6,7 @@ import 'package:kim_lhc_app/kim-lhc/record2.dart';
 
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_compress_plus/video_compress_plus.dart';
 
 void main() {
   runApp(const Record1());
@@ -50,19 +51,32 @@ class _CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
-  /// 複製檔案至暫存區
-  Future<XFile> _copyFileToTempDir(XFile file, String newFileName) async {
-    // 取得暫存資料夾路徑
-    Directory tmpDir = await getTemporaryDirectory();
-    // 設定檔案路徑
-    String filePath = path.join(tmpDir.path, newFileName);
-
+  /// 複製檔案至暫存資料夾
+  Future<File> _copyFileToTempDir(String filePath, String newFileName) async {
+    // 暫存資料夾路徑
+    Directory? cacheDir = await getDownloadsDirectory();
+    // 暫存檔案路徑
+    String cacheFilePath = path.join(cacheDir!.path, newFileName);
     // 複製檔案至暫存資料夾
-    File newFile = File(file.path).copySync(filePath);
-    // 設定輸出物件
-    XFile newXFile = XFile(newFile.path);
+    File cacheFile = File(filePath).copySync(cacheFilePath);
+    return cacheFile;
+  }
 
-    return newXFile;
+  /// 暫存影片轉換成 Mp4 檔案
+  Future<XFile> _cacheVideoToMp4File(XFile video) async {
+    // 移動檔案至暫存資料夾
+    File cacheFile = await _copyFileToTempDir(video.path, "${video.name}.mp4");
+    debugPrint("file path 1: ${cacheFile.path}");
+
+    // 將暫存檔案轉換成 mp4 檔
+    MediaInfo? info = await VideoCompress.compressVideo(cacheFile.path,
+        quality: VideoQuality.DefaultQuality, deleteOrigin: false);
+    debugPrint("file path 2: ${info!.path}");
+
+    cacheFile.deleteSync(); // 刪除暫存檔
+    XFile mp4File = XFile(info.path!); // 設定輸出資料
+
+    return mp4File;
   }
 
   /// 初始化相機
@@ -90,16 +104,15 @@ class _CameraPageState extends State<CameraPage> {
     } else {
       // 停止錄影並儲存檔案
       var cacheVideo = await _cameraController.stopVideoRecording();
-      // 將檔案複製到暫存資料夾區域
-      var tmpVideo =
-          await _copyFileToTempDir(cacheVideo, "${cacheVideo.name}.mp4");
+      // 將暫存檔案轉換成 mp4 檔案
+      var video = await _cacheVideoToMp4File(cacheVideo);
 
       setState(() => _isRecording = false);
 
       // 切換畫面
       final route = MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => VideoPage(filePath: tmpVideo.path),
+        builder: (_) => VideoPage(filePath: video.path),
       );
       if (mounted) {
         Navigator.push(context, route);
