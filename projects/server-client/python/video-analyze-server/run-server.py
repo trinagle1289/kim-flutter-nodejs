@@ -68,15 +68,21 @@ video_id: 客戶端上傳影片的字串值<br>
     "extra 2": "FREQUENTLY_OR_CONSTANTLY",<br>
     "extra 3": "OCCASIONALLY",<br>
     "extra 4": "RARELY",<br>
+    "pose score": "5",<br>
+    "extra score": "2",<br>
+    "total score": "7",<br>
 }<br>
 <br>
-video id:   客戶端上傳影片的字串值<br>
-start:      起始姿勢(A1~A5)<br>
-end:        結束姿勢(A1~A5)<br>
-extra 1:    軀幹扭轉/側傾的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
-extra 2:    手或重心遠離身體的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
-extra 3:    手臂抬舉，手的水平位於手肘與肩膀之間的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
-extra 4:    手高過肩膀的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+video id:       客戶端上傳影片的字串值<br>
+start:          起始姿勢(A1~A5)<br>
+end:            結束姿勢(A1~A5)<br>
+extra 1:        軀幹扭轉/側傾的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+extra 2:        手或重心遠離身體的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+extra 3:        手臂抬舉，手的水平位於手肘與肩膀之間的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+extra 4:        手高過肩膀的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+pose score:     姿勢評級分數<br>
+extra score:    額外加分項分數<br>
+total score:    身體姿勢總分數<br>
 </code>
 
 """
@@ -109,10 +115,20 @@ def server_api(video_id: str):
         "extra 2": "null",
         "extra 3": "null",
         "extra 4": "null",
+        "pose score": "-1",
+        "extra score": "-1",
+        "total score": "-1",
     }
 
     # 取得回應資料結果
-    response_data.update(get_video_json_result(str(saved_path)))
+    try:
+        result = get_video_json_result(str(saved_path))
+        response_data.update(result)
+        print(f"Response Json Data: {response_data}")
+    except Exception as e:
+        print(str(e))
+
+    # 設定回應資訊
     response = jsonify(response_data)
 
     # 清除暫存資料
