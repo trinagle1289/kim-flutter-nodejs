@@ -121,7 +121,7 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Two()),
+                  MaterialPageRoute(builder: (context) => const Two()),
                 );
                 debugPrint('Frequency tapped');
               },
@@ -134,7 +134,7 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LhcPart5()),
+                  MaterialPageRoute(builder: (context) => const LhcPart5()),
                 );
                 debugPrint('Load handling conditions tapped');
               },
@@ -161,7 +161,7 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LhcPart7()),
+                  MaterialPageRoute(builder: (context) => const LhcPart7()),
                 );
                 debugPrint('Work organization / temporal distribution tapped');
               },
