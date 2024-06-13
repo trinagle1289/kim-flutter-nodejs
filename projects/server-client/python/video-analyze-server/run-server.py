@@ -3,7 +3,7 @@
 
 # ### 常數
 
-# In[9]:
+# In[ ]:
 
 
 HOST = "127.0.0.1"
@@ -13,7 +13,7 @@ SAVED_VIDEO_PATH = "video_in.mp4"
 
 # ### 套件
 
-# In[7]:
+# In[ ]:
 
 
 from flask import Flask, jsonify, request
@@ -25,7 +25,7 @@ import shutil
 
 # ##### Custom
 
-# In[11]:
+# In[ ]:
 
 
 from src.server_api import get_video_json_result
@@ -33,7 +33,7 @@ from src.server_api import get_video_json_result
 
 # ##### Datatype Reference
 
-# In[12]:
+# In[ ]:
 
 
 from werkzeug.datastructures.file_storage import FileStorage
@@ -51,7 +51,42 @@ video_name = Path(SAVED_VIDEO_PATH)
 # In[ ]:
 
 
-@app.route("/analyze/<video_id>", methods=["POST", "GET"])
+@app.route("/", methods=["GET"])
+def index_page():
+    help_msg = """
+<code>
+/analyze/video_id 為上傳影片的路徑<br>
+video_id: 客戶端上傳影片的字串值<br>
+回傳結果: Json 格式檔案<br>
+<br>
+範例回傳資料:<br>
+{<br>
+    "video id": video_id,<br>
+    "start": "A1",<br>
+    "end": "A2",<br>
+    "extra 1": "RARELY",<br>
+    "extra 2": "FREQUENTLY_OR_CONSTANTLY",<br>
+    "extra 3": "OCCASIONALLY",<br>
+    "extra 4": "RARELY",<br>
+}<br>
+<br>
+video id:   客戶端上傳影片的字串值<br>
+start:      起始姿勢(A1~A5)<br>
+end:        結束姿勢(A1~A5)<br>
+extra 1:    軀幹扭轉/側傾的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+extra 2:    手或重心遠離身體的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+extra 3:    手臂抬舉，手的水平位於手肘與肩膀之間的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+extra 4:    手高過肩膀的頻率(FREQUENTLY_OR_CONSTANTLY, OCCASIONALLY, RARELY)<br>
+</code>
+
+"""
+    return help_msg
+
+
+# In[ ]:
+
+
+@app.route("/analyze/<video_id>", methods=["POST"])
 @cross_origin()
 def server_api(video_id: str):
     # 取得資料
