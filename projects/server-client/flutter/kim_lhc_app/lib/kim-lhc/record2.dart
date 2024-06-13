@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
-import 'package:video_player/video_player.dart';
+import 'package:kim_lhc_app/utils/server.dart' as server;
 
 //變數posture1~8,sumofposture,totalposture
 int posture1 = 1; //表格內變數
@@ -28,6 +32,10 @@ int bodyposture = 10;
 //int totalbodyposture = sumofposture + bodyposture;
 int totalbodyposture = 0;
 
+void main() {
+  runApp(const Record1());
+}
+
 class VideoPage extends StatefulWidget {
   final String filePath;
   const VideoPage({super.key, required this.filePath});
@@ -43,6 +51,7 @@ class _VideoPageState extends State<VideoPage> {
   void initState() {
     super.initState();
     _initVideoPlayer();
+    _uploadVideo();
   }
 
   @override
@@ -51,6 +60,7 @@ class _VideoPageState extends State<VideoPage> {
     super.dispose();
   }
 
+  /// 初始化影片播放器
   void _initVideoPlayer() {
     var videoPath = widget.filePath;
     _videoPlayerController = VideoPlayerController.file(File(videoPath));
@@ -59,6 +69,13 @@ class _VideoPageState extends State<VideoPage> {
       _videoPlayerController.setLooping(true);
       _videoPlayerController.play();
     });
+  }
+
+  /// 上傳影片
+  void _uploadVideo() async {
+    String request = await server.uploadToServer(widget.filePath);
+    var jsonRequest = jsonDecode(request);
+    debugPrint("Server request: $request");
   }
 
   @override
