@@ -1,24 +1,41 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:format/format.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_compress_plus/video_compress_plus.dart';
 
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
-import 'package:kim_lhc_app/utils/server.dart' as server;
+import 'package:kim_lhc_app/utils/server.dart' as server_api;
 
+// 起始結束姿勢
+var startPoseImg = Image.asset('assets/picture/LHC/Poses/A1.png');
+var endPoseImg = Image.asset('assets/picture/LHC/Poses/A1.png');
+
+// 姿勢圖片路徑
+var imgA1 = Image.asset('assets/picture/LHC/Poses/A1.png');
+var imgA23 = Image.asset('assets/picture/LHC/Poses/A2-3.png');
+var imgA4 = Image.asset('assets/picture/LHC/Poses/A4.png');
+var imgA5 = Image.asset('assets/picture/LHC/Poses/A5.png');
+
+// 額外姿勢分數
 //變數posture1~8,sumofposture,totalposture
-int posture1 = 1; //表格內變數
-int posture2 = 0;
-int posture3 = 0;
-int posture4 = 0;
-int posture5 = 0;
-int posture6 = 0;
-int posture7 = 0;
-int posture8 = 2;
+int posture1 = 0; //表格內變數 // 軀幹經常扭轉、側傾
+int posture2 = 0; // 軀幹偶爾扭轉、側傾
+int posture3 = 0; // 負重重心或手經常遠離身體
+int posture4 = 0; // 負重重心或手偶爾遠離身體
+double posture5 = 0; // 手臂經常需抬舉，手位於手肘與肩膀之間
+int posture6 = 0; // 手臂偶爾需抬舉，手位於手肘與肩膀之間
+int posture7 = 0; // 手經常會高過肩膀
+int posture8 = 0; // 手偶爾會高過肩膀
 
-int sumofposture = posture1 +
+/// 額外姿勢總分數
+double sumofposture = posture1 +
     posture2 +
     posture3 +
     posture4 +
@@ -28,9 +45,11 @@ int sumofposture = posture1 +
     posture8;
 //additonl points
 
+/// 姿勢評級分數
 int bodyposture = 10;
 //int totalbodyposture = sumofposture + bodyposture;
-int totalbodyposture = 0;
+/// 身體姿勢總分數
+double totalbodyposture = 0;
 
 void main() {
   runApp(const Record1());
@@ -60,6 +79,139 @@ class _VideoPageState extends State<VideoPage> {
     super.dispose();
   }
 
+  /// 複製檔案至暫存資料夾
+  Future<File> _copyFileToTempDir(String filePath, String newFileName) async {
+    // 暫存資料夾路徑
+    Directory? cacheDir = await getDownloadsDirectory();
+    // 暫存檔案路徑
+    String cacheFilePath = path.join(cacheDir!.path, newFileName);
+    // 複製檔案至暫存資料夾
+    File cacheFile = File(filePath).copySync(cacheFilePath);
+    return cacheFile;
+  }
+
+  /// 暫存影片轉換成 Mp4 檔案
+  Future<XFile> _cacheVideoToMp4File(XFile video) async {
+    // 移動檔案至暫存資料夾
+    File cacheFile = await _copyFileToTempDir(video.path, "${video.name}.mp4");
+    // 將暫存檔案轉換成 mp4 檔
+    MediaInfo? info = await VideoCompress.compressVideo(cacheFile.path,
+        quality: VideoQuality.DefaultQuality, deleteOrigin: false);
+
+    cacheFile.deleteSync(); // 刪除暫存檔
+    XFile mp4File = XFile(info!.path!); // 設定輸出資料
+
+    return mp4File;
+  }
+
+  //// 更新介面
+  void _updateView(Map<String, String> jsonRequest) {
+    setState(() {
+      //// 設定分數
+      bodyposture = int.parse(jsonRequest["pose score"]!); // 姿勢評級分數
+      sumofposture = double.parse(jsonRequest["extra score"]!); // 額外加分總分數
+      totalbodyposture = double.parse(jsonRequest["total score"]!); // 身體姿勢總分
+
+      //// 設定初始和結束姿勢圖片
+      switch (jsonRequest["start"]) {
+        case "A1":
+          startPoseImg = imgA1;
+          break;
+        case "A2":
+        case "A3":
+          startPoseImg = imgA23;
+          break;
+        case "A4":
+          startPoseImg = imgA4;
+          break;
+        case "A5":
+          startPoseImg = imgA5;
+          break;
+        default:
+          break;
+      }
+      switch (jsonRequest["end"]) {
+        case "A1":
+          startPoseImg = imgA1;
+          break;
+        case "A2":
+        case "A3":
+          startPoseImg = imgA23;
+          break;
+        case "A4":
+          startPoseImg = imgA4;
+          break;
+        case "A5":
+          startPoseImg = imgA5;
+          break;
+        default:
+          break;
+      }
+
+      //// 設定額外加分項資訊
+      // 軀幹扭轉/側傾的頻率
+      switch (jsonRequest["extra 1"]) {
+        case "FREQUENTLY_OR_CONSTANTLY":
+          posture1 = 3;
+          posture2 = 0;
+          break;
+        case "OCCASIONALLY":
+          posture1 = 0;
+          posture2 = 1;
+          break;
+        default:
+          posture1 = 0;
+          posture2 = 0;
+          break;
+      }
+      // 手或重心遠離身體的頻率
+      switch (jsonRequest["extra 2"]) {
+        case "FREQUENTLY_OR_CONSTANTLY":
+          posture3 = 3;
+          posture4 = 0;
+          break;
+        case "OCCASIONALLY":
+          posture3 = 0;
+          posture4 = 1;
+          break;
+        default:
+          posture3 = 0;
+          posture4 = 0;
+          break;
+      }
+      // 手臂抬舉，手的水平位於手肘與肩膀之間的頻率
+      switch (jsonRequest["extra 3"]) {
+        case "FREQUENTLY_OR_CONSTANTLY":
+          posture5 = 0.5;
+          posture6 = 0;
+          break;
+        case "OCCASIONALLY":
+          posture5 = 0;
+          posture6 = 1;
+          break;
+        default:
+          posture5 = 0;
+          posture6 = 0;
+          break;
+      }
+      // 手高過肩膀的頻率
+      switch (jsonRequest["extra 4"]) {
+        case "FREQUENTLY_OR_CONSTANTLY":
+          posture7 = 2;
+          posture8 = 0;
+          break;
+        case "OCCASIONALLY":
+          posture7 = 0;
+          posture8 = 1;
+          break;
+        default:
+          posture7 = 0;
+          posture8 = 0;
+          break;
+      }
+    });
+  }
+
   /// 初始化影片播放器
   void _initVideoPlayer() {
     var videoPath = widget.filePath;
@@ -73,9 +225,18 @@ class _VideoPageState extends State<VideoPage> {
 
   /// 上傳影片
   void _uploadVideo() async {
-    String request = await server.uploadToServer(widget.filePath);
-    var jsonRequest = jsonDecode(request);
-    debugPrint("Server request: $request");
+    //// 將影片轉換成 mp4 檔
+    XFile video = await _cacheVideoToMp4File(XFile(widget.filePath));
+
+    //// 與伺服器進行連接
+    var server = server_api.Server(); // 建立伺服器
+    String request = await server.uploadToServer(video.path); // 上傳檔案至伺服器
+    Map<String, String> jsonRequest = jsonDecode(request); // 解碼伺服器回應
+
+    _updateView(jsonRequest); // 更新介面
+
+    // 刪除影片
+    File(video.path).deleteSync();
   }
 
   @override
@@ -86,21 +247,21 @@ class _VideoPageState extends State<VideoPage> {
         backgroundColor: const Color(0xFFC9D6DE),
         title: Center(
           child: RichText(
-            text: const TextSpan(
+            text: TextSpan(
               children: <TextSpan>[
-                TextSpan(
+                const TextSpan(
                     text: 'Total body posture:',
                     style: TextStyle(
                         fontSize: 20.0,
                         color: Colors.black,
                         fontWeight: FontWeight.bold)),
                 TextSpan(
-                    text: ' 13 ',
-                    style: TextStyle(
+                    text: ' {0:.1f} '.format(totalbodyposture),
+                    style: const TextStyle(
                         fontSize: 20.0,
                         color: Colors.blue,
                         fontWeight: FontWeight.bold)),
-                TextSpan(
+                const TextSpan(
                     text: 'point',
                     style: TextStyle(
                         fontSize: 20.0,
@@ -189,13 +350,10 @@ class _VideoPageState extends State<VideoPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/picture/LHC/p2.png'),
-                        Image.asset(
-                          'assets/picture/LHC/ginto1.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                        Image.asset('assets/picture/LHC/CDDD.png'),
+                        startPoseImg,
+                        Image.asset('assets/picture/LHC/ginto1.png',
+                            width: 50, height: 50),
+                        endPoseImg,
                       ],
                     ),
                     const SizedBox(height: 15),
