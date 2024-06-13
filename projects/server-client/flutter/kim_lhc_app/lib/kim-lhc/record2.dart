@@ -13,15 +13,15 @@ import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
 import 'package:kim_lhc_app/utils/server.dart' as server_api;
 
-// 起始結束姿勢
-var startPoseImg = Image.asset('assets/picture/LHC/Poses/A1.png');
-var endPoseImg = Image.asset('assets/picture/LHC/Poses/A1.png');
-
 // 姿勢圖片路徑
-var imgA1 = Image.asset('assets/picture/LHC/Poses/A1.png');
-var imgA23 = Image.asset('assets/picture/LHC/Poses/A2-3.png');
-var imgA4 = Image.asset('assets/picture/LHC/Poses/A4.png');
-var imgA5 = Image.asset('assets/picture/LHC/Poses/A5.png');
+var imgA1Path = 'assets/picture/LHC/Poses/A1.png';
+var imgA23Path = 'assets/picture/LHC/Poses/A2-A3.png';
+var imgA4Path = 'assets/picture/LHC/Poses/A4.png';
+var imgA5Path = 'assets/picture/LHC/Poses/A5.png';
+
+// 起始結束姿勢(預設為空畫面)
+var startImgPath = 'assets/picture/LHC/Poses/A0.png';
+var endImgPath = 'assets/picture/LHC/Poses/A0.png';
 
 // 額外姿勢分數
 //變數posture1~8,sumofposture,totalposture
@@ -46,7 +46,7 @@ double sumofposture = posture1 +
 //additonl points
 
 /// 姿勢評級分數
-int bodyposture = 10;
+int bodyposture = -1;
 //int totalbodyposture = sumofposture + bodyposture;
 /// 身體姿勢總分數
 double totalbodyposture = 0;
@@ -105,7 +105,7 @@ class _VideoPageState extends State<VideoPage> {
   }
 
   //// 更新介面
-  void _updateView(Map<String, String> jsonRequest) {
+  void _updateView(Map<String, dynamic> jsonRequest) {
     setState(() {
       //// 設定分數
       bodyposture = int.parse(jsonRequest["pose score"]!); // 姿勢評級分數
@@ -115,34 +115,34 @@ class _VideoPageState extends State<VideoPage> {
       //// 設定初始和結束姿勢圖片
       switch (jsonRequest["start"]) {
         case "A1":
-          startPoseImg = imgA1;
+          startImgPath = imgA1Path;
           break;
         case "A2":
         case "A3":
-          startPoseImg = imgA23;
+          startImgPath = imgA23Path;
           break;
         case "A4":
-          startPoseImg = imgA4;
+          startImgPath = imgA4Path;
           break;
         case "A5":
-          startPoseImg = imgA5;
+          startImgPath = imgA5Path;
           break;
         default:
           break;
       }
       switch (jsonRequest["end"]) {
         case "A1":
-          startPoseImg = imgA1;
+          endImgPath = imgA1Path;
           break;
         case "A2":
         case "A3":
-          startPoseImg = imgA23;
+          endImgPath = imgA23Path;
           break;
         case "A4":
-          startPoseImg = imgA4;
+          endImgPath = imgA4Path;
           break;
         case "A5":
-          startPoseImg = imgA5;
+          endImgPath = imgA5Path;
           break;
         default:
           break;
@@ -231,7 +231,7 @@ class _VideoPageState extends State<VideoPage> {
     //// 與伺服器進行連接
     var server = server_api.Server(); // 建立伺服器
     String request = await server.uploadToServer(video.path); // 上傳檔案至伺服器
-    Map<String, String> jsonRequest = jsonDecode(request); // 解碼伺服器回應
+    Map<String, dynamic> jsonRequest = jsonDecode(request); // 解碼伺服器回應
 
     _updateView(jsonRequest); // 更新介面
 
@@ -350,10 +350,10 @@ class _VideoPageState extends State<VideoPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        startPoseImg,
+                        Image.asset(startImgPath, width: 150, height: 150),
                         Image.asset('assets/picture/LHC/ginto1.png',
                             width: 50, height: 50),
-                        endPoseImg,
+                        Image.asset(endImgPath, width: 150, height: 150),
                       ],
                     ),
                     const SizedBox(height: 15),
