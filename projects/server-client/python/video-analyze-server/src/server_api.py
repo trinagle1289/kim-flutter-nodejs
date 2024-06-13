@@ -84,7 +84,10 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
         # 取得模型結果，並存入到變數中
         mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
         result = landmarker.detect_for_video(mp_img, int(time.time() * 1000))
-        lhc_analyzer += [result]
+
+        # 如果成功在圖片中取得人體姿勢，則加入結果到 lhc_analyzer 中
+        if len(result.pose_landmarks) > 0:
+            lhc_analyzer += [result]
 
     ### 取得起始和結束的姿勢標籤
     start_label, end_label = lhc_analyzer.get_start_and_finish_poses(is_3d)
@@ -99,11 +102,11 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
     extra_4 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
 
     # 姿勢評級
-    pose_score = lhc_analyzer.get_lhc_body_posture_rating_points(is_3d)
+    pose_score = str(lhc_analyzer.get_lhc_body_posture_rating_points(is_3d))
     # 額外加分
-    extra_score = lhc_analyzer.get_lhc_body_posture_additional_points(is_3d)
+    extra_score = str(lhc_analyzer.get_lhc_body_posture_additional_points(is_3d))
     # 總分
-    total_score = lhc_analyzer.get_lhc_body_posture_total_points(is_3d)
+    total_score = str(lhc_analyzer.get_lhc_body_posture_total_points(is_3d))
 
     # 更新分析結果
     json_result.update(
