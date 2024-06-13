@@ -63,12 +63,15 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
 
     # 初始化分析結果
     json_result = {
-        "start": "",
-        "end": "",
-        "extra 1": "",
-        "extra 2": "",
-        "extra 3": "",
-        "extra 4": "",
+        "start": "null",
+        "end": "null",
+        "extra 1": "null",
+        "extra 2": "null",
+        "extra 3": "null",
+        "extra 4": "null",
+        "pose score": "-1",
+        "extra score": "-1",
+        "total score": "-1",
     }
 
     cap = cv2.VideoCapture(img_path)  # 影片抓取物件
@@ -95,6 +98,13 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
     # 手高過肩膀的頻率
     extra_4 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
 
+    # 姿勢評級
+    pose_score = lhc_analyzer.get_lhc_body_posture_rating_points(is_3d)
+    # 額外加分
+    extra_score = lhc_analyzer.get_lhc_body_posture_additional_points(is_3d)
+    # 總分
+    total_score = lhc_analyzer.get_lhc_body_posture_total_points(is_3d)
+
     # 更新分析結果
     json_result.update(
         {
@@ -104,6 +114,9 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
             "extra 2": extra_2,
             "extra 3": extra_3,
             "extra 4": extra_4,
+            "pose score": pose_score,
+            "extra score": extra_score,
+            "total score": total_score,
         }
     )
 
