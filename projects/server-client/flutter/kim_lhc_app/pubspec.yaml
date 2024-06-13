@@ -36,5 +36,6 @@ flutter:
     - assets/picture/LHC/hand_and_arm.png
     - assets/picture/LHC/hands.png
     - assets/picture/LHC/lifting.png
+    - assets/picture/LHC/Poses/
 
   uses-material-design: true
