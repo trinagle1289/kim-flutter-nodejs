@@ -25,14 +25,14 @@ var endImgPath = 'assets/picture/LHC/Poses/A0.png';
 
 // 額外姿勢分數
 //變數posture1~8,sumofposture,totalposture
-int posture1 = 0; //表格內變數 // 軀幹經常扭轉、側傾
-int posture2 = 0; // 軀幹偶爾扭轉、側傾
-int posture3 = 0; // 負重重心或手經常遠離身體
-int posture4 = 0; // 負重重心或手偶爾遠離身體
-double posture5 = 0; // 手臂經常需抬舉，手位於手肘與肩膀之間
-int posture6 = 0; // 手臂偶爾需抬舉，手位於手肘與肩膀之間
-int posture7 = 0; // 手經常會高過肩膀
-int posture8 = 0; // 手偶爾會高過肩膀
+int posture1 = 0; //表格內變數 // 軀幹偶爾扭轉、側傾
+int posture2 = 0; // 軀幹經常扭轉、側傾
+int posture3 = 0; // 負重重心或手偶爾遠離身體
+int posture4 = 0; // 負重重心或手經常遠離身體
+double posture5 = 0; // 手臂偶爾需抬舉，手位於手肘與肩膀之間
+int posture6 = 0; // 手臂經常需抬舉，手位於手肘與肩膀之間
+int posture7 = 0; // 手偶爾會高過肩膀
+int posture8 = 0; // 手經常會高過肩膀
 
 /// 額外姿勢總分數
 double sumofposture = posture1 +
@@ -152,12 +152,12 @@ class _VideoPageState extends State<VideoPage> {
       // 軀幹扭轉/側傾的頻率
       switch (jsonRequest["extra 1"]) {
         case "FREQUENTLY_OR_CONSTANTLY":
-          posture1 = 3;
-          posture2 = 0;
+          posture1 = 0;
+          posture2 = 3;
           break;
         case "OCCASIONALLY":
-          posture1 = 0;
-          posture2 = 1;
+          posture1 = 1;
+          posture2 = 0;
           break;
         default:
           posture1 = 0;
@@ -167,12 +167,12 @@ class _VideoPageState extends State<VideoPage> {
       // 手或重心遠離身體的頻率
       switch (jsonRequest["extra 2"]) {
         case "FREQUENTLY_OR_CONSTANTLY":
-          posture3 = 3;
-          posture4 = 0;
+          posture3 = 0;
+          posture4 = 3;
           break;
         case "OCCASIONALLY":
-          posture3 = 0;
-          posture4 = 1;
+          posture3 = 1;
+          posture4 = 0;
           break;
         default:
           posture3 = 0;
@@ -182,12 +182,12 @@ class _VideoPageState extends State<VideoPage> {
       // 手臂抬舉，手的水平位於手肘與肩膀之間的頻率
       switch (jsonRequest["extra 3"]) {
         case "FREQUENTLY_OR_CONSTANTLY":
-          posture5 = 0.5;
-          posture6 = 0;
-          break;
-        case "OCCASIONALLY":
           posture5 = 0;
           posture6 = 1;
+          break;
+        case "OCCASIONALLY":
+          posture5 = 0.5;
+          posture6 = 0;
           break;
         default:
           posture5 = 0;
@@ -197,12 +197,12 @@ class _VideoPageState extends State<VideoPage> {
       // 手高過肩膀的頻率
       switch (jsonRequest["extra 4"]) {
         case "FREQUENTLY_OR_CONSTANTLY":
-          posture7 = 2;
-          posture8 = 0;
+          posture7 = 0;
+          posture8 = 2;
           break;
         case "OCCASIONALLY":
-          posture7 = 0;
-          posture8 = 1;
+          posture7 = 1;
+          posture8 = 0;
           break;
         default:
           posture7 = 0;
@@ -225,12 +225,14 @@ class _VideoPageState extends State<VideoPage> {
 
   /// 上傳影片
   void _uploadVideo() async {
+    debugPrint("Uploading file");
     //// 將影片轉換成 mp4 檔
     XFile video = await _cacheVideoToMp4File(XFile(widget.filePath));
 
     //// 與伺服器進行連接
     var server = server_api.Server(); // 建立伺服器
-    String request = await server.uploadToServer(video.path); // 上傳檔案至伺服器
+    String request = await server.uploadFile(video.path); // 上傳檔案至伺服器
+    debugPrint("Finish Uploading file");
     Map<String, dynamic> jsonRequest = jsonDecode(request); // 解碼伺服器回應
 
     _updateView(jsonRequest); // 更新介面
@@ -350,10 +352,10 @@ class _VideoPageState extends State<VideoPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(startImgPath, width: 150, height: 150),
+                        Image.asset(startImgPath, width: 100, height: 100),
                         Image.asset('assets/picture/LHC/ginto1.png',
                             width: 50, height: 50),
-                        Image.asset(endImgPath, width: 150, height: 150),
+                        Image.asset(endImgPath, width: 100, height: 100),
                       ],
                     ),
                     const SizedBox(height: 15),
@@ -484,7 +486,7 @@ class _VideoPageState extends State<VideoPage> {
                       backgroundColor: WidgetStateProperty.all<Color>(
                           const Color(0xFF8EC0E4)),
                       minimumSize: WidgetStateProperty.all<Size>(
-                          const Size(170, 50)), // 調整按鈕的最小尺寸
+                          const Size(130, 50)), // 調整按鈕的最小尺寸
                     ),
                     child: const Text(
                       'Re-record',
@@ -497,7 +499,6 @@ class _VideoPageState extends State<VideoPage> {
                       const EdgeInsets.only(bottom: 20, left: 10), // 調整按鈕間距
                   child: ElevatedButton(
                     onPressed: () {
-                      totalbodyposture = 13;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -513,7 +514,7 @@ class _VideoPageState extends State<VideoPage> {
                       backgroundColor: WidgetStateProperty.all<Color>(
                           const Color(0xFF8EC0E4)),
                       minimumSize: WidgetStateProperty.all<Size>(
-                          const Size(170, 50)), // 調整按鈕的最小尺寸
+                          const Size(130, 50)), // 調整按鈕的最小尺寸
                     ),
                     child: const Text(
                       'Save',
