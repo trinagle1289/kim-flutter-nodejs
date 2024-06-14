@@ -1074,24 +1074,24 @@ class LhcPoseListAnalyzer:
         ]
         # 軀幹扭轉/側傾的分數
         if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[0] = 1
-        elif frequency_lst is Frequency.OCCASIONALLY:
             extra_score_lst[0] = 3
+        elif frequency_lst is Frequency.OCCASIONALLY:
+            extra_score_lst[0] = 1
         # 手或重心遠離身體的分數
-        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[0] = 1
+        if frequency_lst[1] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[1] = 3
         elif frequency_lst is Frequency.OCCASIONALLY:
-            extra_score_lst[0] = 3
+            extra_score_lst[1] = 1
         # 手臂抬舉，手的水平位於手肘與肩膀之間的分數
-        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[0] = 0.5
+        if frequency_lst[2] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[2] = 1
         elif frequency_lst is Frequency.OCCASIONALLY:
-            extra_score_lst[0] = 1
+            extra_score_lst[2] = 0.5
         # 手高過肩膀的分數
-        if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[0] = 1
+        if frequency_lst[3] is Frequency.FREQUENTLY_OR_CONSTANTLY:
+            extra_score_lst[3] = 2
         elif frequency_lst is Frequency.OCCASIONALLY:
-            extra_score_lst[0] = 2
+            extra_score_lst[3] = 1
         score = extra_score_lst.sum()  # 設定額外加分的總和分數
         # 如果總和大於 6，分數則訂為6
         if score > 6:

@@ -6,7 +6,8 @@
 # In[ ]:
 
 
-HOST = "127.0.0.1"
+# HOST = "127.0.0.1"
+HOST = "0.0.0.0"
 PORT = 8022
 SAVED_VIDEO_PATH = "video_in.mp4"
 
@@ -131,8 +132,8 @@ def server_api(video_id: str):
     # 設定回應資訊
     response = jsonify(response_data)
 
-    # 清除暫存資料
-    shutil.rmtree(str(saved_path.parent))
+    # # 清除暫存資料
+    # shutil.rmtree(str(saved_path.parent))
 
     return response
 
