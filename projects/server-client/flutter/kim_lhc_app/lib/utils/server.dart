@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 
 class Server {
-  /// 伺服器 IP(包含通訊埠)
-  var ip = "10.0.2.2:8022"; // Android 到本地開發機器的 IP
-  /// 伺服器用於分析檔案的路徑
-  var analyzeFilePath = "/analyze/test_video"; // 需要將資料上傳至相應路徑才可順利運行
+  /// 伺服器 IP(包含通訊埠)[預設為 Android 到本地開發機器的 IP]
+  var ip = "10.0.2.2:8022";
+
+  /// 伺服器用於分析檔案的路徑(需要將資料上傳至相應路徑才可順利運行)
+  var analyzeFilePath = "/analyze/test_video";
 
   /// 設定伺服器 IP 和傳輸檔案路徑
   Server({String? ip, String? analyzeFilePath}) {
@@ -20,8 +21,8 @@ class Server {
     }
   }
 
-  /// 上傳檔案到伺服器
-  Future<String> uploadToServer(String filePath) async {
+  /// 上傳檔案
+  Future<String> uploadFile(String filePath) async {
     // 預設回傳結果
     var result = """{
         "video id": "null",
@@ -34,7 +35,7 @@ class Server {
         "pose score": "-1",
         "extra score": "-1",
         "total score": "-1",
-    }"""; 
+    }""";
     var file = XFile(filePath); // 影片檔
 
     // dio 物件設定
