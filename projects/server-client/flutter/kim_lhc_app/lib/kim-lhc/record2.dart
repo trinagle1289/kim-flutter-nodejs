@@ -4,10 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:video_compress_plus/video_compress_plus.dart';
 
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
@@ -206,7 +203,7 @@ class _VideoPageState extends State<VideoPage> {
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
 
     //// 與伺服器進行連接
-    var server = server_api.Server(); // 建立伺服器
+    var server = server_api.Server(ip: "192.168.0.16"); // 建立伺服器
     String request = await server.uploadFile(video.path); // 上傳檔案至伺服器
     debugPrint("Finish Uploading file");
     Map<String, dynamic> jsonRequest = jsonDecode(request); // 解碼伺服器回應
