@@ -71,6 +71,7 @@ class _CameraPageState extends State<CameraPage> {
       // 停止錄影並儲存檔案
       var video = await _cameraController.stopVideoRecording();
       setState(() => _isRecording = false);
+      debugPrint("Camera video Path: ${video.path}");
 
       // 切換畫面
       final route = MaterialPageRoute(

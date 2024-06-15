@@ -203,7 +203,7 @@ class _VideoPageState extends State<VideoPage> {
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
 
     //// 與伺服器進行連接
-    var server = server_api.Server(ip: "192.168.0.16"); // 建立伺服器
+    var server = server_api.Server(); // 建立伺服器
     String request = await server.uploadFile(video.path); // 上傳檔案至伺服器
     debugPrint("Finish Uploading file");
     Map<String, dynamic> jsonRequest = jsonDecode(request); // 解碼伺服器回應
