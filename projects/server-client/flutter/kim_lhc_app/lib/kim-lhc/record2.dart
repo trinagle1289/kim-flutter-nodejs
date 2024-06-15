@@ -11,6 +11,7 @@ import 'package:video_compress_plus/video_compress_plus.dart';
 
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
+import 'package:kim_lhc_app/utils/utils.dart' as utils;
 import 'package:kim_lhc_app/utils/server.dart' as server_api;
 
 // 姿勢圖片路徑
@@ -77,31 +78,6 @@ class _VideoPageState extends State<VideoPage> {
   void dispose() {
     _videoPlayerController.dispose();
     super.dispose();
-  }
-
-  /// 複製檔案至暫存資料夾
-  Future<File> _copyFileToTempDir(String filePath, String newFileName) async {
-    // 暫存資料夾路徑
-    Directory? cacheDir = await getDownloadsDirectory();
-    // 暫存檔案路徑
-    String cacheFilePath = path.join(cacheDir!.path, newFileName);
-    // 複製檔案至暫存資料夾
-    File cacheFile = File(filePath).copySync(cacheFilePath);
-    return cacheFile;
-  }
-
-  /// 暫存影片轉換成 Mp4 檔案
-  Future<XFile> _cacheVideoToMp4File(XFile video) async {
-    // 移動檔案至暫存資料夾
-    File cacheFile = await _copyFileToTempDir(video.path, "${video.name}.mp4");
-    // 將暫存檔案轉換成 mp4 檔
-    MediaInfo? info = await VideoCompress.compressVideo(cacheFile.path,
-        quality: VideoQuality.DefaultQuality, deleteOrigin: false);
-
-    cacheFile.deleteSync(); // 刪除暫存檔
-    XFile mp4File = XFile(info!.path!); // 設定輸出資料
-
-    return mp4File;
   }
 
   //// 更新介面
@@ -227,7 +203,7 @@ class _VideoPageState extends State<VideoPage> {
   void _uploadVideo() async {
     debugPrint("Uploading file");
     //// 將影片轉換成 mp4 檔
-    XFile video = await _cacheVideoToMp4File(XFile(widget.filePath));
+    XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
 
     //// 與伺服器進行連接
     var server = server_api.Server(); // 建立伺服器
