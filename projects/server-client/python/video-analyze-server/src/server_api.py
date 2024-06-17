@@ -29,10 +29,10 @@ from mediapipe.tasks.python.vision.pose_landmarker import (
 
 if __name__ == "__main__":
     from mediapipe_lib.base import LhcPoseListAnalyzer
-    MODEL_PTH = "../model/BlazePose/pose_landmarker_full.task"
+    MODEL_PTH = "../models/BlazePose/pose_landmarker_full.task"
 else:
     from src.mediapipe_lib.base import LhcPoseListAnalyzer
-    MODEL_PTH = "./model/BlazePose/pose_landmarker_full.task"
+    MODEL_PTH = "./models/BlazePose/pose_landmarker_full.task"
 
 
 # ### 初始設定
