@@ -1,7 +1,15 @@
 # python=3.11
-matplotlib
+
+# for ai
 mediapipe
 numpy
+
+# for viewing data
+matplotlib
+
+# for server
+flask
+flask_cors
 
 # for dev
 jupyter
