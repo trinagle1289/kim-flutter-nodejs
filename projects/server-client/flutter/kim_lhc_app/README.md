@@ -12,6 +12,13 @@
 5. path_provider: ^2.1.3
 6. video_player: ^2.8.6
 
+## Android 額外設定
+
+- 需要在 `android\app\src\main\AndroidManifest.xml` 中添加下列程式碼，否則編譯成發行版時無法順利進行連線
+  ```xml
+  <uses-permission android:name="android.permission.INTERNET"/>
+  ```
+
 ## 開發套件
 
 1. flutter_launcher_icons: ^0.13.1
