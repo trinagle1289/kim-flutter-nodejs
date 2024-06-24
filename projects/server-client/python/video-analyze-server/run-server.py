@@ -54,6 +54,7 @@ video_name = Path(SAVED_VIDEO_PATH)
 
 @app.route("/", methods=["GET"])
 def index_page():
+    print("Someone connect to index page.")
     help_msg = """
 <code>
 /analyze/video_id 為上傳影片的路徑<br>
@@ -106,6 +107,7 @@ def server_api(video_id: str):
 
     # 儲存檔案
     file.save(str(saved_path))
+    print(f"Save client file to: {saved_path}")
 
     # 回應資料
     response_data = {
@@ -127,7 +129,7 @@ def server_api(video_id: str):
         response_data.update(result)
         print(f"Response Json Data: {response_data}")
     except Exception as e:
-        print(str(e))
+        print(f"Exception: {str(e)}")
 
     # 設定回應資訊
     response = jsonify(response_data)
