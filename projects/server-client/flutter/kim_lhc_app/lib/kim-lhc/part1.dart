@@ -7,6 +7,7 @@ import 'package:kim_lhc_app/kim-lhc/part7.dart';
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/record2.dart';
 import 'package:kim_lhc_app/kim-lhc/result.dart';
+import 'package:kim_lhc_app/kim-lhc/ip_view.dart';
 
 void main() {
   runApp(const LhcPart1());
@@ -35,6 +36,14 @@ void calculateresult() {
   loadResult = selectedOption / 4;
   workResult = selectedOpt / 4;
 }
+
+bool one = false;
+int _onechecked = 0;
+int _twochecked = 0;
+int _threechecked = 0;
+int _fourchecked = 0;
+int _fivechecked = 0;
+int _sixchecked = 0;
 
 class LhcPart1 extends StatelessWidget {
   const LhcPart1({super.key});
@@ -76,6 +85,24 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
         centerTitle: true, // 標題居中
+        ///添加Menu 來改變IP
+        actions: [
+          PopupMenuButton<int>(
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 1, child: Text("IP Page")),
+            ],
+            onSelected: (value) {
+              switch (value) {
+                case 1:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const IpViewApp()),
+                  );
+                  break;
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -89,23 +116,25 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(height: 30),
             // 第一個選項
             TextOption(
-              text: '1. Effective load weight',
+              text: '1. Effective Load Weight',
               points: '$part2Score',
               onTap: () {
+                _onechecked = -1;
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LhcPart2()),
                 );
-                debugPrint('Effective load weight tapped');
+                debugPrint('Effective Load Weight tapped');
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // 第二個選項
             TextOption(
-              text: '2. Total body posture',
-              points: '$totalbodyposture',
+              text: '2. Total Body Posture',
+              points: totalbodyposture2,
               //points: '0',
               onTap: () {
+                _twochecked = -1;
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Record1()),
@@ -113,12 +142,13 @@ class MyHomePage extends StatelessWidget {
                 debugPrint('Total body posture tapped');
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // 第三個選項
             TextOption(
               text: '3. Frequency',
-              points: formatTimeLevel(timeLevel),
+              points: formatTimeLevel(timeLevel - 1),
               onTap: () {
+                _threechecked = -1;
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Two()),
@@ -126,12 +156,13 @@ class MyHomePage extends StatelessWidget {
                 debugPrint('Frequency tapped');
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // 第四個選項
             TextOption(
-              text: '4. Load handling conditions',
+              text: '4. Load Handling Conditions',
               points: '$selectedOption',
               onTap: () {
+                _fourchecked = -1;
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LhcPart5()),
@@ -139,12 +170,13 @@ class MyHomePage extends StatelessWidget {
                 debugPrint('Load handling conditions tapped');
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // 第五個選項
             TextOption(
-              text: '5. Unfavorable working conditions',
+              text: '5. Unfavorable Working Conditions',
               points: '$part6Score',
               onTap: () {
+                _fivechecked = -1;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -153,12 +185,13 @@ class MyHomePage extends StatelessWidget {
                 debugPrint('Unfavorable working conditions tapped');
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // 第六個選項
             TextOption(
-              text: '6. Work organization',
+              text: '6. Work Organization',
               points: '$selectedOpt',
               onTap: () {
+                _sixchecked = -1;
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LhcPart7()),
@@ -166,28 +199,35 @@ class MyHomePage extends StatelessWidget {
                 debugPrint('Work organization / temporal distribution tapped');
               },
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 70),
             // 底部按鈕
             Container(
               margin: const EdgeInsets.only(bottom: 10.0),
               child: ElevatedButton(
-                onPressed: () {
-                  calculateresult();
-                  debugPrint('$finalScore');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Result()),
-                  );
-                  debugPrint('Button tapped');
-                },
+                onPressed: _onechecked.isNegative &&
+                        _twochecked.isNegative &&
+                        _threechecked.isNegative &&
+                        _fourchecked.isNegative &&
+                        _fivechecked.isNegative &&
+                        _sixchecked.isNegative
+                    ? () {
+                        calculateresult();
+                        debugPrint('$finalScore');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Result()),
+                        );
+                        debugPrint('Button tapped');
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  textStyle: const TextStyle(
-                    fontSize: 20, // 調整按鈕文字大小
-                    fontWeight: FontWeight.bold, // 設置字體加粗
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8, horizontal: 40), // 調整按鈕內邊距
-                  backgroundColor: const Color(0xFF8EC0E4), // 設置按鈕背景色
+                  backgroundColor: const Color(0xFF8EC0E4), // 設置按鈕背景顏色
+                  disabledBackgroundColor: Colors.grey[300], // 設置按鈕被禁用時的顏色
+                  minimumSize: const Size(170, 50), // 設置按鈕的最小尺寸
                 ),
                 child: const Text(
                   'Result',

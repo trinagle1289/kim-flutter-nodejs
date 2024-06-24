@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 //1
-void lhc_result1 (BuildContext context){
+void lhcResult1 (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -19,7 +19,7 @@ void lhc_result1 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: const Text('關閉', style: TextStyle(color: Colors.black),),
           ),
         ],
       );
@@ -28,7 +28,7 @@ void lhc_result1 (BuildContext context){
 }
 
 //2
-void lhc_result2 (BuildContext context){
+void lhcResult2 (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -46,7 +46,7 @@ void lhc_result2 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: const Text('關閉', style: TextStyle(color: Colors.black),),
           ),
         ],
       );
@@ -55,7 +55,7 @@ void lhc_result2 (BuildContext context){
 }
 
 //3
-void lhc_result3 (BuildContext context){
+void lhcResult3 (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -73,7 +73,7 @@ void lhc_result3 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: const Text('關閉', style: TextStyle(color: Colors.black),),
           ),
         ],
       );
@@ -82,7 +82,7 @@ void lhc_result3 (BuildContext context){
 }
 
 //4
-void lhc_result4 (BuildContext context){
+void lhcResult4 (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -100,7 +100,7 @@ void lhc_result4 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: const Text('關閉', style: TextStyle(color: Colors.black),),
           ),
         ],
       );
@@ -109,7 +109,7 @@ void lhc_result4 (BuildContext context){
 }
 
 //5
-void lhc_result5 (BuildContext context){
+void lhcResult5 (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -127,7 +127,7 @@ void lhc_result5 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: const Text('關閉', style: TextStyle(color: Colors.black),),
           ),
         ],
       );
@@ -136,7 +136,7 @@ void lhc_result5 (BuildContext context){
 }
 
 //6
-void lhc_result6 (BuildContext context){
+void lhcResult6 (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -154,7 +154,7 @@ void lhc_result6 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: const Text('關閉', style: TextStyle(color: Colors.black),),
           ),
         ],
       );

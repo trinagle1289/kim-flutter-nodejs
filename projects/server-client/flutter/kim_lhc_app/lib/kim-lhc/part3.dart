@@ -46,31 +46,31 @@ class _Part2State extends State<Two> {
 
   double frquency(int value) {
     if (value <= 5) {
-      return 1.0;
-    } else if (value <= 20) {
-      return 1.5;
-    } else if (value <= 50) {
       return 2.0;
-    } else if (value <= 100) {
+    } else if (value <= 20) {
       return 2.5;
-    } else if (value <= 150) {
+    } else if (value <= 50) {
       return 3.0;
-    } else if (value <= 220) {
+    } else if (value <= 100) {
       return 3.5;
-    } else if (value <= 300) {
+    } else if (value <= 150) {
       return 4.0;
-    } else if (value <= 500) {
+    } else if (value <= 220) {
+      return 4.5;
+    } else if (value <= 300) {
       return 5.0;
-    } else if (value <= 750) {
+    } else if (value <= 500) {
       return 6.0;
-    } else if (value <= 1000) {
+    } else if (value <= 750) {
       return 7.0;
-    } else if (value <= 1500) {
+    } else if (value <= 1000) {
       return 8.0;
-    } else if (value <= 2000) {
+    } else if (value <= 1500) {
       return 9.0;
-    } else {
+    } else if (value <= 2000) {
       return 10.0;
+    } else {
+      return 11.0;
     }
   }
 
@@ -101,7 +101,7 @@ class _Part2State extends State<Two> {
               child: IconButton(
                 icon: const Icon(Icons.help_outline, color: Colors.black),
                 onPressed: () {
-                  lhc_part2_text(context);
+                  lhcPart2Text(context);
                 },
               ),
             ),
@@ -313,14 +313,14 @@ class _Part2State extends State<Two> {
                 ),
               ),
               Text(
-                ' ${formatTimeLevel(timeLevel)}',
+                ' ${formatTimeLevel(timeLevel - 1)}',
                 style: const TextStyle(
                   fontSize: 20,
                   color: Colors.blue,
                 ),
               ),
               const Text(
-                ' point ',
+                ' points ',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,

@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
             text: TextSpan(
               children: <TextSpan>[
                 const TextSpan(
-                    text: 'Effective load weight:',
+                    text: 'Effective Load Weight:',
                     style: TextStyle(
                         fontSize: 20.0,
                         color: Colors.black,
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         color: Colors.blue,
                         fontWeight: FontWeight.bold)),
                 const TextSpan(
-                    text: 'point',
+                    text: 'points',
                     style: TextStyle(
                         fontSize: 20.0,
                         color: Colors.black,
@@ -67,9 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-
-      body: Column(
-        //ListView(滑動螢幕)，Column(垂直排列)
+      body: ListView(
+        // ListView(滑動螢幕)，Column(垂直排列)
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -81,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: BoxDecoration(
                     // 背景框
                     color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
-                    borderRadius: BorderRadius.circular(20), // 圆角邊角
+                    borderRadius: BorderRadius.circular(20), // 圓角邊角
                     border: Border.all(
                       color: Colors.black, // 邊框颜色
                       width: 2.5, // 邊框宽度
@@ -115,11 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                     decoration: BoxDecoration(
                                       border: _gender == 'Male'
                                           ? Border.all(
-                                              color: Colors.blue, width: 2.0)
+                                          color: Colors.blue, width: 2.0)
                                           : null,
                                     ),
                                     child: Image.asset(
-                                        'assets/picture/LHC/man.png'), //https://www.flaticon.com/free-icons/people
+                                        'assets/picture/LHC/man.png'), // https://www.flaticon.com/free-icons/people
                                   ),
                                 ),
                                 Text(
@@ -152,11 +151,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                     decoration: BoxDecoration(
                                       border: _gender == 'Female'
                                           ? Border.all(
-                                              color: Colors.blue, width: 2.0)
+                                          color: Colors.blue, width: 2.0)
                                           : null,
                                     ),
                                     child: Image.asset(
-                                        'assets/picture/LHC/woman.png'), //https://www.flaticon.com/free-icons/female
+                                        'assets/picture/LHC/woman.png'), // https://www.flaticon.com/free-icons/female
                                   ),
                                 ),
                                 Text(
@@ -184,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: BoxDecoration(
                     // 背景框
                     color: const Color(0xFFF0F5F9), // 背景色
-                    borderRadius: BorderRadius.circular(20), // 圆角邊角
+                    borderRadius: BorderRadius.circular(20), // 圓角邊角
                     border: Border.all(
                       color: Colors.black, // 邊框颜色
                       width: 2.5, // 邊框宽度
@@ -197,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              'Effective load weight',
+                              'Effective Load Weight',
                               style: TextStyle(
                                 fontSize: 20.0,
                                 color: Colors.black,
@@ -209,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 icon: const Icon(Icons.help_outline),
                                 color: Colors.black,
                                 onPressed: () {
-                                  lhc_part2_text(context);
+                                  lhcPart2Text(context);
                                 },
                               ),
                             ),
@@ -230,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Text(
                               part2SliderValue > 40
                                   ? 'weight: > 40 kg'
-                                  : 'weight: ${part2SliderValue.toStringAsFixed(0)} kg',
+                                  : 'Weight: ${part2SliderValue.toStringAsFixed(0)} kg',
                               style: const TextStyle(
                                   fontSize: 20.0, color: Colors.white),
                             ),
@@ -280,8 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     icon: const Icon(Icons.remove),
                                     onPressed: () {
                                       setState(() {
-                                        if (_gender.isNotEmpty &&
-                                            part2SliderValue > 3) {
+                                        if (part2SliderValue > 3) {
                                           part2SliderValue -= 1;
                                           updateScore();
                                         }
@@ -304,8 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     icon: const Icon(Icons.add),
                                     onPressed: () {
                                       setState(() {
-                                        if (_gender.isNotEmpty &&
-                                            part2SliderValue <= 40) {
+                                        if (part2SliderValue <= 40) {
                                           part2SliderValue += 1;
                                           updateScore();
                                         }
@@ -321,50 +318,37 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-
-      //save按鈕
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 20.0), //左上右下
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: _gender.isNotEmpty
-                  ? () {
+                // Save按鈕
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _gender.isNotEmpty
+                        ? () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LhcPart1()),
                       );
                     }
-                  : null,
-              style: ButtonStyle(
-                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      backgroundColor: const Color(0xFF8EC0E4), // 設置按鈕背景顏色
+                      disabledBackgroundColor: Colors.grey[300], // 設置按鈕被禁用時的顏色
+                      minimumSize: const Size(170, 50), // 設置按鈕的最小尺寸
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(fontSize: 30, color: Colors.white),
+                    ),
                   ),
                 ),
-                backgroundColor:
-                    WidgetStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(WidgetState.disabled)) {
-                    return Colors.grey[300]!;
-                  }
-                  return const Color(0xFF8EC0E4);
-                }),
-                minimumSize: WidgetStateProperty.all<Size>(const Size(170, 50)),
-              ),
-              child: const Text(
-                'Save',
-                style: TextStyle(fontSize: 30, color: Colors.white),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

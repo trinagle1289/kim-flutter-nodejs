@@ -5,20 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 
 class Server {
+  static final Server _instance = Server._internal();
+  // 將構造函數設為私有
+  Server._internal();
+
+  // 提供一個公共的訪問點
+  static Server get instance => _instance;
+
   /// 伺服器 IP(包含通訊埠)[預設為 Android 到本地開發機器的 IP]
-  var ip = "10.0.2.2:8022";
+  String ip = "10.0.2.2:8022";
+  //var ip ="";
 
   /// 伺服器用於分析檔案的路徑(需要將資料上傳至相應路徑才可順利運行)
   var analyzeFilePath = "/analyze/test_video";
 
-  /// 設定伺服器 IP 和傳輸檔案路徑
-  Server({String? ip, String? analyzeFilePath}) {
-    if (ip != null) {
-      this.ip = ip;
-    }
-    if (analyzeFilePath != null) {
-      this.analyzeFilePath = analyzeFilePath;
-    }
+  /// 更新伺服器 IP
+  void updateServerIP(String newIP) {
+    ip = newIP;
+    debugPrint('已成功更新伺服器 IP 為 $ip');
   }
 
   /// 上傳檔案

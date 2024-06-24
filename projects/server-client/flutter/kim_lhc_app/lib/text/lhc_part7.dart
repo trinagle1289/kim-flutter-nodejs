@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void lhc_part7(BuildContext context) {
+void lhcPart7(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -12,11 +12,11 @@ void lhc_part7(BuildContext context) {
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: SingleChildScrollView(
-          child: const Text(
+        content: const SingleChildScrollView(
+          child: Text(
             '"Good: Load is handled with both hands and symmetrically.\n'
-                'Restricted: Load is handled temporarily with one hand and/or asymmetrically, uneven load distribution between the two hands.\n'
-                'Unfavorable: Load is handled predominantly with one hand or unstable load centre.',
+            'Restricted: Load is handled temporarily with one hand and/or asymmetrically, uneven load distribution between the two hands.\n'
+            'Unfavorable: Load is handled predominantly with one hand or unstable load centre.',
             style: TextStyle(
               color: Colors.blue, // 文字顏色
               fontSize: 24.0, // 文字大小
@@ -29,7 +29,7 @@ void lhc_part7(BuildContext context) {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text(
+            child: const Text(
               '關閉',
               style: TextStyle(color: Colors.black),
             ),

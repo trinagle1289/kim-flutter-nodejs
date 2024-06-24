@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:format/format.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
@@ -48,6 +47,11 @@ int bodyposture = -1;
 //int totalbodyposture = sumofposture + bodyposture;
 /// 身體姿勢總分數
 double totalbodyposture = 0;
+String totalbodyposture2 =
+    totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+String sumofposture2 =
+    sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+String posture5_2 = posture5.toString().replaceAll(RegExp(r"([.]0$)"), "");
 
 void main() {
   runApp(const Record1());
@@ -63,7 +67,6 @@ class VideoPage extends StatefulWidget {
 
 class _VideoPageState extends State<VideoPage> {
   late VideoPlayerController _videoPlayerController;
-
   @override
   void initState() {
     super.initState();
@@ -84,7 +87,6 @@ class _VideoPageState extends State<VideoPage> {
       bodyposture = int.parse(jsonRequest["pose score"]!); // 姿勢評級分數
       sumofposture = double.parse(jsonRequest["extra score"]!); // 額外加分總分數
       totalbodyposture = double.parse(jsonRequest["total score"]!); // 身體姿勢總分
-
       //// 設定初始和結束姿勢圖片
       switch (jsonRequest["start"]) {
         case "A1":
@@ -182,6 +184,12 @@ class _VideoPageState extends State<VideoPage> {
           posture8 = 0;
           break;
       }
+
+      totalbodyposture2 =
+          totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+      sumofposture2 =
+          sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+      posture5_2 = posture5.toString().replaceAll(RegExp(r"([.]0$)"), "");
     });
   }
 
@@ -191,6 +199,7 @@ class _VideoPageState extends State<VideoPage> {
     _videoPlayerController = VideoPlayerController.file(File(videoPath));
     _videoPlayerController.initialize().then((_) {
       setState(() {});
+      _videoPlayerController.setVolume(0);
       _videoPlayerController.setLooping(true);
       _videoPlayerController.play();
     });
@@ -199,18 +208,19 @@ class _VideoPageState extends State<VideoPage> {
   /// 上傳影片
   void _uploadVideo() async {
     debugPrint("Uploading file");
-    //// 將影片轉換成 mp4 檔
+
+    var server = server_api.Server.instance; // 取得伺服器物件
+    debugPrint('IP Address: ${server.ip}'); // 打印當前 IP 地址
+
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
-
-    //// 與伺服器進行連接
-    var server = server_api.Server(); // 建立伺服器
-    String request = await server.uploadFile(video.path); // 上傳檔案至伺服器
+    String request = await server.uploadFile(video.path);
     debugPrint("Finish Uploading file");
-    Map<String, dynamic> jsonRequest = jsonDecode(request); // 解碼伺服器回應
+    Map<String, dynamic> jsonRequest = jsonDecode(request);
 
-    _updateView(jsonRequest); // 更新介面
+    //// 更新介面
+    _updateView(jsonRequest);
 
-    // 刪除影片
+    //// 刪除影片
     File(video.path).deleteSync();
   }
 
@@ -225,19 +235,19 @@ class _VideoPageState extends State<VideoPage> {
             text: TextSpan(
               children: <TextSpan>[
                 const TextSpan(
-                    text: 'Total body posture:',
+                    text: 'Total body posture : ',
                     style: TextStyle(
                         fontSize: 20.0,
                         color: Colors.black,
                         fontWeight: FontWeight.bold)),
                 TextSpan(
-                    text: ' {0:.1f} '.format(totalbodyposture),
+                    text: totalbodyposture2,
                     style: const TextStyle(
                         fontSize: 20.0,
                         color: Colors.blue,
                         fontWeight: FontWeight.bold)),
                 const TextSpan(
-                    text: 'point',
+                    text: ' points',
                     style: TextStyle(
                         fontSize: 20.0,
                         color: Colors.black,
@@ -300,7 +310,7 @@ class _VideoPageState extends State<VideoPage> {
                         text: TextSpan(
                           children: <TextSpan>[
                             const TextSpan(
-                                text: 'Body posture:',
+                                text: 'Body posture : ',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: Colors.black,
@@ -312,7 +322,7 @@ class _VideoPageState extends State<VideoPage> {
                                     color: Colors.blue,
                                     fontWeight: FontWeight.bold)),
                             const TextSpan(
-                                text: 'point',
+                                text: 'points',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: Colors.black,
@@ -362,7 +372,7 @@ class _VideoPageState extends State<VideoPage> {
                                   style: TextStyle(fontSize: 20)))),
                       DataColumn(
                           label: SizedBox(
-                              width: 50, child: Text(' $sumofposture Points'))),
+                              width: 55, child: Text('$sumofposture2 Points'))),
                     ],
                     rows: [
                       DataRow(cells: [
@@ -370,64 +380,64 @@ class _VideoPageState extends State<VideoPage> {
                             width: 250,
                             child: Text(
                                 'Occasional twisting and/or lateral inclination'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture1'))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture1'))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Frequent/constant twisting and/or lateral inclination'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture2'))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture2'))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Load center occasionally at a distance from the body'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture3'))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture3'))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Load center frequently/constantly at a distance from the body'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture4 '))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture4 '))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands occasionally between elbow and shoulder'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture5 '))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture5_2 '))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands frequently/constantly between elbow and shoulder'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture6 '))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture6 '))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands occasionally above shoulder height'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture7'))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture7'))),
                       ]),
                       DataRow(cells: [
                         const DataCell(SizedBox(
                             width: 250,
                             child: Text(
                                 'Hands frequently/constantly above shoulder height'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('  +$posture8'))),
+                        DataCell(SizedBox(
+                            width: 50, child: Text('     +$posture8'))),
                       ]),
                     ],
                   ),

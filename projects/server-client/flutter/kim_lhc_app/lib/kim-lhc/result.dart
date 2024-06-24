@@ -66,32 +66,32 @@ class MyHomePage extends StatelessWidget {
       {
         'text': ' Unfavorable working conditions',
         'score': (unfavorableResult * 100).toInt(),
-        'callback': lhc_result1
+        'callback': lhcResult1
       },
       {
         'text': ' Frequency',
         'score': (frequencyResult * 100).toInt(),
-        'callback': lhc_result2
+        'callback': lhcResult2
       },
       {
         'text': ' Total body posture',
         'score': (totalResult * 100).toInt(),
-        'callback': lhc_result3
+        'callback': lhcResult3
       },
       {
         'text': ' Effective load weight',
         'score': (effectiveResult * 100).toInt(),
-        'callback': lhc_result4
+        'callback': lhcResult4
       },
       {
         'text': ' Load handling conditions',
         'score': (loadResult * 100).toInt(),
-        'callback': lhc_result5
+        'callback': lhcResult5
       },
       {
         'text': ' Work organization ',
         'score': (workResult * 100).toInt(),
-        'callback': lhc_result6
+        'callback': lhcResult6
       },
     ];
 
@@ -192,7 +192,7 @@ class MyHomePage extends StatelessWidget {
                                           color: Colors.blue,
                                           fontWeight: FontWeight.bold)),
                                   const TextSpan(
-                                      text: 'point',
+                                      text: 'points',
                                       style: TextStyle(
                                           fontSize: 20.0,
                                           color: Colors.black,
@@ -420,7 +420,7 @@ class MyHomePage extends StatelessWidget {
                               const Size(170, 50)), // 調整按鈕的最小尺寸
                         ),
                         child: const Text(
-                          'Download',
+                          'Finish',
                           style: TextStyle(fontSize: 27, color: Colors.white),
                         ),
                       ),

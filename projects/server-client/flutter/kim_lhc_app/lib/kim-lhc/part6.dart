@@ -253,9 +253,9 @@ class _MyHomePageState extends State<MyHomePage> {
         RichText(
           text: TextSpan(
             children: <TextSpan>[
-              const TextSpan(text: 'Unfavorable working conditions:', style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold, color: Colors.black)),
+              const TextSpan(text: 'Unfavorable Working Conditions:', style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold, color: Colors.black)),
               TextSpan(text: ' $part6Score ', style: const TextStyle(fontSize: 20.0, color: Colors.blueAccent, fontWeight: FontWeight.bold)),
-              const TextSpan(text: 'point', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black)),
+              const TextSpan(text: 'points', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black)),
             ],
           ),
         ),
@@ -372,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: IconButton(
                                   icon: const Icon(Icons.help_outline, color: Colors.black),
                                   onPressed: () {
-                                    Loads(context);
+                                    loads(context);
                                   },
                                 ),
                               ),
@@ -435,7 +435,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: IconButton(
                                   icon: const Icon(Icons.help_outline, color: Colors.black),
                                   onPressed: () {
-                                    Unfavorable(context);
+                                    unfavorable(context);
                                   },
                                 ),
                               ),
@@ -497,7 +497,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: IconButton(
                                   icon: const Icon(Icons.help_outline, color: Colors.black),
                                   onPressed: () {
-                                    Spatial(context);
+                                    spatial(context);
                                   },
                                 ),
                               ),
@@ -560,7 +560,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: IconButton(
                                   icon: const Icon(Icons.help_outline, color: Colors.black),
                                   onPressed: () {
-                                    Additional(context);
+                                    additional(context);
                                   },
                                 ),
                               ),
@@ -622,7 +622,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: IconButton(
                                   icon: const Icon(Icons.help_outline, color: Colors.black),
                                   onPressed: () {
-                                    Difficulties(context);
+                                    difficulties(context);
                                   },
                                 ),
                               ),

@@ -73,6 +73,9 @@ class _SelectionPageState extends State<SelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
@@ -84,7 +87,7 @@ class _SelectionPageState extends State<SelectionPage> {
             text: TextSpan(
               children: [
                 const TextSpan(
-                  text: 'Work organization / temporal distribution: ',
+                  text: 'Work Organization / Temporal Distribution: ',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -117,7 +120,7 @@ class _SelectionPageState extends State<SelectionPage> {
                 icon: const Icon(Icons.help_outline),
                 color: Colors.black,
                 onPressed: () {
-                  lhc_part7(context);
+                  lhcPart7(context);
                 },
               ),
             ),
@@ -140,8 +143,8 @@ class _SelectionPageState extends State<SelectionPage> {
               Expanded(
                 child: Center(
                   child: Container(
-                    width: 500.0,
-                    height: 180.0,
+                    width: screenWidth * 0.9,
+                    height: screenHeight* 0.25,
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
@@ -162,7 +165,7 @@ class _SelectionPageState extends State<SelectionPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 150.0), // 白色框與按鈕之間的距離
+              const SizedBox(height: 20.0), // 白色框與按鈕之間的距離
             ],
           ),
         ],

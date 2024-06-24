@@ -78,6 +78,9 @@ class _SelectionPageState extends State<SelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFC9D6DE),
@@ -85,7 +88,7 @@ class _SelectionPageState extends State<SelectionPage> {
           text: TextSpan(
             children: [
               const TextSpan(
-                text: 'Load handling conditions: ',
+                text: 'Load Handling Conditions: ',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -129,8 +132,8 @@ class _SelectionPageState extends State<SelectionPage> {
               Expanded(
                 child: Center(
                   child: Container(
-                    width: 500.0,
-                    height: 300.0,
+                    width: screenWidth * 0.95,
+                    height: screenHeight * 0.27,
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
@@ -142,16 +145,16 @@ class _SelectionPageState extends State<SelectionPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _buildOption(_option1, 'Use both hands symmetrically', 20.0),
-                        const SizedBox(height: 30.0),
+                        const SizedBox(height: 10.0),
                         _buildOption(_option2, 'Temporarily use one hand', 20.0),
-                        const SizedBox(height: 30.0),
+                        const SizedBox(height: 10.0),
                         _buildOption(_option3, 'Always use one hand', 20.0),
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 150.0), // 白色框與按鈕之間的距離
+              const SizedBox(height: 90.0), // 白色框與按鈕之間的距離
             ],
           ),
         ],
