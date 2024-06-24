@@ -56,25 +56,28 @@ class _IpInputPageState extends State<IpInputPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 var ipText = ipController.text;
-                // 測試是否連線
-                Dio().getUri(Uri.http(ipText)).then(
-                  (onValue) {
-                    // 顯示 Debug 資訊
-                    debugPrint("Debug Connection: ${onValue.toString()}");
-                    // 更新伺服器IP
-                    Server.instance.updateServerIP(ipText);
-                    debugPrint('ip_view 的 IP 已更新為: ${Server.instance.ip}');
-                  },
-                ).catchError((err) {
-                  debugPrint("Connect Server Error: ${err.toString()}");
-                });
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LhcPart1()),
-                );
+                try {
+                  // 更新伺服器IP
+                  Server.instance.updateServerIP(ipText);
+                  debugPrint('ip_view 的 IP 已更新為: ${Server.instance.ip}');
+                  // 測試是否連線
+                  var response = await Dio().getUri(Uri.http(ipText));
+                  // 顯示 Debug 資訊
+                  debugPrint("Debug Connection: ${response.toString()}");
+                } catch (e) {
+                  debugPrint("Connect Server Error: ${e.toString()}");
+                } finally {
+                  // 切換介面
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LhcPart1()),
+                    );
+                  }
+                }
               },
               child: const Text('提交'),
             ),
