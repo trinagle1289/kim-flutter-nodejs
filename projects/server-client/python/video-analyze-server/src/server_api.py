@@ -97,9 +97,9 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
     # 手遠離身體的頻率
     extra_2 = str(lhc_analyzer.get_frequency_of_hands_at_a_distance(is_3d).name)
     # 手臂抬舉，手的水平位於手肘與肩膀之間的頻率
-    extra_3 = str(lhc_analyzer.get_frequency_of_hands_above_shoulder(is_3d).name)
+    extra_3 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
     # 手高過肩膀的頻率
-    extra_4 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
+    extra_4 = str(lhc_analyzer.get_frequency_of_hands_above_shoulder(is_3d).name)
 
     # 姿勢評級
     pose_score = str(lhc_analyzer.get_lhc_body_posture_rating_points(is_3d))

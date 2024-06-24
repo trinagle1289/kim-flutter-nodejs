@@ -1063,8 +1063,8 @@ class LhcPoseListAnalyzer:
         Returns:
             float: 額外加分分數
         """
-        score = -1  # 總分數
-        extra_score_lst = np.array([0, 0, 0, 0])  # 額外分數列表
+        score = -1.0  # 總分數
+        extra_score_lst = np.array([0.0, 0.0, 0.0, 0.0])  # 額外分數列表
         # 頻率列表
         frequency_lst = [
             self.get_frequency_of_trunk_is_twisted(get_3d),
@@ -1074,28 +1074,33 @@ class LhcPoseListAnalyzer:
         ]
         # 軀幹扭轉/側傾的分數
         if frequency_lst[0] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[0] = 3
-        elif frequency_lst is Frequency.OCCASIONALLY:
-            extra_score_lst[0] = 1
+            extra_score_lst[0] = 3.0
+        elif frequency_lst[0] is Frequency.OCCASIONALLY:
+            extra_score_lst[0] = 1.0
         # 手或重心遠離身體的分數
         if frequency_lst[1] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[1] = 3
-        elif frequency_lst is Frequency.OCCASIONALLY:
-            extra_score_lst[1] = 1
+            extra_score_lst[1] = 3.0
+        elif frequency_lst[1] is Frequency.OCCASIONALLY:
+            extra_score_lst[1] = 1.0
         # 手臂抬舉，手的水平位於手肘與肩膀之間的分數
         if frequency_lst[2] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[2] = 1
-        elif frequency_lst is Frequency.OCCASIONALLY:
+            extra_score_lst[2] = 1.0
+        elif frequency_lst[2] is Frequency.OCCASIONALLY:
             extra_score_lst[2] = 0.5
         # 手高過肩膀的分數
         if frequency_lst[3] is Frequency.FREQUENTLY_OR_CONSTANTLY:
-            extra_score_lst[3] = 2
-        elif frequency_lst is Frequency.OCCASIONALLY:
-            extra_score_lst[3] = 1
-        score = extra_score_lst.sum()  # 設定額外加分的總和分數
+            extra_score_lst[3] = 2.0
+        elif frequency_lst[3] is Frequency.OCCASIONALLY:
+            extra_score_lst[3] = 1.0
+
+        # 設定額外加分的總和分數
+        score = extra_score_lst.sum()
         # 如果總和大於 6，分數則訂為6
-        if score > 6:
-            score = 6
+        if score > 6.0:
+            score = 6.0
+
+        print(f"extra scores: {extra_score_lst}")
+        print(f"sum of extra scores: {score}")
 
         return score
 
