@@ -14,10 +14,9 @@ class Server {
 
   /// 伺服器 IP(包含通訊埠)[預設為 Android 到本地開發機器的 IP]
   String ip = "10.0.2.2:8022";
-  //var ip ="";
 
   /// 伺服器用於分析檔案的路徑(需要將資料上傳至相應路徑才可順利運行)
-  var analyzeFilePath = "/analyze/test_video";
+  String analyzeFilePath = "/analyze/test_video";
 
   /// 更新伺服器 IP
   void updateServerIP(String newIP) {
@@ -50,28 +49,25 @@ class Server {
     var uploader = ChunkedUploader(dio); // 上傳器
 
     // 傳輸資料
-    int reloadTimes = 10; // 設定重新傳輸資料的次數
+    int reloadTimes = 5; // 設定重新傳輸資料的次數
     for (var i = 0; i < reloadTimes; i++) {
       try {
         // 傳輸資料並取得伺服器的回應
-        final response = await uploader.uploadUsingFilePath(
-          filePath: file.path,
-          fileName: file.name,
-          path: analyzeFilePath,
-          onUploadProgress: (p0) {
-            debugPrint("upload progress: {0:.2f}%".format(p0 * 100));
-          },
-        );
+        var response = await uploader.uploadUsingFilePath(
+            filePath: file.path,
+            fileName: file.name,
+            path: analyzeFilePath,
+            onUploadProgress: (p0) =>
+                debugPrint("upload progress: {0:.2f}%".format(p0 * 100)));
         result = response.toString(); // 取得回應結果
         break; // 成功傳輸後，就離開迴圈
       } catch (e) {
         if (i + 1 < reloadTimes) {
-          // 有時會出現斷線的狀況，會等待 1 秒後才會重新傳輸
-          debugPrint("Error: ${e.toString()}");
-          await Future.delayed(const Duration(seconds: 1));
+          // 有時會出現斷線的狀況，會等待 500 毫秒後才會重新傳輸
+          debugPrint("Error To Connect Server: ${e.toString()}");
+          await Future.delayed(const Duration(milliseconds: 500));
         } else {
-          // 運行最後一次時，顯示傳輸失敗訊息
-          debugPrint("Upload Failed...");
+          debugPrint("Upload Failed..."); // 運行最後一次時，顯示傳輸失敗訊息
         }
       }
     }

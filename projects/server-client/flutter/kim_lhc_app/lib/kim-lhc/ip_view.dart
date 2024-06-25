@@ -1,6 +1,7 @@
 // ip_view.dart
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kim_lhc_app/utils/server.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
 
@@ -57,27 +58,24 @@ class _IpInputPageState extends State<IpInputPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                // IP 字串
                 var ipText = ipController.text;
-
-                try {
-                  // 更新伺服器IP
-                  Server.instance.updateServerIP(ipText);
-                  debugPrint('ip_view 的 IP 已更新為: ${Server.instance.ip}');
-                  // 測試是否連線
-                  var response = await Dio().getUri(Uri.http(ipText));
-                  // 顯示 Debug 資訊
-                  debugPrint("Debug Connection: ${response.toString()}");
-                } catch (e) {
+                // 測試連線狀況
+                Dio().getUri(Uri.http(ipText)).then((response) {
+                  debugPrint("Debug response: ${response.toString()}");
+                  Server.instance.updateServerIP(ipText); // 更新伺服器IP
+                  Fluttertoast.showToast(msg: "成功連上伺服器: $ipText");
+                }, onError: (e) {
+                  // 錯誤處理
                   debugPrint("Connect Server Error: ${e.toString()}");
-                } finally {
-                  // 切換介面
-                  if (context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LhcPart1()),
-                    );
-                  }
-                }
+                  Fluttertoast.showToast(msg: "伺服器連線失敗");
+                }).whenComplete(() {
+                  // 結束時切換畫面
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LhcPart1()),
+                  );
+                });
               },
               child: const Text('提交'),
             ),
