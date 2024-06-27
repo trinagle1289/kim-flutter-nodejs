@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              'Effective Load Weight',
+                              '      Effective Load Weight',
                               style: TextStyle(
                                 fontSize: 20.0,
                                 color: Colors.black,

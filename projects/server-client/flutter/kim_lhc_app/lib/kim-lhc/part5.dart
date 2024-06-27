@@ -31,7 +31,6 @@ class SelectionPage extends StatefulWidget {
 }
 
 class _SelectionPageState extends State<SelectionPage> {
-
   final int _option1 = 0; // 新增變數給第一個選項
   final int _option2 = 2; // 新增變數給第二個選項
   final int _option3 = 4; // 新增變數給第三個選項
@@ -56,7 +55,7 @@ class _SelectionPageState extends State<SelectionPage> {
           Container(
             width: 20.0,
             height: 40.0,
-            margin: const EdgeInsets.symmetric(horizontal: 15.0),
+            margin: const EdgeInsets.symmetric(horizontal: 10.0), // 調整間距
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: selectedOption == option ? Colors.blue : Colors.black, width: 2.0),
@@ -66,7 +65,7 @@ class _SelectionPageState extends State<SelectionPage> {
                 ? const Icon(Icons.check, size: 16.0, color: Colors.white)
                 : null,
           ),
-          const SizedBox(width: 10.0),
+          const SizedBox(width: 5.0), // 調整間距
           Text(
             text,
             style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
@@ -137,18 +136,18 @@ class _SelectionPageState extends State<SelectionPage> {
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
-                      border: Border.all(color: Colors.black, width: 4.0),
+                      border: Border.all(color: Colors.black, width: 2.5),
                       color: const Color(0xFFF0F5F9).withOpacity(1),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildOption(_option1, 'Use both hands symmetrically', 19.0),
+                        _buildOption(_option1, 'Use both hands symmetrically', 20.0),
                         const SizedBox(height: 10.0),
-                        _buildOption(_option2, 'Temporarily use one hand', 19.0),
+                        _buildOption(_option2, 'Temporarily use one hand', 20.0),
                         const SizedBox(height: 10.0),
-                        _buildOption(_option3, 'Always use one hand', 19.0),
+                        _buildOption(_option3, 'Always use one hand', 20.0),
                       ],
                     ),
                   ),

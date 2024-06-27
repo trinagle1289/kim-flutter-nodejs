@@ -6,8 +6,8 @@ void lhc_result1 (BuildContext context){
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Detailed information', style: TextStyle(fontSize:28.0, fontWeight: FontWeight.bold), ),
-        content: const Text('Your rating is among the top three. The percentage score is calculated as your score divided by the total possible score.',
+        title: const Text('Information', style: TextStyle(fontSize:28.0, fontWeight: FontWeight.bold), ),
+        content: const Text('These rating are among the top three. The percentage score is calculated as your score divided by the total possible score.',
           style: TextStyle(
             color: Colors.blue, // 文字顏色
             fontSize: 24.0, // 文字大小
@@ -19,7 +19,7 @@ void lhc_result1 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: Text('Close', style: TextStyle(color: Colors.black),),
           ),
         ],
       );
@@ -46,7 +46,7 @@ void lhc_result2 (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: Text('Close', style: TextStyle(color: Colors.black),),
           ),
         ],
       );

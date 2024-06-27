@@ -35,24 +35,17 @@ int posture7 = 0; // 手偶爾會高過肩膀
 int posture8 = 0; // 手經常會高過肩膀
 
 /// 額外姿勢總分數
-double sumofposture = posture1 +
-    posture2 +
-    posture3 +
-    posture4 +
-    posture5 +
-    posture6 +
-    posture7 +
-    posture8;
+double sumofposture = 0;
 //additonl points
 
 /// 姿勢評級分數
-int bodyposture = -1;
+int bodyposture = 0;
 //int totalbodyposture = sumofposture + bodyposture;
 /// 身體姿勢總分數
 double totalbodyposture = 0;
-String totalbodyposture2 = totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
-String sumofposture2 = sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
-String posture5_2 = posture5.toString().replaceAll(RegExp(r"([.]0$)"), "");
+String totalbodyposture2 = "0" ;
+String sumofposture2 = "0";
+String posture5_2 = "0";
 
 void main() {
   runApp(const Record1());
@@ -88,9 +81,7 @@ class _VideoPageState extends State<VideoPage> {
       bodyposture = int.parse(jsonRequest["pose score"]!); // 姿勢評級分數
       sumofposture = double.parse(jsonRequest["extra score"]!); // 額外加分總分數
       totalbodyposture = double.parse(jsonRequest["total score"]!); // 身體姿勢總分
-      totalbodyposture2 = totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
-      sumofposture2 = sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
-      posture5_2 = posture5.toString().replaceAll(RegExp(r"([.]0$)"), "");
+
       //// 設定初始和結束姿勢圖片
       switch (jsonRequest["start"]) {
         case "A1":
@@ -188,6 +179,9 @@ class _VideoPageState extends State<VideoPage> {
           posture8 = 0;
           break;
       }
+      totalbodyposture2 = totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+      sumofposture2 = sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+      posture5_2 = posture5.toString().replaceAll(RegExp(r"([.]0$)"), "");
     });
   }
 
@@ -359,91 +353,101 @@ class _VideoPageState extends State<VideoPage> {
                     width: 2.5,
                   ),
                 ),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columnSpacing: 20.0,
-                    headingRowHeight: 50.0,
-                    columns: [
-                      const DataColumn(
-                          label: SizedBox(
-                              width: 250,
-                              child: Text('Additional Points:',
-                                  style: TextStyle(fontSize: 20)))),
-                      DataColumn(
-                          label: SizedBox(
-                              width: 55, child: Text('$sumofposture2 Points'))),
-                    ],
-                    rows: [
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Occasional twisting and/or lateral inclination'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture1'))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Frequent/constant twisting and/or lateral inclination'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture2'))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Load center occasionally at a distance from the body'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture3'))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Load center frequently/constantly at a distance from the body'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture4 '))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Hands occasionally between elbow and shoulder'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture5_2 '))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Hands frequently/constantly between elbow and shoulder'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture6 '))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Hands occasionally above shoulder height'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture7'))),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(SizedBox(
-                            width: 250,
-                            child: Text(
-                                'Hands frequently/constantly above shoulder height'))),
-                        DataCell(
-                            SizedBox(width: 50, child: Text('     +$posture8'))),
-                      ]),
-                    ],
-                  ),
+                child: DataTable(
+                  columnSpacing: 0.0,
+                  headingRowHeight: 40.0,
+                  columns: [
+                    const DataColumn(
+                      label: SizedBox(
+                        width: 200,
+                        child: Text('Additional Points:', style: TextStyle(fontSize: 20)),
+                      ),
+                    ),
+                    DataColumn(
+                      label: SizedBox(
+                        width: 46,
+                        child: Text('$sumofposture2 Points'),
+                      ),
+                    ),
+                  ],
+                  rows: [
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Occasional twisting and/or lateral inclination'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture1')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Frequent/constant twisting and/or lateral inclination'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture2')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Load center occasionally at a distance from the body'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture3')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Load center frequently/constantly at a distance from the body'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture4 ')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Hands occasionally between elbow and shoulder'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture5_2 ')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Hands frequently/constantly between elbow and shoulder'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture6 ')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Hands occasionally above shoulder height'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture7')),
+                      ),
+                    ]),
+                    DataRow(cells: [
+                      const DataCell(SizedBox(
+                        width: 250,
+                        child: Text('Hands frequently/constantly above shoulder height'),
+                      )),
+                      DataCell(
+                        SizedBox(width: 50, child: Text('     +$posture8')),
+                      ),
+                    ]),
+                  ],
                 ),
               ),
             ),
+
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center, // 主軸方向置中

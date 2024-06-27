@@ -79,9 +79,9 @@ class _Part2State extends State<Two> {
     var appBody = Stack(
       children: [
         Container(
-          width: 360,
+          width: 350,
           height: 395,
-          margin: const EdgeInsets.only(left: 15, top: 50),
+          margin: const EdgeInsets.only(left: 15, top: 50, right: 15),
           decoration: BoxDecoration(
             color: const Color(0xFFF0F5F9).withOpacity(1),
             borderRadius: BorderRadius.circular(25),
@@ -91,6 +91,7 @@ class _Part2State extends State<Two> {
             ),
           ),
         ),
+        /*
         Positioned(
           top: 55,
           right: 30,
@@ -101,12 +102,13 @@ class _Part2State extends State<Two> {
               child: IconButton(
                 icon: const Icon(Icons.help_outline, color: Colors.black),
                 onPressed: () {
-                  lhc_part2_text(context);
+                  lhc_part3_text(context);
                 },
               ),
             ),
           ),
         ),
+        */
         Column(
           children: [
             Expanded(
@@ -223,7 +225,7 @@ class _Part2State extends State<Two> {
                                     child: const Icon(Icons.remove,
                                         size: 30, color: Colors.black),
                                   ),
-                                  const SizedBox(width: 100),
+                                  const SizedBox(width: 90),
                                   OutlinedButton(
                                     onPressed: () {
                                       setState(() {

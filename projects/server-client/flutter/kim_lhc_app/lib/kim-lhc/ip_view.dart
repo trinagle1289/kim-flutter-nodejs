@@ -1,27 +1,28 @@
 // ip_view.dart
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kim_lhc_app/utils/server.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
 
 void main() {
-  runApp(IpViewApp());
+  runApp(const IpViewApp());
 }
 
 class IpViewApp extends StatelessWidget {
+  const IpViewApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'IP 輸入',
-      home: IpInputPage(),
-      debugShowCheckedModeBanner: false,
-    );
+    return const MaterialApp(title: 'IP 輸入', home: IpInputPage());
   }
 }
 
 class IpInputPage extends StatefulWidget {
+  const IpInputPage({super.key});
+
   @override
-  _IpInputPageState createState() => _IpInputPageState();
+  State<IpInputPage> createState() => _IpInputPageState();
 }
 
 class _IpInputPageState extends State<IpInputPage> {
@@ -30,14 +31,14 @@ class _IpInputPageState extends State<IpInputPage> {
   @override
   void initState() {
     super.initState();
-    ipController.text = Server.instance.ip;  // 使用 Server 單例中的 IP 初始化文本控制器
+    ipController.text = Server.instance.ip; // 使用 Server 單例中的 IP 初始化文本控制器
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('輸入伺服器 IP'),
+        title: const Text('輸入伺服器 IP'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -45,31 +46,38 @@ class _IpInputPageState extends State<IpInputPage> {
           children: <Widget>[
             Text(
               '當前伺服器 IP: ${Server.instance.ip}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: ipController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: '輸入新的 IP 地址',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                Server.instance.updateServerIP(ipController.text);
-                print('ip_view 的 IP 已更新為: ${Server.instance.ip}');
-                //debug 收集資料
-                Dio()
-                    .getUri(Uri.http(Server.instance.ip))
-                    .then((onValue) => {debugPrint("Debug Connection: ${onValue.toString()}")});
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LhcPart1()),
-                );
+              onPressed: () async {
+                // IP 字串
+                var ipText = ipController.text;
+                // 測試連線狀況
+                Dio().getUri(Uri.http(ipText)).then((response) {
+                  debugPrint("Debug response: ${response.toString()}");
+                  Server.instance.updateServerIP(ipText); // 更新伺服器IP
+                  Fluttertoast.showToast(msg: "成功連上伺服器: $ipText");
+                }, onError: (e) {
+                  // 錯誤處理
+                  debugPrint("Connect Server Error: ${e.toString()}");
+                  Fluttertoast.showToast(msg: "伺服器連線失敗");
+                }).whenComplete(() {
+                  // 結束時切換畫面
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LhcPart1()),
+                  );
+                });
               },
-              child: Text('提交'),
+              child: const Text('提交'),
             ),
           ],
         ),

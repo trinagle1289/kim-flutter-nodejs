@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
 import 'package:kim_lhc_app/text/lhc_result.dart';
 
@@ -64,34 +65,34 @@ class MyHomePage extends StatelessWidget {
     //六個內容及其分數
     List<Map<String, dynamic>> items = [
       {
-        'text': ' Working conditions',
+        'text': ' Working Conditions',
         'score': (unfavorableResult * 100).toInt(),
-        'callback': lhc_result1
+
       },
       {
         'text': ' Frequency',
         'score': (frequencyResult * 100).toInt(),
-        'callback': lhc_result2
+
       },
       {
-        'text': ' Total body posture',
+        'text': ' Total Body Posture',
         'score': (totalResult * 100).toInt(),
-        'callback': lhc_result3
+
       },
       {
-        'text': ' Effective load weight',
+        'text': ' Effective Load Weight',
         'score': (effectiveResult * 100).toInt(),
-        'callback': lhc_result4
+
       },
       {
-        'text': ' Load handling conditions',
+        'text': ' Load Handling Conditions',
         'score': (loadResult * 100).toInt(),
-        'callback': lhc_result5
+
       },
       {
-        'text': ' Work organization ',
+        'text': ' Work Organization ',
         'score': (workResult * 100).toInt(),
-        'callback': lhc_result6
+        //'callback': lhc_result6
       },
     ];
 
@@ -201,12 +202,31 @@ class MyHomePage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10.0),
-                            Text('Risk level: $riskLevel',
-                                style: const TextStyle(
-                                    fontSize: 20.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 10.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  width: 95, // 调整这里的宽度以移动文字
+                                ),
+                                Expanded(
+                                  child: Text('Risk level: $riskLevel',
+                                      style: const TextStyle(
+                                          fontSize: 20.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                                Tooltip(
+                                  message: 'more information',
+                                  child: IconButton(
+                                    icon: const Icon(Icons.help_outline, color: Colors.black),
+                                    onPressed: () {
+                                      lhc_result1(context);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -226,7 +246,9 @@ class MyHomePage extends StatelessWidget {
                                         style: const TextStyle(
                                             fontSize: 14.0,
                                             color: Colors.black,
-                                            fontWeight: FontWeight.bold)),
+                                            fontWeight: FontWeight.bold)
+                                    ),
+                                    SizedBox(height: 40,),
                                     Expanded(
                                       child: Text(
                                           '${item['text']}: ${item['score']}%',
@@ -234,7 +256,8 @@ class MyHomePage extends StatelessWidget {
                                               fontSize: 14.0,
                                               color: Colors.black)),
                                     ),
-                                    //Expanded(child: Text('${item['text']}: ${percentage.toStringAsFixed(2)}%', style: TextStyle(fontSize: 14.0, color: Colors.black)),),
+                                    SizedBox(height: 10,),
+                                    /*
                                     Tooltip(
                                       message: 'more information。',
                                       child: IconButton(
@@ -248,6 +271,7 @@ class MyHomePage extends StatelessWidget {
                                         },
                                       ),
                                     ),
+                                    */
                                   ],
                                 ),
                                 //SizedBox(height: 10.0),
@@ -278,9 +302,9 @@ class MyHomePage extends StatelessWidget {
                       Center(
                         child: Column(
                           children: [
-                            Text('Recommendations for improvement',
+                            Text('Suggestions',
                                 style: TextStyle(
-                                    fontSize: 20.0,
+                                    fontSize: 19.0,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold)),
                             SizedBox(height: 18.0),
@@ -394,7 +418,7 @@ class MyHomePage extends StatelessWidget {
                           backgroundColor: WidgetStateProperty.all<Color>(
                               const Color(0xFF8EC0E4)),
                           minimumSize: WidgetStateProperty.all<Size>(
-                              const Size(170, 50)), // 調整按鈕的最小尺寸
+                              const Size(150, 50)), // 調整按鈕的最小尺寸
                         ),
                         child: const Text(
                           'Revise',
@@ -404,9 +428,11 @@ class MyHomePage extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                          bottom: 20, right: 10), // 調整按鈕間距
+                          bottom: 20, right: 0), // 調整按鈕間距
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Restart.restartApp();
+                        },
                         style: ButtonStyle(
                           shape:
                               WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -417,7 +443,7 @@ class MyHomePage extends StatelessWidget {
                           backgroundColor: WidgetStateProperty.all<Color>(
                               const Color(0xFF8EC0E4)),
                           minimumSize: WidgetStateProperty.all<Size>(
-                              const Size(170, 50)), // 調整按鈕的最小尺寸
+                              const Size(150, 50)), // 調整按鈕的最小尺寸
                         ),
                         child: const Text(
                           'Finish',

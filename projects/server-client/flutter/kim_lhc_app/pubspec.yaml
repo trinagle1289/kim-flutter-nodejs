@@ -12,14 +12,14 @@ dependencies:
   dio: ^5.4.3+1
   flutter:
     sdk: flutter
-  flutter_screenutil: ^5.9.3
-  fluttertoast: ^8.2.6
   format: ^1.5.2
   image_picker: ^1.1.2
   path: ^1.8.3
   path_provider: ^2.1.3
   video_compress_plus: ^1.0.0
   video_player: ^2.8.6
+  restart_app: ^1.2.1
+  fluttertoast: ^8.2.6
 
 dev_dependencies:
   flutter_test:
@@ -29,7 +29,7 @@ dev_dependencies:
 
 flutter_launcher_icons:
   android: "launcher_icon"
-  image_path: "assets/icons/kim_icon.jpg"
+  image_path: "assets/icons/kim_icon.png"
 
 flutter:
   assets:

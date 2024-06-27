@@ -6,7 +6,7 @@ void lhc_part7(BuildContext context) {
     builder: (BuildContext context) {
       return AlertDialog(
         title: const Text(
-          'Detailed information',
+          'Information',
           style: TextStyle(
             fontSize: 28.0,
             fontWeight: FontWeight.bold,
@@ -14,9 +14,15 @@ void lhc_part7(BuildContext context) {
         ),
         content: SingleChildScrollView(
           child: const Text(
-            '"Good: The workload frequently fluctuates due to other activities. It includes various types of tasks without concentrating on a single high-intensity workload within a single day.\n'
-                'Restricted: The workload rarely changes due to other activities. Occasionally, there is a focus on a single high-intensity workload within a single day.\n'
-                'Unfavorable: The workload is hardly affected by other activities. It often focuses on a single high-intensity workload within a single day, frequently reaching peak load.',
+            'Good: "Frequent variation of the physical workload situation due to other activities (including other types of physical'
+                    'workload) / without a tight sequence of higher physical workloads within one type of physical workload during a single'
+                    'working day."\n'
+            'Restricted: "Rare variation of the physical workload situation due to other activities (including other types of physical'
+                          'workload) / occasional tight sequence of higher physical workloads within one type of physical workload during a'
+                          'single working day"\n'
+            'Unfavorable: "No/Hardly any variation of the physical workload situation due to other activities (including other types'
+                          'of physical workload) / frequent tight sequence of higher physical workloads within one type of physical workload'
+                          'during a single working day with concurrent high load peaks."',
             style: TextStyle(
               color: Colors.blue, // 文字顏色
               fontSize: 24.0, // 文字大小
@@ -30,7 +36,7 @@ void lhc_part7(BuildContext context) {
               Navigator.of(context).pop();
             },
             child: Text(
-              '關閉',
+              'Close',
               style: TextStyle(color: Colors.black),
             ),
           ),

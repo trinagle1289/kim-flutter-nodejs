@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void lhc_part2_text (BuildContext context){
+void lhc_part3_text (BuildContext context){
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -20,7 +20,7 @@ void lhc_part2_text (BuildContext context){
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('關閉', style: TextStyle(color: Colors.black),),
+            child: Text('Close', style: TextStyle(color: Colors.black),),
           ),
         ],
       );

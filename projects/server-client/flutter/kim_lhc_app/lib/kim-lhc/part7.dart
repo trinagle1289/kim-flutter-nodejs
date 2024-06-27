@@ -148,7 +148,7 @@ class _SelectionPageState extends State<SelectionPage> {
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
-                      border: Border.all(color: Colors.black, width: 4.0),
+                      border: Border.all(color: Colors.black, width: 2.5),
                       color: const Color(0xFFF0F5F9).withOpacity(1),
                     ),
                     child: Column(
@@ -165,7 +165,7 @@ class _SelectionPageState extends State<SelectionPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20.0), // 白色框與按鈕之間的距離
+              const SizedBox(height: 90.0), // 白色框與按鈕之間的距離
             ],
           ),
         ],
