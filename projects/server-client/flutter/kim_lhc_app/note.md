@@ -1,0 +1,2 @@
+1. 解決相機儲存影片副檔名為 temp 的問題
+    * [flutter-cameraController.stopVideoRecording（）傳回帶有.temp副檔名的XFile，該檔案應該是mp4並儲存到圖庫 - Thinbug](https://stackoverflow.com/questions/78488243/cameracontroller-stopvideorecording-return-xfile-with-temp-extension-which-sh)
