@@ -118,9 +118,9 @@ def server_api(video_id: str):
         "extra 2": "null",
         "extra 3": "null",
         "extra 4": "null",
-        "pose score": "-1",
-        "extra score": "-1",
-        "total score": "-1",
+        "pose score": "0",
+        "extra score": "0",
+        "total score": "0",
     }
 
     # 取得回應資料結果

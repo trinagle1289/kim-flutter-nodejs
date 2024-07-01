@@ -69,9 +69,9 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
         "extra 2": "null",
         "extra 3": "null",
         "extra 4": "null",
-        "pose score": "-1",
-        "extra score": "-1",
-        "total score": "-1",
+        "pose score": "0",
+        "extra score": "0",
+        "total score": "0",
     }
 
     cap = cv2.VideoCapture(img_path)  # 影片抓取物件
