@@ -3,12 +3,8 @@ import 'package:chunked_uploader/chunked_uploader.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
-import 'package:kim_lhc_app/kim-lhc/ip_view.dart';
-
-
 
 class Server {
-
   static final Server _instance = Server._internal();
   // 將構造函數設為私有
   Server._internal();

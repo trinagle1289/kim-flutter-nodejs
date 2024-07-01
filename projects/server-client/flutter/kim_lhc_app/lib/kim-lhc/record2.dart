@@ -3,15 +3,12 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:format/format.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:kim_lhc_app/kim-lhc/record1.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
-import 'package:kim_lhc_app/kim-lhc/ip_view.dart';
 import 'package:kim_lhc_app/utils/utils.dart' as utils;
 import 'package:kim_lhc_app/utils/server.dart' as server_api;
-
 
 // 姿勢圖片路徑
 var imgA1Path = 'assets/picture/LHC/Poses/A1.png';
@@ -43,7 +40,7 @@ int bodyposture = 0;
 //int totalbodyposture = sumofposture + bodyposture;
 /// 身體姿勢總分數
 double totalbodyposture = 0;
-String totalbodyposture2 = "0" ;
+String totalbodyposture2 = "0";
 String sumofposture2 = "0";
 String posture5_2 = "0";
 
@@ -179,8 +176,10 @@ class _VideoPageState extends State<VideoPage> {
           posture8 = 0;
           break;
       }
-      totalbodyposture2 = totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
-      sumofposture2 = sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+      totalbodyposture2 =
+          totalbodyposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
+      sumofposture2 =
+          sumofposture.toString().replaceAll(RegExp(r"([.]0$)"), "");
       posture5_2 = posture5.toString().replaceAll(RegExp(r"([.]0$)"), "");
     });
   }
@@ -202,8 +201,8 @@ class _VideoPageState extends State<VideoPage> {
     debugPrint("Uploading file");
 
     var server = server_api.Server.instance;
-    String ip = server.ip;  // 從 Server 實例中獲取當前的 IP 地址
-    print('IP Address: $ip');  // 打印當前 IP 地址
+    String ip = server.ip; // 從 Server 實例中獲取當前的 IP 地址
+    print('IP Address: $ip'); // 打印當前 IP 地址
 
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
     String request = await server.uploadFile(video.path);
@@ -216,7 +215,6 @@ class _VideoPageState extends State<VideoPage> {
     //// 刪除影片
     File(video.path).deleteSync();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -272,13 +270,13 @@ class _VideoPageState extends State<VideoPage> {
                     ),
                     child: _videoPlayerController.value.isInitialized
                         ? AspectRatio(
-                      aspectRatio:
-                      _videoPlayerController.value.aspectRatio * 1.5,
-                      child: Transform.scale(
-                        scale: 0.9,
-                        child: VideoPlayer(_videoPlayerController),
-                      ),
-                    )
+                            aspectRatio:
+                                _videoPlayerController.value.aspectRatio * 1.5,
+                            child: Transform.scale(
+                              scale: 0.9,
+                              child: VideoPlayer(_videoPlayerController),
+                            ),
+                          )
                         : const CircularProgressIndicator(),
                   ),
                 ),
@@ -360,7 +358,8 @@ class _VideoPageState extends State<VideoPage> {
                     const DataColumn(
                       label: SizedBox(
                         width: 200,
-                        child: Text('Additional Points:', style: TextStyle(fontSize: 20)),
+                        child: Text('Additional Points:',
+                            style: TextStyle(fontSize: 20)),
                       ),
                     ),
                     DataColumn(
@@ -374,7 +373,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Occasional twisting and/or lateral inclination'),
+                        child: Text(
+                            'Occasional twisting and/or lateral inclination'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture1')),
@@ -383,7 +383,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Frequent/constant twisting and/or lateral inclination'),
+                        child: Text(
+                            'Frequent/constant twisting and/or lateral inclination'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture2')),
@@ -392,7 +393,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Load center occasionally at a distance from the body'),
+                        child: Text(
+                            'Load center occasionally at a distance from the body'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture3')),
@@ -401,7 +403,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Load center frequently/constantly at a distance from the body'),
+                        child: Text(
+                            'Load center frequently/constantly at a distance from the body'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture4 ')),
@@ -410,7 +413,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Hands occasionally between elbow and shoulder'),
+                        child: Text(
+                            'Hands occasionally between elbow and shoulder'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture5_2 ')),
@@ -419,7 +423,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Hands frequently/constantly between elbow and shoulder'),
+                        child: Text(
+                            'Hands frequently/constantly between elbow and shoulder'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture6 ')),
@@ -437,7 +442,8 @@ class _VideoPageState extends State<VideoPage> {
                     DataRow(cells: [
                       const DataCell(SizedBox(
                         width: 250,
-                        child: Text('Hands frequently/constantly above shoulder height'),
+                        child: Text(
+                            'Hands frequently/constantly above shoulder height'),
                       )),
                       DataCell(
                         SizedBox(width: 50, child: Text('     +$posture8')),
@@ -447,14 +453,13 @@ class _VideoPageState extends State<VideoPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center, // 主軸方向置中
               children: [
                 Padding(
                   padding:
-                  const EdgeInsets.only(bottom: 20, right: 10), // 調整按鈕間距
+                      const EdgeInsets.only(bottom: 20, right: 10), // 調整按鈕間距
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -483,7 +488,7 @@ class _VideoPageState extends State<VideoPage> {
                 ),
                 Padding(
                   padding:
-                  const EdgeInsets.only(bottom: 20, left: 10), // 調整按鈕間距
+                      const EdgeInsets.only(bottom: 20, left: 10), // 調整按鈕間距
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(

@@ -30,8 +30,8 @@ void calculateresult() {
           part6Score);
 
   unfavorableResult = part6Score / 13;
-  frequencyResult = timeLevel / 10;
-  totalResult = totalbodyposture / 20;
+  frequencyResult = timeLevel / 11;
+  totalResult = totalbodyposture / 26;
   effectiveResult = part2Score / 100;
   loadResult = selectedOption / 4;
   workResult = selectedOpt / 4;
