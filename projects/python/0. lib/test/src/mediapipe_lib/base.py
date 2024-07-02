@@ -600,18 +600,16 @@ class ResultAnalyzer:
         )
         right_result = False  # 表示左側是否達標
 
-        ### 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+        ### (x) 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
 
         # 判斷左手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
         if left_shoulder_angle > RAISED_ANGLE:
-            if abs(left_shoulder_y - left_elbow_y) > abs(left_elbow_y - left_wrist_y):
+            if left_shoulder_y > left_wrist_y and left_wrist_y > left_elbow_y:
                 left_result = True
-
+        
         # 判斷右手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
         if right_shoulder_angle > RAISED_ANGLE:
-            if abs(right_shoulder_y - right_elbow_y) > abs(
-                right_elbow_y - right_wrist_y
-            ):
+            if right_shoulder_y > right_wrist_y and right_wrist_y > right_elbow_y:
                 right_result = True
 
         # 只要出現其中一種狀況，就表示為真
@@ -763,12 +761,10 @@ class ResultAnalyzer:
                 self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)[1] * -1
             )
 
-            ### 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+            ### (x) 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
             # 判斷左手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
             if left_shoulder_angle > RAISED_ANGLE:
-                if abs(left_shoulder_y - left_elbow_y) > abs(
-                    left_elbow_y - left_wrist_y
-                ):
+                if left_shoulder_y > left_wrist_y and left_wrist_y > left_elbow_y:
                     result = True
         else:
             # 右肩膀角度
@@ -788,12 +784,10 @@ class ResultAnalyzer:
                 self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)[1] * -1
             )
 
-            ### 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+            ### (x) 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
             # 判斷右手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
             if right_shoulder_angle > RAISED_ANGLE:
-                if abs(right_shoulder_y - right_elbow_y) > abs(
-                    right_elbow_y - right_wrist_y
-                ):
+                if right_shoulder_y > right_wrist_y and right_wrist_y > right_elbow_y:
                     result = True
 
         return result
@@ -811,7 +805,7 @@ class ResultAnalyzer:
             bool: 手是否會高過肩膀
         """
         result = False
-        
+
         if is_left:
             # 左手腕的 y 軸位置
             left_wrist_y = (
