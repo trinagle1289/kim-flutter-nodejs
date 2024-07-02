@@ -125,3 +125,60 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
 
     return json_result
 
+
+# In[ ]:
+
+
+def get_json_result(lhc_analyzer: LhcPoseListAnalyzer) -> dict[str, str]:
+
+    is_3d = True  # 表示 3D 姿勢
+
+    # 初始化分析結果
+    json_result = {
+        "start": "null",
+        "end": "null",
+        "extra 1": "null",
+        "extra 2": "null",
+        "extra 3": "null",
+        "extra 4": "null",
+        "pose score": "0",
+        "extra score": "0",
+        "total score": "0",
+    }
+
+    ### 取得起始和結束的姿勢標籤
+    start_label, end_label = lhc_analyzer.get_start_and_finish_poses(is_3d)
+    ### 額外加分結果
+    # 身體扭轉的頻率
+    extra_1 = str(lhc_analyzer.get_frequency_of_trunk_is_twisted(is_3d).name)
+    # 手遠離身體的頻率
+    extra_2 = str(lhc_analyzer.get_frequency_of_hands_at_a_distance(is_3d).name)
+    # 手臂抬舉，手的水平位於手肘與肩膀之間的頻率
+    extra_3 = str(lhc_analyzer.get_frequency_of_arms_raised(is_3d).name)
+    # 手高過肩膀的頻率
+    extra_4 = str(lhc_analyzer.get_frequency_of_hands_above_shoulder(is_3d).name)
+
+    # 姿勢評級
+    pose_score = str(lhc_analyzer.get_lhc_body_posture_rating_points(is_3d))
+    # 額外加分
+    extra_score = str(lhc_analyzer.get_lhc_body_posture_additional_points(is_3d))
+    # 總分
+    total_score = str(lhc_analyzer.get_lhc_body_posture_total_points(is_3d))
+
+    # 更新分析結果
+    json_result.update(
+        {
+            "start": start_label,
+            "end": end_label,
+            "extra 1": extra_1,
+            "extra 2": extra_2,
+            "extra 3": extra_3,
+            "extra 4": extra_4,
+            "pose score": pose_score,
+            "extra score": extra_score,
+            "total score": total_score,
+        }
+    )
+
+    return json_result
+

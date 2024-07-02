@@ -44,6 +44,7 @@ if __name__ == "__main__":
         angles_to_lhc_label,
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
+        get_dist_between_points,
         get_triangle_gravity_position,
         label_list_to_label_list_rule,
         label_list_rule_to_label_list,
@@ -61,6 +62,7 @@ else:
         angles_to_lhc_label,
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
+        get_dist_between_points,
         get_triangle_gravity_position,
         label_list_to_label_list_rule,
         label_list_rule_to_label_list,
@@ -424,7 +426,7 @@ class ResultAnalyzer:
         # 手腕座標
         hand = np.array(self.pose_result.get_kpt_pos_by_name(hand_kpt_name, get_3d))
         gravity = np.array(self.get_body_gravity_position(get_3d))  # 重心座標
-        dist = np.linalg.norm(hand - gravity)  # 手腕到重心距離
+        dist = get_dist_between_points(hand, gravity)  # 手腕到重心距離
         return dist
 
     def get_two_hands_center_to_gravity_dist(self, get_3d: bool = False) -> float:
@@ -438,7 +440,7 @@ class ResultAnalyzer:
         """
         hand = np.array(self.get_center_position_by_2_hand(get_3d))  # 雙手中心座標
         gravity = np.array(self.get_body_gravity_position(get_3d))  # 重心座標
-        dist = np.linalg.norm(hand - gravity)  # 雙手中心到重心距離
+        dist = get_dist_between_points(hand, gravity)  # 雙手中心到重心距離
         return dist
 
     def get_all_joint_angles_by_name(self, get_3d: bool = False) -> dict:
@@ -521,33 +523,17 @@ class ResultAnalyzer:
         result = False  # 判斷結果
 
         # 取得關鍵點座標
-        left_wrist = np.array(
-            self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
-        )
-        left_elbow = np.array(
-            self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
-        )
-        left_shoulder = np.array(
-            self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
-        )
-        right_wrist = np.array(
-            self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
-        )
-        right_elbow = np.array(
-            self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
-        )
-        right_shoulder = np.array(
-            self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
-        )
+        left_wrist = self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
+        left_elbow = self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
+        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
+        right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
+        right_elbow = self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
+        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
 
         # 左臂長度
-        left_arm = np.linalg.norm(left_wrist - left_elbow) + np.linalg.norm(
-            left_elbow - left_shoulder
-        )
+        left_arm = get_dist_between_points(left_wrist, left_elbow, left_shoulder)
         # 右臂長度
-        right_arm = np.linalg.norm(right_wrist - right_elbow) + np.linalg.norm(
-            right_elbow - right_shoulder
-        )
+        right_arm = get_dist_between_points(right_wrist, right_elbow, right_shoulder)
 
         # 左手到重心距離
         left_hand_to_gravity = self.get_a_hand_to_gravity_dist(True, get_3d)
@@ -584,9 +570,6 @@ class ResultAnalyzer:
 
         # 左肩膀角度
         left_shoulder_angle = self.get_joint_angle_by_name("left_shoulder", get_3d)
-        # 右肩膀角度
-        right_shoulder_angle = self.get_joint_angle_by_name("right_shoulder", get_3d)
-
         # 左肩膀的 y 軸位置
         left_shoulder_y = (
             self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)[1] * -1
@@ -601,6 +584,8 @@ class ResultAnalyzer:
         )
         left_result = False  # 表示左側是否達標
 
+        # 右肩膀角度
+        right_shoulder_angle = self.get_joint_angle_by_name("right_shoulder", get_3d)
         # 右肩膀的 y 軸位置
         right_shoulder_y = (
             self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)[1] * -1
@@ -615,18 +600,16 @@ class ResultAnalyzer:
         )
         right_result = False  # 表示左側是否達標
 
-        ### 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+        ### (x) 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
 
         # 判斷左手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
         if left_shoulder_angle > RAISED_ANGLE:
-            if abs(left_shoulder_y - left_elbow_y) > abs(left_elbow_y - left_wrist_y):
+            if left_shoulder_y > left_wrist_y and left_wrist_y > left_elbow_y:
                 left_result = True
-
+        
         # 判斷右手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
         if right_shoulder_angle > RAISED_ANGLE:
-            if abs(right_shoulder_y - right_elbow_y) > abs(
-                right_elbow_y - right_wrist_y
-            ):
+            if right_shoulder_y > right_wrist_y and right_wrist_y > right_elbow_y:
                 right_result = True
 
         # 只要出現其中一種狀況，就表示為真
@@ -663,6 +646,186 @@ class ResultAnalyzer:
 
         # 只要出現其中一種狀況(左手腕比左肩膀高 或 右手腕比右肩膀高)，就表示為真
         result = left_wrist_y > left_shoulder_y or right_wrist_y > right_shoulder_y
+
+        return result
+
+    # 測試區域
+
+    def get_lhc_label_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> str:
+        """取得其中一邊的 LHC 身體姿勢標籤
+
+        標籤描述:
+        A1: 站立
+        A2: 搬運高處物品
+        A3: 微彎腰
+        A4: 彎腰
+        A5: 蹲姿、跪姿、跪坐姿勢
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            str: LHC 身體姿勢標籤
+        """
+        angle_name_dict = self.get_all_joint_angles_by_name(get_3d)
+        return angles_to_lhc_label(angle_name_dict)
+
+    def check_if_hands_at_a_distance_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> bool:
+        """檢查其中一邊的手或重心是否遠離身體
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 手或重心是否遠離身體
+        """
+        # 手遠離身體時，整個手臂長 和 手到重心距離 的比率(臂長: 手到重心距離 = 1: RATE)
+        # 或是 手到重心距離 / 整個手臂長 = RATE
+        # 或是 手到重心距離 = 整個手臂長 * RATE
+        RATE = 0.8
+
+        result = False  # 判斷結果
+
+        if is_left:
+            # 取得關鍵點座標
+            left_wrist = self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
+            left_elbow = self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
+            left_shoulder = self.pose_result.get_kpt_pos_by_name(
+                "left_shoulder", get_3d
+            )
+            # 左臂長度
+            left_arm = get_dist_between_points(left_wrist, left_elbow, left_shoulder)
+            # 左手到重心距離
+            left_hand_to_gravity = self.get_a_hand_to_gravity_dist(True, get_3d)
+
+            # 左手到重心距離 大於 左臂長度*比率
+            if left_hand_to_gravity > left_arm * RATE:
+                result = True
+        else:
+            # 取得關鍵點座標
+            right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
+            right_elbow = self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
+            right_shoulder = self.pose_result.get_kpt_pos_by_name(
+                "right_shoulder", get_3d
+            )
+            # 右臂長度
+            right_arm = get_dist_between_points(
+                right_wrist, right_elbow, right_shoulder
+            )
+
+            # 右手到重心距離
+            right_hand_to_gravity = self.get_a_hand_to_gravity_dist(False, get_3d)
+
+            # 右手到重心距離 大於 右臂長度*比率
+            if right_hand_to_gravity > right_arm * RATE:
+                result = True
+            pass
+
+        return result
+
+    def check_if_arms_raised_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> bool:
+        """檢查手臂是否需抬舉，手的水平位於手肘與肩膀之間
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
+        """
+        RAISED_ANGLE = 45  # 判斷抬舉的角度
+
+        result = False  # 判斷結果
+
+        if is_left:
+            # 左肩膀角度
+            left_shoulder_angle = self.get_joint_angle_by_name("left_shoulder", get_3d)
+            # 左肩膀的 y 軸位置
+            left_shoulder_y = (
+                self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)[1] * -1
+            )
+            # 左手肘的 y 軸位置
+            left_elbow_y = (
+                self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)[1] * -1
+            )
+            # 左手腕的 y 軸位置
+            left_wrist_y = (
+                self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)[1] * -1
+            )
+
+            ### (x) 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+            # 判斷左手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
+            if left_shoulder_angle > RAISED_ANGLE:
+                if left_shoulder_y > left_wrist_y and left_wrist_y > left_elbow_y:
+                    result = True
+        else:
+            # 右肩膀角度
+            right_shoulder_angle = self.get_joint_angle_by_name(
+                "right_shoulder", get_3d
+            )
+            # 右肩膀的 y 軸位置
+            right_shoulder_y = (
+                self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)[1] * -1
+            )
+            # 右手肘的 y 軸位置
+            right_elbow_y = (
+                self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)[1] * -1
+            )
+            # 右手腕的 y 軸位置
+            right_wrist_y = (
+                self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)[1] * -1
+            )
+
+            ### (x) 在 y 軸中，當手在手肘和肩膀之間時，肩膀到手肘的長度 會大於 手肘到手腕的長度
+            # 判斷右手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
+            if right_shoulder_angle > RAISED_ANGLE:
+                if right_shoulder_y > right_wrist_y and right_wrist_y > right_elbow_y:
+                    result = True
+
+        return result
+
+    def check_if_hands_above_shoulder_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> bool:
+        """檢查手是否會高過肩膀
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 手是否會高過肩膀
+        """
+        result = False
+
+        if is_left:
+            # 左手腕的 y 軸位置
+            left_wrist_y = (
+                self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)[1] * -1
+            )
+            # 左肩膀的 y 軸位置
+            left_shoulder_y = (
+                self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)[1] * -1
+            )
+            result = left_wrist_y > left_shoulder_y
+        else:
+            # 右手腕的 y 軸位置
+            right_wrist_y = (
+                self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)[1] * -1
+            )
+            # 右肩膀的 y 軸位置
+            right_shoulder_y = (
+                self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)[1] * -1
+            )
+            result = right_wrist_y > right_shoulder_y
 
         return result
 
@@ -1116,6 +1279,84 @@ class LhcPoseListAnalyzer:
         bp_rating_points = self.get_lhc_body_posture_rating_points(get_3d)
         addtional_points = self.get_lhc_body_posture_additional_points(get_3d)
         return bp_rating_points + addtional_points
+
+    # 用於測試
+
+    def get_lhc_label_list_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> list[str]:
+        """取得一邊的 LHC 標籤列表
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否取得 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[str]: LHC 標籤列表
+        """
+        return [
+            ResultAnalyzer(PoseResult(result)).get_lhc_label_by_one_side(
+                is_left, get_3d
+            )
+            for result in self.result_lst
+        ]
+
+    def get_hands_at_a_distance_list_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> list[bool]:
+        """取得一邊的手或重心遠離身體的 bool 列表
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 手或重心遠離身體的 bool 列表
+        """
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_hands_at_a_distance_by_one_side(
+                is_left, get_3d
+            )
+            for result in self.result_lst
+        ]
+
+    def get_arms_raised_list_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> list[bool]:
+        """取得一邊的手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
+        """
+        return [
+            ResultAnalyzer(PoseResult(result)).check_if_arms_raised_by_one_side(
+                is_left, get_3d
+            )
+            for result in self.result_lst
+        ]
+
+    def get_hands_above_shoulder_list_by_one_side(
+        self, is_left: bool = False, get_3d: bool = False
+    ) -> list[bool]:
+        """取得一邊的手會高過肩膀的 bool 列表
+
+        Args:
+            is_left (bool, optional): 是否為左側姿勢. Defaults to False.
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 手會高過肩膀的 bool 列表
+        """
+        return [
+            ResultAnalyzer(
+                PoseResult(result)
+            ).check_if_hands_above_shoulder_by_one_side(is_left, get_3d)
+            for result in self.result_lst
+        ]
 
     pass
 
