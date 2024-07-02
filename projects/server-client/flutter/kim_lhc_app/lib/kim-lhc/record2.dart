@@ -202,7 +202,7 @@ class _VideoPageState extends State<VideoPage> {
 
     var server = server_api.Server.instance;
     String ip = server.ip; // 從 Server 實例中獲取當前的 IP 地址
-    print('IP Address: $ip'); // 打印當前 IP 地址
+    debugPrint('IP Address: $ip'); // 打印當前 IP 地址
 
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
     String request = await server.uploadFile(video.path);
