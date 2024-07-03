@@ -13,7 +13,7 @@ class LhcPart5 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '選擇頁面',
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -58,8 +58,11 @@ class _SelectionPageState extends State<SelectionPage> {
             margin: const EdgeInsets.symmetric(horizontal: 10.0), // 調整間距
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: selectedOption == option ? Colors.blue : Colors.black, width: 2.0),
-              color: selectedOption == option ? Colors.blue : Colors.transparent,
+              border: Border.all(
+                  color: selectedOption == option ? Colors.blue : Colors.black,
+                  width: 2.0),
+              color:
+                  selectedOption == option ? Colors.blue : Colors.transparent,
             ),
             child: selectedOption == option
                 ? const Icon(Icons.check, size: 16.0, color: Colors.white)
@@ -143,9 +146,11 @@ class _SelectionPageState extends State<SelectionPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildOption(_option1, 'Use both hands symmetrically', 20.0),
+                        _buildOption(
+                            _option1, 'Use both hands symmetrically', 20.0),
                         const SizedBox(height: 10.0),
-                        _buildOption(_option2, 'Temporarily use one hand', 20.0),
+                        _buildOption(
+                            _option2, 'Temporarily use one hand', 20.0),
                         const SizedBox(height: 10.0),
                         _buildOption(_option3, 'Always use one hand', 20.0),
                       ],
@@ -176,7 +181,8 @@ class _SelectionPageState extends State<SelectionPage> {
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                 ),
-                backgroundColor: WidgetStateProperty.all(const Color(0xFF8EC0E4)),
+                backgroundColor:
+                    WidgetStateProperty.all(const Color(0xFF8EC0E4)),
                 minimumSize: WidgetStateProperty.all<Size>(const Size(170, 50)),
               ),
               child: const Text(

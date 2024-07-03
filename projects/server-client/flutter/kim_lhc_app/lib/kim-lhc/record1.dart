@@ -14,6 +14,7 @@ class Record1 extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: CameraPage(),
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
     );
   }
 }

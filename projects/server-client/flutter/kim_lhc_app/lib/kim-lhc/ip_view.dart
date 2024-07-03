@@ -14,7 +14,8 @@ class IpViewApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'IP 輸入', home: IpInputPage());
+    return const MaterialApp(
+        title: 'KIM LHC 量表評估工具 - 榮靜計畫', home: IpInputPage());
   }
 }
 

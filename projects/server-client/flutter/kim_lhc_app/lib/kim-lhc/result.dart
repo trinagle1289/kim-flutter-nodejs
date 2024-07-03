@@ -13,7 +13,7 @@ class Result extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KIM_LHC_result',
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -67,27 +67,22 @@ class MyHomePage extends StatelessWidget {
       {
         'text': ' Working Conditions',
         'score': (unfavorableResult * 100).toInt(),
-
       },
       {
         'text': ' Frequency',
         'score': (frequencyResult * 100).toInt(),
-
       },
       {
         'text': ' Total Body Posture',
         'score': (totalResult * 100).toInt(),
-
       },
       {
         'text': ' Effective Load Weight',
         'score': (effectiveResult * 100).toInt(),
-
       },
       {
         'text': ' Load Handling Conditions',
         'score': (loadResult * 100).toInt(),
-
       },
       {
         'text': ' Work Organization ',
@@ -219,7 +214,8 @@ class MyHomePage extends StatelessWidget {
                                 Tooltip(
                                   message: 'more information',
                                   child: IconButton(
-                                    icon: const Icon(Icons.help_outline, color: Colors.black),
+                                    icon: const Icon(Icons.help_outline,
+                                        color: Colors.black),
                                     onPressed: () {
                                       lhc_result1(context);
                                     },
@@ -246,9 +242,10 @@ class MyHomePage extends StatelessWidget {
                                         style: const TextStyle(
                                             fontSize: 14.0,
                                             color: Colors.black,
-                                            fontWeight: FontWeight.bold)
+                                            fontWeight: FontWeight.bold)),
+                                    SizedBox(
+                                      height: 40,
                                     ),
-                                    SizedBox(height: 40,),
                                     Expanded(
                                       child: Text(
                                           '${item['text']}: ${item['score']}%',
@@ -256,7 +253,9 @@ class MyHomePage extends StatelessWidget {
                                               fontSize: 14.0,
                                               color: Colors.black)),
                                     ),
-                                    SizedBox(height: 10,),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
                                     /*
                                     Tooltip(
                                       message: 'more information。',
@@ -427,8 +426,8 @@ class MyHomePage extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 20, right: 0), // 調整按鈕間距
+                      padding:
+                          const EdgeInsets.only(bottom: 20, right: 0), // 調整按鈕間距
                       child: ElevatedButton(
                         onPressed: () {
                           Restart.restartApp();

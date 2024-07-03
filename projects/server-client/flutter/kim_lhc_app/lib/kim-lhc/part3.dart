@@ -6,6 +6,7 @@ double timeLevel = 1.0; // 将timeLevel的类型更改为double
 
 void main() {
   runApp(const MaterialApp(
+    title: 'KIM LHC 量表評估工具 - 榮靜計畫',
     debugShowCheckedModeBanner: false,
     home: Two(),
   ));
@@ -137,7 +138,7 @@ class _Part2State extends State<Two> {
                                   ),
                                   TextSpan(
                                     text:
-                                    '[up to...times per \nsub-activity and working day]',
+                                        '[up to...times per \nsub-activity and working day]',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.blue,
@@ -177,7 +178,7 @@ class _Part2State extends State<Two> {
                                   overlayShape: const RoundSliderOverlayShape(
                                       overlayRadius: 16),
                                   valueIndicatorShape:
-                                  const PaddleSliderValueIndicatorShape(),
+                                      const PaddleSliderValueIndicatorShape(),
                                 ),
                                 child: Slider(
                                   value: lhcPart3Slider,
@@ -209,7 +210,7 @@ class _Part2State extends State<Two> {
                                         if (lhcPart3Slider > 0) {
                                           lhcPart3Slider -= 1;
                                           timeLevel = frquency(sliderValues[
-                                          lhcPart3Slider.toInt()]);
+                                              lhcPart3Slider.toInt()]);
                                         }
                                       });
                                     },
@@ -232,7 +233,7 @@ class _Part2State extends State<Two> {
                                             sliderValues.length - 1) {
                                           lhcPart3Slider += 1;
                                           timeLevel = frquency(sliderValues[
-                                          lhcPart3Slider.toInt()]);
+                                              lhcPart3Slider.toInt()]);
                                         }
                                       });
                                     },
@@ -242,7 +243,7 @@ class _Part2State extends State<Two> {
                                       side: const BorderSide(
                                           width: 2, color: Colors.black),
                                       backgroundColor:
-                                      Colors.white, // 修改按钮填充颜色为蓝色
+                                          Colors.white, // 修改按钮填充颜色为蓝色
                                     ),
                                     child: const Icon(Icons.add,
                                         size: 30,
@@ -278,9 +279,9 @@ class _Part2State extends State<Two> {
                       ),
                     ),
                     backgroundColor:
-                    WidgetStateProperty.all<Color>(const Color(0xFF8EC0E4)),
+                        WidgetStateProperty.all<Color>(const Color(0xFF8EC0E4)),
                     minimumSize:
-                    WidgetStateProperty.all<Size>(const Size(170, 50)),
+                        WidgetStateProperty.all<Size>(const Size(170, 50)),
                   ),
                   child: const Text(
                     'Save',
@@ -296,6 +297,7 @@ class _Part2State extends State<Two> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(

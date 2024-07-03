@@ -16,7 +16,7 @@ class LhcPart2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KIM_LHC_Part2',
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

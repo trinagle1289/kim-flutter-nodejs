@@ -14,7 +14,7 @@ class LhcPart7 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '選擇頁面',
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -32,7 +32,6 @@ class SelectionPage extends StatefulWidget {
 }
 
 class _SelectionPageState extends State<SelectionPage> {
-
   final int _opt1 = 0; // 新增變數給第一個選項
   final int _opt2 = 2; // 新增變數給第二個選項
   final int _opt3 = 4; // 新增變數給第三個選項
@@ -54,7 +53,9 @@ class _SelectionPageState extends State<SelectionPage> {
             margin: const EdgeInsets.symmetric(horizontal: 15.0),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: selectedOpt == option ? Colors.blue : Colors.black, width: 2.0),
+              border: Border.all(
+                  color: selectedOpt == option ? Colors.blue : Colors.black,
+                  width: 2.0),
               color: selectedOpt == option ? Colors.blue : Colors.transparent,
             ),
             child: selectedOpt == option
@@ -144,7 +145,7 @@ class _SelectionPageState extends State<SelectionPage> {
                 child: Center(
                   child: Container(
                     width: screenWidth * 0.9,
-                    height: screenHeight* 0.25,
+                    height: screenHeight * 0.25,
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),
@@ -190,8 +191,10 @@ class _SelectionPageState extends State<SelectionPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                  backgroundColor: WidgetStateProperty.all(const Color(0xFF8EC0E4)),
-                  minimumSize: WidgetStateProperty.all<Size>(const Size(170, 50)),
+                  backgroundColor:
+                      WidgetStateProperty.all(const Color(0xFF8EC0E4)),
+                  minimumSize:
+                      WidgetStateProperty.all<Size>(const Size(170, 50)),
                 ),
                 child: const Text(
                   'Save',

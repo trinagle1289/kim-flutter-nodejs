@@ -24,7 +24,7 @@ class Workingcondition extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.white),
-      title: 'Button App',
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       initialRoute: '/',
       routes: {
         '/': (context) => const MyHomePage(),
@@ -248,20 +248,35 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFC9D6DE),
-        title:Center(
-          child:RichText(
+        title: Center(
+          child: RichText(
             text: TextSpan(
               children: <TextSpan>[
-                const TextSpan(text: 'Working Conditions:', style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold, color: Colors.black)),
-                TextSpan(text: ' $part6Score ', style: const TextStyle(fontSize: 20.0, color: Colors.blueAccent, fontWeight: FontWeight.bold)),
-                const TextSpan(text: 'points', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black)),
-             ],
-           ),
-         ),
+                const TextSpan(
+                    text: 'Working Conditions:',
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black)),
+                TextSpan(
+                    text: ' $part6Score ',
+                    style: const TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold)),
+                const TextSpan(
+                    text: 'points',
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black)),
+              ],
+            ),
+          ),
         ),
       ),
       body: SingleChildScrollView(
-        child:Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 12),
@@ -273,7 +288,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       padding: const EdgeInsets.all(4.0), // 设置内边距
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        border:
+                            Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
                       ),
@@ -305,10 +321,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ],
-                )
-            ),
+                )),
             //const SizedBox(height: 20),
-
 
             /*const Text(
               'The joint of hand or arm \n has reached its limit',
@@ -344,7 +358,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       padding: const EdgeInsets.all(4.0), // 设置内边距
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        border:
+                            Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
                       ),
@@ -362,7 +377,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               const Expanded(
                                 child: Text(
                                   'Loads difficult to grip / greater forces required',
-                                  style: TextStyle(fontSize: 20, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -370,7 +386,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 message: 'more information',
                                 preferBelow: false, // 将 Tooltip 放在右侧
                                 child: IconButton(
-                                  icon: const Icon(Icons.help_outline, color: Colors.black),
+                                  icon: const Icon(Icons.help_outline,
+                                      color: Colors.black),
                                   onPressed: () {
                                     Loads(context);
                                   },
@@ -382,7 +399,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 10.0), // 在左侧添加间距
                                   buildCircularCheckboxTwo(0, 'None'),
@@ -397,8 +415,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ],
-                )
-            ),
+                )),
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -407,7 +424,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       padding: const EdgeInsets.all(8.0), // 设置内边距
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        border:
+                            Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
                       ),
@@ -425,7 +443,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               const Expanded(
                                 child: Text(
                                   'Unfavorable weather conditions',
-                                  style: TextStyle(fontSize: 20, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -433,7 +452,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 message: 'more information',
                                 preferBelow: false, // 将 Tooltip 放在右侧
                                 child: IconButton(
-                                  icon: const Icon(Icons.help_outline, color: Colors.black),
+                                  icon: const Icon(Icons.help_outline,
+                                      color: Colors.black),
                                   onPressed: () {
                                     Unfavorable(context);
                                   },
@@ -445,7 +465,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 10.0), // 在左侧添加间距
                                   buildCircularCheckboxThree(0, 'No'),
@@ -459,8 +480,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ],
-                )
-            ),
+                )),
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -469,7 +489,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       //padding: const EdgeInsets.all(2.0), // 设置内边距
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        border:
+                            Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
                       ),
@@ -487,7 +508,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               const Expanded(
                                 child: Text(
                                   'Spatial conditions',
-                                  style: TextStyle(fontSize: 20, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -495,7 +517,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 message: 'more information',
                                 preferBelow: false, // 将 Tooltip 放在右侧
                                 child: IconButton(
-                                  icon: const Icon(Icons.help_outline, color: Colors.black),
+                                  icon: const Icon(Icons.help_outline,
+                                      color: Colors.black),
                                   onPressed: () {
                                     Spatial(context);
                                   },
@@ -507,7 +530,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   //const SizedBox(width: 8.0), // 在左侧添加间距
                                   buildCircularCheckboxFour(0, 'Normal'),
@@ -522,8 +546,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ],
-                )
-            ),
+                )),
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -532,7 +555,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       padding: const EdgeInsets.all(8.0), // 设置内边距
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        border:
+                            Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
                       ),
@@ -550,7 +574,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               const Expanded(
                                 child: Text(
                                   'Additional clothes or equipment',
-                                  style: TextStyle(fontSize: 20, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -558,7 +583,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 message: 'more information',
                                 preferBelow: false, // 将 Tooltip 放在右侧
                                 child: IconButton(
-                                  icon: const Icon(Icons.help_outline, color: Colors.black),
+                                  icon: const Icon(Icons.help_outline,
+                                      color: Colors.black),
                                   onPressed: () {
                                     Additional(context);
                                   },
@@ -570,7 +596,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 10.0), // 在左侧添加间距
                                   buildCircularCheckboxFive(0, 'No'),
@@ -584,8 +611,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ],
-                )
-            ),
+                )),
             Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -594,7 +620,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       padding: const EdgeInsets.all(8.0), // 设置内边距
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        border:
+                            Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
                       ),
@@ -612,7 +639,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               const Expanded(
                                 child: Text(
                                   'Difficulties due to holding/carrying',
-                                  style: TextStyle(fontSize: 20, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -620,7 +648,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 message: 'more information',
                                 preferBelow: false, // 将 Tooltip 放在右侧
                                 child: IconButton(
-                                  icon: const Icon(Icons.help_outline, color: Colors.black),
+                                  icon: const Icon(Icons.help_outline,
+                                      color: Colors.black),
                                   onPressed: () {
                                     Difficulties(context);
                                   },
@@ -632,16 +661,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               buildCircularCheckboxSix(0, 'None'),
-                              buildCircularCheckboxSix(1, 'Hold for 5~10 seconds or 2~5 m'),
-                              buildCircularCheckboxSix(2, 'Hold for >10 seconds or >5 m'),
+                              buildCircularCheckboxSix(
+                                  1, 'Hold for 5~10 seconds or 2~5 m'),
+                              buildCircularCheckboxSix(
+                                  2, 'Hold for >10 seconds or >5 m'),
                             ],
                           ),
                         ],
                       ),
                     ),
                   ],
-                )
-            ),
+                )),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Padding(
@@ -653,7 +683,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const LhcPart1()),
+                          MaterialPageRoute(
+                              builder: (context) => const LhcPart1()),
                         );
                       },
                       style: ButtonStyle(
@@ -662,8 +693,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
-                        backgroundColor: WidgetStateProperty.all(const Color(0xFF8EC0E4)),
-                        minimumSize: WidgetStateProperty.all<Size>(const Size(170, 50)),
+                        backgroundColor:
+                            WidgetStateProperty.all(const Color(0xFF8EC0E4)),
+                        minimumSize:
+                            WidgetStateProperty.all<Size>(const Size(170, 50)),
                       ),
                       child: const Text(
                         'Save',
