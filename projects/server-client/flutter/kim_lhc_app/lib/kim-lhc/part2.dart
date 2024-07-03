@@ -228,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Center(
                             child: Text(
                               part2SliderValue > 40
-                                  ? 'weight: > 40 kg'
+                                  ? 'Weight: > 40 kg'
                                   : 'Weight: ${part2SliderValue.toStringAsFixed(0)} kg',
                               style: const TextStyle(
                                   fontSize: 20.0, color: Colors.white),

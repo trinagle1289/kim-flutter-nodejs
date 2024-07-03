@@ -22,7 +22,7 @@ double loadResult = 0;
 double workResult = 0;
 
 void calculateresult() {
-  finalScore = (timeLevel) *
+  finalScore = (timeLevel - 1) *
       (totalbodyposture +
           part2Score +
           selectedOption +
@@ -51,7 +51,7 @@ class LhcPart1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My First Flutter App',
+      title: 'KIM LHC 量表評估工具 - 榮靜計畫',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -99,7 +99,7 @@ class MyHomePage extends StatelessWidget {
                 case 1:
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) =>  IpViewApp()),
+                    MaterialPageRoute(builder: (context) => IpViewApp()),
                   );
                   break;
               }
@@ -149,7 +149,7 @@ class MyHomePage extends StatelessWidget {
             // 第三個選項
             TextOption(
               text: '3. Frequency',
-              points: formatTimeLevel(timeLevel - 1) ,
+              points: formatTimeLevel(timeLevel - 1),
               onTap: () {
                 _threechecked = -1;
                 Navigator.push(
@@ -207,16 +207,22 @@ class MyHomePage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(bottom: 10.0),
               child: ElevatedButton(
-                onPressed: _onechecked.isNegative && _twochecked.isNegative && _threechecked.isNegative && _fourchecked.isNegative && _fivechecked.isNegative && _sixchecked.isNegative
+                onPressed: _onechecked.isNegative &&
+                        _twochecked.isNegative &&
+                        _threechecked.isNegative &&
+                        _fourchecked.isNegative &&
+                        _fivechecked.isNegative &&
+                        _sixchecked.isNegative
                     ? () {
-                  calculateresult();
-                  debugPrint('$finalScore');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Result()),
-                  );
-                  debugPrint('Button tapped');
-                }
+                        calculateresult();
+                        debugPrint('$finalScore');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Result()),
+                        );
+                        debugPrint('Button tapped');
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(

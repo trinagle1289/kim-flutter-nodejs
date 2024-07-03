@@ -14,14 +14,14 @@ void lhc_part7(BuildContext context) {
         ),
         content: SingleChildScrollView(
           child: const Text(
-            'Good: "Frequent variation of the physical workload situation due to other activities (including other types of physical'
-                    'workload) / without a tight sequence of higher physical workloads within one type of physical workload during a single'
+            'Good: "Frequent variation of the physical workload situation due to other activities (including other types of physical '
+                    'workload) / without a tight sequence of higher physical workloads within one type of physical workload during a single '
                     'working day."\n'
-            'Restricted: "Rare variation of the physical workload situation due to other activities (including other types of physical'
-                          'workload) / occasional tight sequence of higher physical workloads within one type of physical workload during a'
+            'Restricted: "Rare variation of the physical workload situation due to other activities (including other types of physical '
+                          'workload) / occasional tight sequence of higher physical workloads within one type of physical workload during a '
                           'single working day"\n'
-            'Unfavorable: "No/Hardly any variation of the physical workload situation due to other activities (including other types'
-                          'of physical workload) / frequent tight sequence of higher physical workloads within one type of physical workload'
+            'Unfavorable: "No/Hardly any variation of the physical workload situation due to other activities (including other types '
+                          'of physical workload) / frequent tight sequence of higher physical workloads within one type of physical workload '
                           'during a single working day with concurrent high load peaks."',
             style: TextStyle(
               color: Colors.blue, // 文字顏色
