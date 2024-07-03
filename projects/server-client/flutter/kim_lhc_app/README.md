@@ -15,7 +15,7 @@
 7. path_provider: ^2.1.3
    - 需要在 `android\app\build.gradle` 中新增 `minSdkVersion 16`
 8. video_compress_plus: ^1.0.0
-9.  video_player: ^2.8.6
+9. video_player: ^2.8.6
    - 需要在 `android\app\build.gradle` 中新增 `minSdkVersion 16`
 10. flutter_screenutil: ^5.9.0
 11. restart_app: ^1.2.1
