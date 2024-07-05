@@ -169,9 +169,9 @@ def angles_to_lhc_label(angles: dict) -> str:
     if len(angles) <= 0:
         label = ""
     ### 左右邊關節只要觸發其中一種條件，就可以直接定義姿勢標籤了
-    elif angles["left_knee"] < 90 or angles["right_knee"] < 90:
+    elif angles["left_knee"] < 80 or angles["right_knee"] < 80:
         label = "A5"
-    elif angles["left_hip"] < 120 or angles["right_hip"] < 120:
+    elif angles["left_hip"] < 130 or angles["right_hip"] < 130:
         label = "A4"
     # 角度區間之後會設定為 120-150 度，否則站立判斷過於嚴格
     elif angles["left_hip"] < 160 or angles["right_hip"] < 160:

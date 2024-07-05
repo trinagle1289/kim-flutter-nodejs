@@ -862,8 +862,6 @@ class LhcPoseListAnalyzer:
     def __init__(self, result_lst: list[PoseLandmarkerResult] = None):
         if result_lst is not None:
             self.result_lst = result_lst
-        else:
-            self.result_lst = []
 
     # 特殊函式
     def __add__(self, other: PoseLandmarkerResult) -> list[PoseLandmarkerResult]:
