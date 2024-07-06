@@ -29,12 +29,15 @@ void calculateresult() {
           selectedOpt +
           part6Score);
 
-  unfavorableResult = part6Score / 13;
-  frequencyResult = timeLevel / 11;
-  totalResult = totalbodyposture / 26;
-  effectiveResult = part2Score / 100;
-  loadResult = selectedOption / 4;
-  workResult = selectedOpt / 4;
+  double rateScore =
+      totalbodyposture + part2Score + selectedOption + selectedOpt + part6Score;
+
+  unfavorableResult = part6Score / rateScore;
+  // frequencyResult = timeLevel / rateScore;
+  totalResult = totalbodyposture / rateScore;
+  effectiveResult = part2Score / rateScore;
+  loadResult = selectedOption / rateScore;
+  workResult = selectedOpt / rateScore;
 }
 
 bool one = false;
