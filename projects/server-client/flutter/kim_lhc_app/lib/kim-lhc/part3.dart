@@ -46,7 +46,7 @@ class _Part2State extends State<Two> {
   }
 
   double frquency(int value) {
-    if (value <= 0) {
+    if (value == 0) {
       return 1.0;
     } else if (value <= 5) {
       return 2.0;
@@ -94,24 +94,6 @@ class _Part2State extends State<Two> {
             ),
           ),
         ),
-        /*
-        Positioned(
-          top: 55,
-          right: 30,
-          child: Transform.scale(
-            scale: 1.3,
-            child: Tooltip(
-              message: 'more information。',
-              child: IconButton(
-                icon: const Icon(Icons.help_outline, color: Colors.black),
-                onPressed: () {
-                  lhc_part3_text(context);
-                },
-              ),
-            ),
-          ),
-        ),
-        */
         Column(
           children: [
             Expanded(
@@ -269,22 +251,22 @@ class _Part2State extends State<Two> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LhcPart1()),
-                    );
-                  },
-                  style: ButtonStyle(
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
+                  onPressed: lhcPart3Slider == 0
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LhcPart1()),
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                    backgroundColor:
-                        WidgetStateProperty.all<Color>(const Color(0xFF8EC0E4)),
-                    minimumSize:
-                        WidgetStateProperty.all<Size>(const Size(170, 50)),
+                    backgroundColor: const Color(0xFF8EC0E4), // 設置按鈕背景顏色
+                    disabledBackgroundColor: Colors.grey[300], // 設置按鈕被禁用時的顏色
+                    minimumSize: const Size(170, 50), // 設置按鈕的最小尺寸
                   ),
                   child: const Text(
                     'Save',
