@@ -67,26 +67,32 @@ class MyHomePage extends StatelessWidget {
       {
         'text': ' Working Conditions',
         'score': (unfavorableResult * 100).toInt(),
+        'num': 1,
       },
       {
         'text': ' Frequency',
         'score': (frequencyResult * 100).toInt(),
+        'num': 2,
       },
       {
         'text': ' Total Body Posture',
         'score': (totalResult * 100).toInt(),
+        'num': 3,
       },
       {
         'text': ' Effective Load Weight',
         'score': (effectiveResult * 100).toInt(),
+        'num': 4,
       },
       {
         'text': ' Load Handling Conditions',
         'score': (loadResult * 100).toInt(),
+        'num': 5,
       },
       {
         'text': ' Work Organization ',
         'score': (workResult * 100).toInt(),
+        'num': 6,
         //'callback': lhc_result6
       },
     ];
@@ -96,6 +102,22 @@ class MyHomePage extends StatelessWidget {
 
     // 選取分數最高的前三個內容
     List<Map<String, dynamic>> topItems = items.take(3).toList();
+
+    //新增Suggestions內容
+    List<String> Suggestions = [
+      'Working conditions.',
+      'Frequency',
+      'Total body posture',
+      'Effective load weight.',
+      'Load handling conditions.',
+      'Work organization.',
+    ];
+
+    // 根據前三個項目產生建議
+    List<String> topSuggestions = topItems.map((item) {
+      int num = item['num'];
+      return Suggestions[num - 1];
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -296,95 +318,43 @@ class MyHomePage extends StatelessWidget {
                       width: 2.5, // 邊框宽度
                     ),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: <Widget>[
                       Center(
                         child: Column(
                           children: [
-                            Text('Suggestions',
+                            const Text('Suggestions ',
                                 style: TextStyle(
-                                    fontSize: 19.0,
+                                    fontSize: 20.0,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold)),
-                            SizedBox(height: 18.0),
-                          ],
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              //建議1
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('1.  ',
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold)),
-                                Expanded(
-                                  child: Text('Reduce load weight.',
-                                      style: TextStyle(
-                                          fontSize: 14.0, color: Colors.black)),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20.0),
-                            Row(
-                              //建議2
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('2.  ',
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold)),
-                                Expanded(
-                                  child: Text(
-                                      'Reduce the frequency of this sub-activity.',
-                                      style: TextStyle(
-                                          fontSize: 14.0, color: Colors.black)),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20.0),
-                            Row(
-                              //建議3
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('3.  ',
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold)),
-                                Expanded(
-                                  child: Text(
-                                      'Provide lower seats, change to sitting position.',
-                                      style: TextStyle(
-                                          fontSize: 14.0, color: Colors.black)),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20.0),
-                            Row(
-                              //建議4
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('4.  ',
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold)),
-                                Expanded(
-                                  child: Text(
-                                      'Increase the height of the console.',
-                                      style: TextStyle(
-                                          fontSize: 14.0, color: Colors.black)),
-                                ),
-                              ],
-                            ),
+                            const SizedBox(height: 18.0),
+                            ...topSuggestions.asMap().entries.map((entry) {
+                              int index = entry.key + 1;
+                              String Suggestions = entry.value;
+                              return Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('$index.  ',
+                                          style: const TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold)),
+                                      Expanded(
+                                        child: Text(Suggestions,
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20.0),
+                                ],
+                              );
+                            }).toList(),
                           ],
                         ),
                       ),
