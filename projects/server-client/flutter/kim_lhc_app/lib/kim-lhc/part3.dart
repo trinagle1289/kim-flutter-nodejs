@@ -21,6 +21,7 @@ class Two extends StatefulWidget {
 
 class _Part2State extends State<Two> {
   List<int> sliderValues = [
+    0,
     5,
     20,
     50,
@@ -45,7 +46,9 @@ class _Part2State extends State<Two> {
   }
 
   double frquency(int value) {
-    if (value <= 5) {
+    if (value <= 0) {
+      return 1.0;
+    } else if (value <= 5) {
       return 2.0;
     } else if (value <= 20) {
       return 2.5;
