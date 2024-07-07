@@ -202,7 +202,7 @@ class _VideoPageState extends State<VideoPage> {
 
     var server = server_api.Server.instance;
     String ip = server.ip; // 從 Server 實例中獲取當前的 IP 地址
-    debugPrint('IP Address: $ip'); // 打印當前 IP 地址
+    print('IP Address: $ip'); // 打印當前 IP 地址
 
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
     String request = await server.uploadFile(video.path);
@@ -214,6 +214,38 @@ class _VideoPageState extends State<VideoPage> {
 
     //// 刪除影片
     File(video.path).deleteSync();
+  }
+
+  /// 重置所有狀態和資料
+  void _resetRecord() {
+    //清除資料
+    setState(() {
+      bodyposture = 0;
+      sumofposture = 0;
+      totalbodyposture = 0;
+      totalbodyposture2 = "0";
+      sumofposture2 = "0";
+      posture1 = 0;
+      posture2 = 0;
+      posture3 = 0;
+      posture4 = 0;
+      posture5 = 0;
+      posture6 = 0;
+      posture7 = 0;
+      posture8 = 0;
+      posture5_2 = "0";
+      startImgPath = 'assets/picture/LHC/Poses/A0.png';
+      endImgPath = 'assets/picture/LHC/Poses/A0.png';
+    });
+
+    // 刪除當前影片
+    File(widget.filePath).deleteSync();
+
+    // 導航回 Record1 重新錄影
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Record1()),
+    );
   }
 
   @override
@@ -461,14 +493,7 @@ class _VideoPageState extends State<VideoPage> {
                   padding:
                       const EdgeInsets.only(bottom: 20, right: 10), // 調整按鈕間距
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        // 點擊按鈕時導航到第二個畫面
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Record1()),
-                      );
-                    },
+                    onPressed: _resetRecord,
                     style: ButtonStyle(
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
