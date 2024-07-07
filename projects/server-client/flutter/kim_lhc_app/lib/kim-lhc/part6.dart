@@ -48,6 +48,38 @@ class _MyHomePageState extends State<MyHomePage> {
   List<bool> isFiveSelected = [false, false];
   List<bool> isSixSelected = [false, false, false];
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeSelections();
+  }
+
+  void _initializeSelections() {
+    isOneSelected = [
+      selectedOneValue == 0,
+      selectedOneValue == 1,
+      selectedOneValue == 2
+    ];
+    isTwoSelected = [
+      selectedTwoValue == 0,
+      selectedTwoValue == 1,
+      selectedTwoValue == 2
+    ];
+    isThreeSelected = [selectedThreeValue == 0, selectedThreeValue == 1];
+    isFourSelected = [
+      selectedFourValue == 0,
+      selectedFourValue == 1,
+      selectedFourValue == 2
+    ];
+    isFiveSelected = [selectedFiveValue == 0, selectedFiveValue == 1];
+    isSixSelected = [
+      selectedSixValue == 0,
+      selectedSixValue == 2,
+      selectedSixValue == 5
+    ];
+    updatePart6Score();
+  }
+
   void updateOneSelectedIndex(int index) {
     setState(() {
       for (int i = 0; i < isOneSelected.length; i++) {
