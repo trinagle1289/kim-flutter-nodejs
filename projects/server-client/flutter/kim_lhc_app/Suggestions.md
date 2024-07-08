@@ -2,9 +2,19 @@
 
 尋找可以幫助自動化、簡化或優化工作流程的技術解決方案
 
-- 1\~2.5(5\~100): 無建議
-- 3\~5(150\~500): 頻率較高，需看情況調整工時或穿戴護具。
-- 6\~10(750\~2500): 頻率過高，必須調整工時，或進行檢查。
+- 1\~2.5(5\~100)
+
+  - 頻率尚可，請繼續保持。
+  - The frequency is acceptable, please continue to maintain it.
+
+- 3\~5(150\~500)
+
+  - 頻率較高，需看情況調整工時或穿戴護具。
+  - With higher frequency, it may be necessary to adjust working hours or wear protective gear depending on the situation.
+
+- 6\~10(750\~2500)
+  - 頻率過高，必須調整工時，或進行身體檢查。
+  - With excessively high frequency, it is necessary to adjust working hours or undergo a physical examination.
 
 # 負重
 
