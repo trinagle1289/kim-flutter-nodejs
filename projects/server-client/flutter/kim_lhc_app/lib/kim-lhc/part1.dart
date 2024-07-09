@@ -29,15 +29,68 @@ void calculateresult() {
           selectedOpt +
           part6Score);
 
-  double rateScore =
-      totalbodyposture + part2Score + selectedOption + selectedOpt + part6Score;
+  double rateScore = totalbodyposture + part2Score + selectedOption + selectedOpt + part6Score;
 
   unfavorableResult = part6Score / rateScore;
-  // frequencyResult = timeLevel / rateScore;
+  frequencyResult = timeLevel;
   totalResult = totalbodyposture / rateScore;
   effectiveResult = part2Score / rateScore;
   loadResult = selectedOption / rateScore;
   workResult = selectedOpt / rateScore;
+}
+
+/// 身體姿勢分數
+String resultPosture() {
+  String result = '';
+  //
+  if (bodyposture != 0){
+    result += 'Choose less strenuous postures for lifting.\n';
+  }
+
+  if (posture1 != 0 || posture2 != 0) {
+    result += '•  Maintain trunk stability: Turn with your feet, not your waist, to reduce trunk twisting.\n';
+  }
+  if (posture3 != 0 || posture4 != 0) {
+    result += '•  Keep objects close: Hold items close to your body to avoid overreaching.\n';
+  }
+  if (posture5 != 0 || posture6 != 0) {
+    result += '•  Plan workflow: Reorganize paths and processes to minimize arm lifting.\n';
+  }
+  if (posture7 != 0 || posture8 != 0) {
+    result += '•  Use tools: Operate at lower positions to reduce overhead arm movements.\n';
+  }
+
+  if (result.isEmpty) {
+    return 'No suggestion';
+  } else {
+    result = result.trimRight();
+    return result;
+  }
+}
+
+///不良工作條件
+String conditionresult(){
+
+  String condi='';
+  if(isListOneSelected && (selectedOneValue == 1  || selectedOneValue == 2)) {
+    condi +='•  Adjust your working posture to avoid movements that reach the limits of your joint range of motion.\n';
+  } if (isListTwoSelected && (selectedTwoValue == 1  || selectedTwoValue == 2)) {
+    condi +='•  Use anti-slip gloves, install assistive tools, and adjust your working posture and height.\n';
+  } if (isListThreeSelected && selectedThreeValue == 1){
+    condi +='•  For hot conditions, use air conditioners or fans; for cold or damp conditions, use insulation or waterproofing.\n';
+  } if (isListFourSelected && (selectedFourValue == 1  || selectedFourValue == 2)) {
+    condi +='•  Adjust the work process or rearrange the work area, and carry out site cleaning and maintenance.\n';
+  } if (isListFiveSelected && selectedFiveValue == 1){
+    condi += '•  You can choose lightweight and comfortable protective gear.\n';
+  } if (isListSixSelected && (selectedSixValue == 2  || selectedSixValue == 5)) {
+    condi += '•  Increase personnel assistance or use a hand truck.\n';
+  } if (condi.isEmpty) {
+    return 'No suggestion';
+  } else {
+    condi = condi.trimRight();
+    return condi;
+  }
+
 }
 
 bool one = false;
@@ -140,11 +193,18 @@ class MyHomePage extends StatelessWidget {
               points: '$totalbodyposture2',
               //points: '0',
               onTap: () {
+                if(_twochecked == 0){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Record1()),
+                  );
+                }else{
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VideoPage(filePath: VideoPath!)),
+                  );
+                };
                 _twochecked = -1;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Record1()),
-                );
                 debugPrint('Total body posture tapped');
               },
             ),
@@ -211,21 +271,21 @@ class MyHomePage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 10.0),
               child: ElevatedButton(
                 onPressed: _onechecked.isNegative &&
-                        _twochecked.isNegative &&
-                        _threechecked.isNegative &&
-                        _fourchecked.isNegative &&
-                        _fivechecked.isNegative &&
-                        _sixchecked.isNegative
+                    _twochecked.isNegative &&
+                    _threechecked.isNegative &&
+                    _fourchecked.isNegative &&
+                    _fivechecked.isNegative &&
+                    _sixchecked.isNegative
                     ? () {
-                        calculateresult();
-                        debugPrint('$finalScore');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Result()),
-                        );
-                        debugPrint('Button tapped');
-                      }
+                  calculateresult();
+                  debugPrint('$finalScore');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Result()),
+                  );
+                  debugPrint('Button tapped');
+                }
                     : null,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(

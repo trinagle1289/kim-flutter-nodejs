@@ -6,6 +6,8 @@ void main() {
   runApp(const Record1());
 }
 
+String? VideoPath;
+
 class Record1 extends StatelessWidget {
   const Record1({super.key});
 
@@ -54,7 +56,7 @@ class _CameraPageState extends State<CameraPage> {
     //     (camera) => camera.lensDirection == CameraLensDirection.front);
     // 後置鏡頭
     final back = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.back);
+            (camera) => camera.lensDirection == CameraLensDirection.back);
     // 相機控制器
     _cameraController = CameraController(back, ResolutionPreset.max);
     // 初始化相機控制器
@@ -72,6 +74,7 @@ class _CameraPageState extends State<CameraPage> {
       // 停止錄影並儲存檔案
       var video = await _cameraController.stopVideoRecording();
       setState(() => _isRecording = false);
+      VideoPath = video.path;
       debugPrint("Camera video Path: ${video.path}");
 
       // 切換畫面
@@ -105,7 +108,7 @@ class _CameraPageState extends State<CameraPage> {
                 onPressed: () => _recordVideo(),
                 shape: const CircleBorder(), // 更改按鈕的背景顏色
                 child:
-                    Icon(_isRecording ? Icons.stop : Icons.circle), // 設置按鈕形狀為圓形
+                Icon(_isRecording ? Icons.stop : Icons.circle), // 設置按鈕形狀為圓形
               ),
             ),
           ],

@@ -11,6 +11,13 @@ int selectedSixValue = 0;
 
 int part6Score = 0;
 
+bool isListOneSelected = false;
+bool isListTwoSelected = false;
+bool isListThreeSelected = false;
+bool isListFourSelected = false;
+bool isListFiveSelected = false;
+bool isListSixSelected = false;
+
 void main() {
   runApp(const Workingcondition());
 }
@@ -53,32 +60,17 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _initializeSelections();
   }
-
+  ///記錄選項
   void _initializeSelections() {
-    isOneSelected = [
-      selectedOneValue == 0,
-      selectedOneValue == 1,
-      selectedOneValue == 2
-    ];
-    isTwoSelected = [
-      selectedTwoValue == 0,
-      selectedTwoValue == 1,
-      selectedTwoValue == 2
-    ];
+    isOneSelected = [selectedOneValue == 0, selectedOneValue == 1, selectedOneValue == 2];
+    isTwoSelected = [selectedTwoValue == 0, selectedTwoValue == 1, selectedTwoValue == 2];
     isThreeSelected = [selectedThreeValue == 0, selectedThreeValue == 1];
-    isFourSelected = [
-      selectedFourValue == 0,
-      selectedFourValue == 1,
-      selectedFourValue == 2
-    ];
+    isFourSelected = [selectedFourValue == 0, selectedFourValue == 1, selectedFourValue == 2];
     isFiveSelected = [selectedFiveValue == 0, selectedFiveValue == 1];
-    isSixSelected = [
-      selectedSixValue == 0,
-      selectedSixValue == 2,
-      selectedSixValue == 5
-    ];
+    isSixSelected = [selectedSixValue == 0, selectedSixValue == 2, selectedSixValue == 5];
     updatePart6Score();
   }
+
 
   void updateOneSelectedIndex(int index) {
     setState(() {
@@ -87,8 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
           isOneSelected[i] = !isOneSelected[i];
           if (isOneSelected[i]) {
             selectedOneValue = getOneValue(i);
+            isListOneSelected = true;
           } else {
             selectedOneValue = 0;
+            isListOneSelected = false;
           }
         } else {
           isOneSelected[i] = false;
@@ -105,8 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
           isTwoSelected[i] = !isTwoSelected[i];
           if (isTwoSelected[i]) {
             selectedTwoValue = getTwoValue(i);
+            isListTwoSelected = true;
           } else {
             selectedTwoValue = 0;
+            isListTwoSelected = false;
           }
         } else {
           isTwoSelected[i] = false;
@@ -123,8 +119,10 @@ class _MyHomePageState extends State<MyHomePage> {
           isThreeSelected[i] = !isThreeSelected[i];
           if (isThreeSelected[i]) {
             selectedThreeValue = getThreeValue(i);
+            isListThreeSelected = true;
           } else {
             selectedThreeValue = 0;
+            isListThreeSelected = false;
           }
         } else {
           isThreeSelected[i] = false;
@@ -141,8 +139,10 @@ class _MyHomePageState extends State<MyHomePage> {
           isFourSelected[i] = !isFourSelected[i];
           if (isFourSelected[i]) {
             selectedFourValue = getFourValue(i);
+            isListFourSelected = true;
           } else {
             selectedFourValue = 0;
+            isListFourSelected = false;
           }
         } else {
           isFourSelected[i] = false;
@@ -159,8 +159,10 @@ class _MyHomePageState extends State<MyHomePage> {
           isFiveSelected[i] = !isFiveSelected[i];
           if (isFiveSelected[i]) {
             selectedFiveValue = getFiveValue(i);
+            isListFiveSelected = true;
           } else {
             selectedFiveValue = 0;
+            isListFiveSelected = false;
           }
         } else {
           isFiveSelected[i] = false;
@@ -177,8 +179,10 @@ class _MyHomePageState extends State<MyHomePage> {
           isSixSelected[i] = !isSixSelected[i];
           if (isSixSelected[i]) {
             selectedSixValue = getSixValue(i);
+            isListSixSelected = true;
           } else {
             selectedSixValue = 0;
+            isListSixSelected = false;
           }
         } else {
           isSixSelected[i] = false;
@@ -321,7 +325,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(4.0), // 设置内边距
                       decoration: BoxDecoration(
                         border:
-                            Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
                       ),
@@ -391,7 +395,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(4.0), // 设置内边距
                       decoration: BoxDecoration(
                         border:
-                            Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
                       ),
@@ -432,7 +436,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 10.0), // 在左侧添加间距
                                   buildCircularCheckboxTwo(0, 'None'),
@@ -457,7 +461,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0), // 设置内边距
                       decoration: BoxDecoration(
                         border:
-                            Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
                       ),
@@ -498,7 +502,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 10.0), // 在左侧添加间距
                                   buildCircularCheckboxThree(0, 'No'),
@@ -522,7 +526,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       //padding: const EdgeInsets.all(2.0), // 设置内边距
                       decoration: BoxDecoration(
                         border:
-                            Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
                       ),
@@ -563,7 +567,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   //const SizedBox(width: 8.0), // 在左侧添加间距
                                   buildCircularCheckboxFour(0, 'Normal'),
@@ -588,7 +592,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0), // 设置内边距
                       decoration: BoxDecoration(
                         border:
-                            Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFF0F5F9).withOpacity(1), // 背景色
                       ),
@@ -629,7 +633,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 10.0), // 在左侧添加间距
                                   buildCircularCheckboxFive(0, 'No'),
@@ -653,7 +657,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0), // 设置内边距
                       decoration: BoxDecoration(
                         border:
-                            Border.all(color: Colors.black, width: 2.0), // 边框样式
+                        Border.all(color: Colors.black, width: 2.0), // 边框样式
                         borderRadius: BorderRadius.circular(20.0), // 圆角
                         color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
                       ),
@@ -726,9 +730,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         backgroundColor:
-                            WidgetStateProperty.all(const Color(0xFF8EC0E4)),
+                        WidgetStateProperty.all(const Color(0xFF8EC0E4)),
                         minimumSize:
-                            WidgetStateProperty.all<Size>(const Size(170, 50)),
+                        WidgetStateProperty.all<Size>(const Size(170, 50)),
                       ),
                       child: const Text(
                         'Save',

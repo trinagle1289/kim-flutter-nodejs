@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:kim_lhc_app/kim-lhc/part1.dart';
+import 'package:kim_lhc_app/kim-lhc/part3.dart';
 import 'package:kim_lhc_app/text/lhc_result.dart';
 
 void main() {
@@ -19,19 +20,21 @@ class Result extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(),
+      home: const resultPage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+
+
+class resultPage extends StatelessWidget {
+  const resultPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     //int final_score = 100;   //test final_score num
     String finalScore2 =
-        finalScore.toString().replaceAll(RegExp(r"([.]0$)"), "");
+    finalScore.toString().replaceAll(RegExp(r"([.]0$)"), "");
 
     // 根據 num 值選擇顏色
     Color boxColor;
@@ -62,7 +65,7 @@ class MyHomePage extends StatelessWidget {
     ];
     */
 
-    //六個內容及其分數
+    ///六個內容及其分數
     List<Map<String, dynamic>> items = [
       {
         'text': ' Working Conditions',
@@ -70,29 +73,24 @@ class MyHomePage extends StatelessWidget {
         'num': 1,
       },
       {
-        'text': ' Frequency',
-        'score': (frequencyResult * 100).toInt(),
-        'num': 2,
-      },
-      {
         'text': ' Total Body Posture',
         'score': (totalResult * 100).toInt(),
-        'num': 3,
+        'num': 2,
       },
       {
         'text': ' Effective Load Weight',
         'score': (effectiveResult * 100).toInt(),
-        'num': 4,
+        'num': 3,
       },
       {
         'text': ' Load Handling Conditions',
         'score': (loadResult * 100).toInt(),
-        'num': 5,
+        'num': 4,
       },
       {
         'text': ' Work Organization ',
         'score': (workResult * 100).toInt(),
-        'num': 6,
+        'num': 5,
         //'callback': lhc_result6
       },
     ];
@@ -103,17 +101,16 @@ class MyHomePage extends StatelessWidget {
     // 選取分數最高的前三個內容
     List<Map<String, dynamic>> topItems = items.take(3).toList();
 
-    //新增Suggestions內容
+    ///新增Suggestions內容
     List<String> Suggestions = [
-      'Working conditions.',
-      'Frequency',
-      'Total body posture',
-      'Effective load weight.',
-      'Load handling conditions.',
-      'Work organization.',
+      conditionresult(),
+      resultPosture(),
+      'It can be carried by two people to reduce individual load, or the goods can be divided to lessen the weight of each item.',
+      'In work, effort should be applied evenly to prevent excessive force on one side, which can cause harm.',
+      'Discuss work plans with your supervisor or colleagues, listen to their advice, and adjust as needed.',
     ];
 
-    // 根據前三個項目產生建議
+    ///根據前三個項目產生建議
     List<String> topSuggestions = topItems.map((item) {
       int num = item['num'];
       return Suggestions[num - 1];
@@ -176,7 +173,7 @@ class MyHomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 15.0),
 
-                //主體
+                ///主體risk
                 Container(
                   //框框1
                   padding: const EdgeInsets.all(12.0),
@@ -248,6 +245,7 @@ class MyHomePage extends StatelessWidget {
                           ],
                         ),
                       ),
+
                       Align(
                         // ▲內容
                         alignment: Alignment.centerLeft,
@@ -305,9 +303,111 @@ class MyHomePage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 30.0),
+                /// Frequency
+                SizedBox(height: 30.0),
                 Container(
                   //框框2
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    // 背景框
+                    color: const Color(0xFFFFFCF2).withOpacity(1), // 背景色
+                    borderRadius: BorderRadius.circular(20), // 圆角邊角
+                    border: Border.all(
+                      color: Colors.black, // 邊框颜色
+                      width: 2.5, // 邊框宽度
+                    ),
+                  ),
+
+                  child: Column(
+                    children: <Widget>[
+                      Center(
+                        child: Column(
+                          children: [
+                            const Text('Frequency  Suggestions',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 18.0),
+                            Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(' Frequency:  ',
+                                        style: const TextStyle(
+                                            fontSize: 14.0,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold)),
+                                    if (frequencyResult <3)
+                                      Expanded(
+                                        child: Text('Moderate.',
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                      )else if(frequencyResult >=3 && frequencyResult <6)
+                                      Expanded(
+                                        child: Text('Slightly high.',
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                      )else if(frequencyResult >=6)
+                                        Expanded(child: Text('excessively high.',
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                        ),
+                                  ],
+                                ),
+                                SizedBox(height: 20.0),
+                                Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Suggestion:  ',
+                                      style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    if (frequencyResult <3)
+                                      Expanded(
+                                        child: Text('The frequency is acceptable, please continue to maintain it.',
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                      )
+                                    else if(frequencyResult >=3 && frequencyResult <6)
+                                      Expanded(
+                                        child: Text('With higher frequency, it may be necessary to adjust working hours or wear protective gear depending on the situation.',
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                      )else if(frequencyResult >=6)
+                                        Expanded(child: Text('With excessively high frequency, it is necessary to adjust working hours or undergo a physical examination.',
+                                            style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black)),
+                                        ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20.0),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                ///suggestion
+                const SizedBox(height: 30.0),
+                Container(
+                  //框框3
                   padding: const EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
                     // 背景框
@@ -323,7 +423,7 @@ class MyHomePage extends StatelessWidget {
                       Center(
                         child: Column(
                           children: [
-                            const Text('Suggestions ',
+                            const Text('Other Suggestions ',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: Colors.black,
@@ -336,7 +436,7 @@ class MyHomePage extends StatelessWidget {
                                 children: [
                                   Row(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text('$index.  ',
                                           style: const TextStyle(
@@ -361,7 +461,9 @@ class MyHomePage extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 55.0),
+                ///按鈕
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -379,7 +481,7 @@ class MyHomePage extends StatelessWidget {
                         },
                         style: ButtonStyle(
                           shape:
-                              WidgetStateProperty.all<RoundedRectangleBorder>(
+                          WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
@@ -397,14 +499,14 @@ class MyHomePage extends StatelessWidget {
                     ),
                     Padding(
                       padding:
-                          const EdgeInsets.only(bottom: 20, right: 0), // 調整按鈕間距
+                      const EdgeInsets.only(bottom: 20, right: 0), // 調整按鈕間距
                       child: ElevatedButton(
                         onPressed: () {
                           Restart.restartApp();
                         },
                         style: ButtonStyle(
                           shape:
-                              WidgetStateProperty.all<RoundedRectangleBorder>(
+                          WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
