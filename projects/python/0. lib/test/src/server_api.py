@@ -89,6 +89,11 @@ def get_video_json_result(img_path: str) -> dict[str, str]:
         if len(result.pose_landmarks) > 0:
             lhc_analyzer += [result]
 
+    # 抓不到任何影片則直接回傳空數值
+    if len(lhc_analyzer) <= 0:
+        print("No poses are obtained.")
+        return json_result
+
     ### 取得起始和結束的姿勢標籤
     start_label, end_label = lhc_analyzer.get_start_and_finish_poses(is_3d)
     ### 額外加分結果
