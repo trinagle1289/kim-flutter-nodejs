@@ -9,6 +9,7 @@
 from enum import Enum
 import numpy as np
 import cv2
+import math
 
 from typing import Self
 
@@ -606,7 +607,7 @@ class ResultAnalyzer:
         if left_shoulder_angle > RAISED_ANGLE:
             if left_shoulder_y > left_wrist_y and left_wrist_y > left_elbow_y:
                 left_result = True
-        
+
         # 判斷右手抬舉行為，再判斷手的水平是否位於手肘和肩膀中間
         if right_shoulder_angle > RAISED_ANGLE:
             if right_shoulder_y > right_wrist_y and right_wrist_y > right_elbow_y:
@@ -996,6 +997,76 @@ class LhcPoseListAnalyzer:
 
         return filtered_labels
 
+    def filter_label_list_in_fun_c(origin_labels: list[str]) -> list[str]:
+        """透過方法 C 來過濾標籤列表
+
+        過濾方法:
+            每 30 幀抓姿勢，設定其 30 幀中的最多姿勢為其代表姿勢
+
+        Args:
+            origin_labels (list[str]): 原始標籤列表
+
+        Returns:
+            list[str]: 過濾後的標籤列表
+        """
+        STEP = 20  # 每 STEP 幀抓姿勢(每秒影片約 30 幀)
+        LEGAL_STEP = 5  # 合法的姿勢數量
+
+        result = []  # 過濾後的標籤列表
+        labels = np.array(origin_labels)  # np 格式的標籤列表
+
+        if len(labels) > STEP * 2:
+            # 當取得標籤數量大於 STEP，會將姿勢標籤以 STEP 幀影像進行分類，最後不到 STEP 幀的影像會跟上一組進行合併
+            #
+
+            # 被分類的數量(不包含最後的一組)
+            nof_categories = math.floor(len(labels) / STEP) - 1
+            # 最後一組的數量
+            last_num = len(labels) - STEP * nof_categories
+            # 被分類的數量陣列
+            nof_categories_arr = np.append([STEP] * nof_categories, last_num)
+
+            filter_labels = np.array([])  # 被分類的標籤列表
+
+            idx = 0  # 索引值
+            for num in nof_categories_arr:
+                label_max = ""  # 最大數量的標籤
+
+                # 取得標籤數量資訊
+                unique, count = np.unique(labels[idx : idx + num], return_counts=True)
+
+                # 如果姿勢在影像幀中數量超過合法數值，設定最大數量的標籤
+                if count.max() > LEGAL_STEP:
+                    label_max = unique[count.argmax()]
+
+                ["", "", "A1"]
+
+                filter_labels = np.append(filter_labels, [label_max])
+                idx += num
+
+            for lab in filter_labels[1:]:
+                pass
+
+        else:
+            # 當取得標籤數量小於 STEP*2，直接將姿勢設定為最多的姿勢標籤
+            max_idx = labels.argmax()
+            max_label = labels[max_idx]
+            result = np.array([max_label] * len(labels)).tolist()
+            pass
+
+        # i 為 [0, STEP, STEP*2, STEP*3 , ...]
+        for i in range(0, len(origin_labels), STEP):
+            labels_in_step = origin_labels[i : i + STEP]  # 在 STEP 中的所有標籤
+
+            # 拋棄最後不夠 STEP 幀影像的結果
+            if len(labels_in_step) < STEP:
+                break
+
+            # 添加 STEP 數量的最多姿勢標籤
+            result += [max(labels_in_step)] * STEP
+
+        return result
+
     # LHC 資料列表
 
     def get_lhc_label_list(self, get_3d: bool = False) -> list[str]:
@@ -1149,12 +1220,10 @@ class LhcPoseListAnalyzer:
 
         # 取得已被過濾後的姿勢標籤列表
         filtered = np.array(LhcPoseListAnalyzer.filter_label_list_in_fun_a(labels))
-        # 取得已被過濾和反轉後的姿勢標籤列表
-        reversed_filtered = np.array(filtered[::-1])
 
         # 設定起始和結束姿勢標籤
-        start = filtered[0]
-        end = reversed_filtered[0]
+        if len(filtered) > 0:
+            start, end = filtered[0], filtered[-1]
 
         return [start, end]
 
