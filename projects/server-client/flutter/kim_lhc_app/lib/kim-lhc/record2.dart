@@ -44,6 +44,8 @@ String totalbodyposture2 = "0";
 String sumofposture2 = "0";
 String posture5_2 = "0";
 
+bool hasUploaded = false; // 已經上傳檔案了
+
 void main() {
   runApp(const Record1());
 }
@@ -62,7 +64,9 @@ class _VideoPageState extends State<VideoPage> {
   void initState() {
     super.initState();
     _initVideoPlayer();
-    _uploadVideo();
+    if (!hasUploaded) {
+      _uploadVideo();
+    }
   }
 
   @override
@@ -202,7 +206,7 @@ class _VideoPageState extends State<VideoPage> {
 
     var server = server_api.Server.instance;
     String ip = server.ip; // 從 Server 實例中獲取當前的 IP 地址
-    print('IP Address: $ip'); // 打印當前 IP 地址
+    debugPrint('IP Address: $ip'); // 打印當前 IP 地址
 
     XFile video = await utils.cacheVideoToMp4File(XFile(widget.filePath));
     String request = await server.uploadFile(video.path);
@@ -214,6 +218,8 @@ class _VideoPageState extends State<VideoPage> {
 
     //// 刪除影片
     File(video.path).deleteSync();
+
+    hasUploaded = true;
   }
 
   /// 重置所有狀態和資料
@@ -236,6 +242,7 @@ class _VideoPageState extends State<VideoPage> {
       posture5_2 = "0";
       startImgPath = 'assets/picture/LHC/Poses/A0.png';
       endImgPath = 'assets/picture/LHC/Poses/A0.png';
+      hasUploaded = false;
     });
 
     // 刪除當前影片
@@ -265,7 +272,7 @@ class _VideoPageState extends State<VideoPage> {
                         color: Colors.black,
                         fontWeight: FontWeight.bold)),
                 TextSpan(
-                    text: '$totalbodyposture2',
+                    text: totalbodyposture2,
                     style: const TextStyle(
                         fontSize: 20.0,
                         color: Colors.blue,
@@ -397,7 +404,7 @@ class _VideoPageState extends State<VideoPage> {
                     DataColumn(
                       label: SizedBox(
                         width: 46,
-                        child: Text('$sumofposture2 Points'),
+                        child: Text('     $sumofposture2'),
                       ),
                     ),
                   ],

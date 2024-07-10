@@ -76,8 +76,16 @@ String resultPosture() {
 ///不良工作條件
 String conditionresult() {
   String condi = '';
-  condi = 'Working conditions:\n';
   
+  if (isListOneSelected ||
+      isListTwoSelected ||
+      isListThreeSelected ||
+      isListFourSelected ||
+      isListFiveSelected ||
+      isListSixSelected) {
+    condi = 'Working conditions:\n';
+  }
+
   if (isListOneSelected && (selectedOneValue == 1 || selectedOneValue == 2)) {
     condi +=
         '•  Adjust your working posture to avoid movements that reach the limits of your joint range of motion.\n';
