@@ -25,8 +25,6 @@ class Result extends StatelessWidget {
   }
 }
 
-
-
 class resultPage extends StatelessWidget {
   const resultPage({super.key});
 
@@ -34,7 +32,7 @@ class resultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     //int final_score = 100;   //test final_score num
     String finalScore2 =
-    finalScore.toString().replaceAll(RegExp(r"([.]0$)"), "");
+        finalScore.toString().replaceAll(RegExp(r"([.]0$)"), "");
 
     // 根據 num 值選擇顏色
     Color boxColor;
@@ -245,7 +243,6 @@ class resultPage extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       Align(
                         // ▲內容
                         alignment: Alignment.centerLeft,
@@ -263,7 +260,7 @@ class resultPage extends StatelessWidget {
                                             fontSize: 14.0,
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold)),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 40,
                                     ),
                                     Expanded(
@@ -273,7 +270,7 @@ class resultPage extends StatelessWidget {
                                               fontSize: 14.0,
                                               color: Colors.black)),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 10,
                                     ),
                                     /*
@@ -304,7 +301,7 @@ class resultPage extends StatelessWidget {
                 ),
 
                 /// Frequency
-                SizedBox(height: 30.0),
+                const SizedBox(height: 30.0),
                 Container(
                   //框框2
                   padding: const EdgeInsets.all(12.0),
@@ -332,66 +329,74 @@ class resultPage extends StatelessWidget {
                             Column(
                               children: [
                                 Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(' Frequency:  ',
-                                        style: const TextStyle(
+                                    const Text(' Frequency:  ',
+                                        style: TextStyle(
                                             fontSize: 14.0,
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold)),
-                                    if (frequencyResult <3)
-                                      Expanded(
+                                    if (frequencyResult < 3)
+                                      const Expanded(
                                         child: Text('Moderate.',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.black)),
-                                      )else if(frequencyResult >=3 && frequencyResult <6)
-                                      Expanded(
+                                      )
+                                    else if (frequencyResult >= 3 &&
+                                        frequencyResult < 6)
+                                      const Expanded(
                                         child: Text('Slightly high.',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.black)),
-                                      )else if(frequencyResult >=6)
-                                        Expanded(child: Text('excessively high.',
-                                            style: const TextStyle(
+                                      )
+                                    else if (frequencyResult >= 6)
+                                      const Expanded(
+                                        child: Text('Excessively high.',
+                                            style: TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.black)),
-                                        ),
+                                      ),
                                   ],
                                 ),
-                                SizedBox(height: 20.0),
+                                const SizedBox(height: 20.0),
                                 Row(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    const Text(
                                       'Suggestion:  ',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14.0,
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    if (frequencyResult <3)
-                                      Expanded(
-                                        child: Text('The frequency is acceptable, please continue to maintain it.',
-                                            style: const TextStyle(
+                                    if (frequencyResult < 3)
+                                      const Expanded(
+                                        child: Text(
+                                            'The frequency is acceptable, please continue to maintain it.',
+                                            style: TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.black)),
                                       )
-                                    else if(frequencyResult >=3 && frequencyResult <6)
-                                      Expanded(
-                                        child: Text('With higher frequency, it may be necessary to adjust working hours or wear protective gear depending on the situation.',
-                                            style: const TextStyle(
+                                    else if (frequencyResult >= 3 &&
+                                        frequencyResult < 6)
+                                      const Expanded(
+                                        child: Text(
+                                            'With higher frequency, it may be necessary to adjust working hours or wear protective gear depending on the situation.',
+                                            style: TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.black)),
-                                      )else if(frequencyResult >=6)
-                                        Expanded(child: Text('With excessively high frequency, it is necessary to adjust working hours or undergo a physical examination.',
-                                            style: const TextStyle(
+                                      )
+                                    else if (frequencyResult >= 6)
+                                      const Expanded(
+                                        child: Text(
+                                            'With excessively high frequency, it is necessary to adjust working hours or undergo a physical examination.',
+                                            style: TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.black)),
-                                        ),
+                                      ),
                                   ],
                                 ),
                                 const SizedBox(height: 20.0),
@@ -436,7 +441,7 @@ class resultPage extends StatelessWidget {
                                 children: [
                                   Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text('$index.  ',
                                           style: const TextStyle(
@@ -463,6 +468,7 @@ class resultPage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 55.0),
+
                 ///按鈕
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -481,7 +487,7 @@ class resultPage extends StatelessWidget {
                         },
                         style: ButtonStyle(
                           shape:
-                          WidgetStateProperty.all<RoundedRectangleBorder>(
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
@@ -499,14 +505,14 @@ class resultPage extends StatelessWidget {
                     ),
                     Padding(
                       padding:
-                      const EdgeInsets.only(bottom: 20, right: 0), // 調整按鈕間距
+                          const EdgeInsets.only(bottom: 20, right: 0), // 調整按鈕間距
                       child: ElevatedButton(
                         onPressed: () {
                           Restart.restartApp();
                         },
                         style: ButtonStyle(
                           shape:
-                          WidgetStateProperty.all<RoundedRectangleBorder>(
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
