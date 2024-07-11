@@ -1020,7 +1020,7 @@ class LhcPoseListAnalyzer:
             # 直接計算最多次數的姿勢
             values, counts = np.unique(labels, return_counts=True)
             val_max = str(values[counts.argmax()])
-            result = val_max * len(labels)
+            result = [val_max] * len(labels)
         else:
             filtered_labels = []  # 過濾後的標籤列表
 
@@ -1036,7 +1036,7 @@ class LhcPoseListAnalyzer:
                 # 添加 STEP 數量的最多姿勢標籤
                 values, counts = np.unique(labels_in_step, return_counts=True)
                 filtered_labels += [str(values[counts.argmax()])] * len(labels_in_step)
-                
+
             result = filtered_labels.copy()
 
         return result
