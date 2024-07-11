@@ -947,7 +947,8 @@ class LhcPoseListAnalyzer:
                 break
 
             # 添加 STEP 數量的最多姿勢標籤
-            filtered_labels += [max(labels_in_step)] * STEP
+            values, counts = np.unique(labels_in_step, return_counts=True)
+            filtered_labels += [str(values[counts.argmax()])] * STEP
 
         return filtered_labels
 
@@ -1001,7 +1002,7 @@ class LhcPoseListAnalyzer:
         """透過方法 C 來過濾標籤列表
 
         過濾方法:
-            每 30 幀抓姿勢，設定其 30 幀中的最多姿勢為其代表姿勢
+            每 30 幀抓姿勢，設定其 30 幀中的最多姿勢為其代表姿勢，最後不足 30 幀的影像會合併跟前一組一同計算
 
         Args:
             origin_labels (list[str]): 原始標籤列表
@@ -1009,61 +1010,32 @@ class LhcPoseListAnalyzer:
         Returns:
             list[str]: 過濾後的標籤列表
         """
-        STEP = 20  # 每 STEP 幀抓姿勢(每秒影片約 30 幀)
-        LEGAL_STEP = 5  # 合法的姿勢數量
+        STEP = 30  # 每 STEP 幀抓姿勢(每秒影片約 30 幀)
+        LEGAL_STEP = 10  # 合法的次數
 
         result = []  # 過濾後的標籤列表
         labels = np.array(origin_labels)  # np 格式的標籤列表
 
-        if len(labels) > STEP * 2:
-            # 當取得標籤數量大於 STEP，會將姿勢標籤以 STEP 幀影像進行分類，最後不到 STEP 幀的影像會跟上一組進行合併
-            #
-
-            # 被分類的數量(不包含最後的一組)
-            nof_categories = math.floor(len(labels) / STEP) - 1
-            # 最後一組的數量
-            last_num = len(labels) - STEP * nof_categories
-            # 被分類的數量陣列
-            nof_categories_arr = np.append([STEP] * nof_categories, last_num)
-
-            filter_labels = np.array([])  # 被分類的標籤列表
-
-            idx = 0  # 索引值
-            for num in nof_categories_arr:
-                label_max = ""  # 最大數量的標籤
-
-                # 取得標籤數量資訊
-                unique, count = np.unique(labels[idx : idx + num], return_counts=True)
-
-                # 如果姿勢在影像幀中數量超過合法數值，設定最大數量的標籤
-                if count.max() > LEGAL_STEP:
-                    label_max = unique[count.argmax()]
-
-                ["", "", "A1"]
-
-                filter_labels = np.append(filter_labels, [label_max])
-                idx += num
-
-            for lab in filter_labels[1:]:
-                pass
-
+        if len(labels) < STEP * 2:
+            # 直接計算最多次數的姿勢
+            values, counts = np.unique(labels, return_counts=True)
+            val_max = str(values[counts.argmax()])
+            result = val_max * len(labels)
         else:
-            # 當取得標籤數量小於 STEP*2，直接將姿勢設定為最多的姿勢標籤
-            max_idx = labels.argmax()
-            max_label = labels[max_idx]
-            result = np.array([max_label] * len(labels)).tolist()
-            pass
+            filtered_labels = []  # 過濾後的標籤列表
 
-        # i 為 [0, STEP, STEP*2, STEP*3 , ...]
-        for i in range(0, len(origin_labels), STEP):
-            labels_in_step = origin_labels[i : i + STEP]  # 在 STEP 中的所有標籤
+            # 索引值列表(只是為了用在之後的標籤索引值)
+            idxs = np.concatenate((range(0, len(labels), STEP), [len(labels)]))
+            if idxs[-1] - idxs[-2] < STEP:
+                idxs = np.delete(idxs, -2)
 
-            # 拋棄最後不夠 STEP 幀影像的結果
-            if len(labels_in_step) < STEP:
-                break
+            for i in range(len(idxs) - 1):
+                # 在 STEP 中的所有標籤
+                labels_in_step = labels[idxs[i] : idxs[i + 1]]
 
-            # 添加 STEP 數量的最多姿勢標籤
-            result += [max(labels_in_step)] * STEP
+                # 添加 STEP 數量的最多姿勢標籤
+                values, counts = np.unique(labels_in_step, return_counts=True)
+                filtered_labels += [str(values[counts.argmax()])] * len(labels_in_step)
 
         return result
 
@@ -1216,10 +1188,10 @@ class LhcPoseListAnalyzer:
         labels = self.get_lhc_label_list(get_3d)
 
         # 初始化開始、結束姿勢標籤
-        start, end = "", ""
+        start, end = "null", "null"
 
         # 取得已被過濾後的姿勢標籤列表
-        filtered = np.array(LhcPoseListAnalyzer.filter_label_list_in_fun_a(labels))
+        filtered = np.array(LhcPoseListAnalyzer.filter_label_list_in_fun_c(labels))
 
         # 設定起始和結束姿勢標籤
         if len(filtered) > 0:
@@ -1260,7 +1232,7 @@ class LhcPoseListAnalyzer:
         if end == "A3":
             end = "A2"
         # 設定分數
-        score = -1
+        score = 0
         if start == "A1" and end == "A1":
             score = 0
         if start == "A1" and end == "A2" or end == "A1" and start == "A2":
