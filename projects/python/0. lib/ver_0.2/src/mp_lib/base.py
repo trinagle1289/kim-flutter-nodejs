@@ -508,7 +508,7 @@ class ResultAnalyzer:
         return self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE
 
     def check_if_hands_at_a_distance(self, get_3d: bool = False) -> bool:
-        """檢查手或重心是否遠離身體
+        """檢查手或重心是否遠離身體(只會算xz軸平面)
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -516,39 +516,35 @@ class ResultAnalyzer:
         Returns:
             bool: 手或重心是否遠離身體
         """
-        # 手遠離身體時，整個手臂長 和 手到重心距離 的比率(臂長: 手到重心距離 = 1: RATE)
-        # 或是 手到重心距離 / 整個手臂長 = RATE
-        # 或是 手到重心距離 = 整個手臂長 * RATE
-        RATE = 0.8
+        # 手遠離身體時，肩膀長度 和 手到重心距離 的比率(肩膀長度: 手到重心距離 = 1: RATE)
+        # 或是 手到重心距離 / 肩膀長度 = RATE
+        # 或是 手到重心距離 = 肩膀長度 * RATE
+        RATE = 1.4
 
         result = False  # 判斷結果
 
         # 取得關鍵點座標
-        left_wrist = self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
-        left_elbow = self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
-        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
-        right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
-        right_elbow = self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
-        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
+        wrist_l = self.pose_result.get_kpt_pos_by_name("left_wrist", True)[0::2]
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)[0::2]
+        wrist_r = self.pose_result.get_kpt_pos_by_name("right_wrist", True)[0::2]
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)[0::2]
 
-        # 左臂長度
-        left_arm = get_dist_between_points(left_wrist, left_elbow, left_shoulder)
-        # 右臂長度
-        right_arm = get_dist_between_points(right_wrist, right_elbow, right_shoulder)
+        # 取得肩膀長度
+        shoulder_len = np.linalg.norm(np.array(shoulder_l) - np.array(shoulder_r))
 
         # 左手到重心距離
-        left_hand_to_gravity = self.get_a_hand_to_gravity_dist(True, get_3d)
+        left_hand_to_gravity = np.linalg.norm(np.array(wrist_l) - np.array([0, 0]))
         # 右手到重心距離
-        right_hand_to_gravity = self.get_a_hand_to_gravity_dist(False, get_3d)
+        right_hand_to_gravity = np.linalg.norm(np.array(wrist_r) - np.array([0, 0]))
 
         # 左手到重心距離 大於 左臂長度*比率
         left_result = False
-        if left_hand_to_gravity > left_arm * RATE:
+        if left_hand_to_gravity > shoulder_len * RATE:
             left_result = True
 
         # 右手到重心距離 大於 右臂長度*比率
         right_result = False
-        if right_hand_to_gravity > right_arm * RATE:
+        if right_hand_to_gravity > shoulder_len * RATE:
             right_result = True
 
         # 只要其中一隻手符合，則都會被認定為真
@@ -565,7 +561,7 @@ class ResultAnalyzer:
         Returns:
             bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
         """
-        RAISED_ANGLE = 45  # 判斷抬舉的角度
+        RAISED_ANGLE = 60  # 判斷抬舉的角度
 
         result = False  # 判斷結果
 
@@ -742,7 +738,7 @@ class ResultAnalyzer:
         Returns:
             bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
         """
-        RAISED_ANGLE = 45  # 判斷抬舉的角度
+        RAISED_ANGLE = 60  # 判斷抬舉的角度
 
         result = False  # 判斷結果
 

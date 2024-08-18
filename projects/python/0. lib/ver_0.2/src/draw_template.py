@@ -125,7 +125,7 @@ def draw_debug_in_img(
 
 # #### Matplotlib
 
-# ##### 根據姿勢座標結果在圖表中繪製骨架
+# ##### 在圖表座標中繪製骨架
 
 # In[ ]:
 
@@ -185,18 +185,15 @@ def get_bones_plot_axes(
 # In[ ]:
 
 
-def get_staggered_angle_axes(
-    result: PoseLandmarkerResult, is_3d: bool = False, ax: Axes3D = None
-) -> Axes3D:
-    """取得肩臀交錯角度圖表座標
+def get_staggered_angle_axes(result: PoseLandmarkerResult, ax: Axes = None) -> Axes:
+    """取得肩臀交錯角度圖表座標(有問題)
 
     Args:
         result (PoseLandmarkerResult): 姿勢分析結果
-        is_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-        ax (Axes3D, optional): 3D 圖表座標. Defaults to None.
+        ax (Axes, optional): 圖表座標. Defaults to None.
 
     Returns:
-        Axes3D: 圖表座標
+        Axes: 圖表座標
     """
     # 取得當前圖表座標
     if ax is None:
@@ -209,27 +206,19 @@ def get_staggered_angle_axes(
     # 建立分析器
     pose_result = PoseResult(result)
 
-    # 設定肩臀線條座標
-    shoulder = np.array(
-        [
-            pose_result.get_kpt_pos_by_name("left_shoulder", is_3d),
-            pose_result.get_kpt_pos_by_name("right_shoulder", is_3d),
-        ]
-    )
-    hip = np.array(
-        [
-            pose_result.get_kpt_pos_by_name("left_hip", is_3d),
-            pose_result.get_kpt_pos_by_name("right_hip", is_3d),
-        ]
-    )
+    # 取得關鍵點座標
+    shoulder_l = pose_result.get_kpt_pos_by_name("left_shoulder", True)
+    shoulder_r = pose_result.get_kpt_pos_by_name("right_shoulder", True)
+    hip_l = pose_result.get_kpt_pos_by_name("left_hip", True)
+    hip_r = pose_result.get_kpt_pos_by_name("right_hip", True)
 
     # 繪製圖表資訊
-    if not is_3d:
-        ax.plot(shoulder[:, 0], shoulder[:, 2], shoulder[:, 1], label="shoulder")
-        ax.plot(hip[:, 0], hip[:, 2], hip[:, 1], label="hip")
-    else:
-        ax.plot(shoulder[:, 0], shoulder[:, 1], label="shoulder")
-        ax.plot(hip[:, 0], hip[:, 1], label="hip")
+    ax.plot(
+        [shoulder_l[0], shoulder_r[0]],
+        [shoulder_l[2], shoulder_r[2]],
+        label="shoulder",
+    )
+    ax.plot([hip_l[0], hip_r[0]], [hip_l[2], hip_r[2]], label="waist")
 
     return ax
 
@@ -294,23 +283,22 @@ def get_a_hand_to_gravity_axes(
     return ax
 
 
-# ##### 取得雙手中心到身體重心資訊的圖表座標
+# ##### 取得雙手腕到身體重心的圖表座標
 
 # In[ ]:
 
 
-def get_hand_center_to_gravity_axes(
-    result: PoseLandmarkerResult, is_3d: bool = False, ax: Axes3D = None
-) -> Axes3D:
-    """取得雙手中心和身體重心資訊的圖表座標
+def get_both_wrists_to_gravity_axes(
+    result: PoseLandmarkerResult, ax: Axes = None
+) -> Axes:
+    """取得雙手腕到身體重心的圖表座標
 
     Args:
         result (PoseLandmarkerResult): 姿勢分析結果
-        is_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-        ax (Axes3D, optional): 3D 圖表座標. Defaults to None.
+        ax (Axes, optional): 圖表座標. Defaults to None.
 
     Returns:
-        Axes3D: 圖表座標
+        Axes: 圖表座標
     """
     # 取得當前圖表座標
     if ax is None:
@@ -324,23 +312,32 @@ def get_hand_center_to_gravity_axes(
     pose_result = PoseResult(result)
     analyzer = ResultAnalyzer(pose_result)
 
-    # 取得 手部到重心距離 的座標
-    dist = np.array(
-        [
-            analyzer.get_center_position_by_2_hand(is_3d),
-            analyzer.get_body_gravity_position(is_3d),
-        ]
-    )
+    # 取得關鍵點座標
+    gravity = [0, 0, 0]
+    shoulder_l = analyzer.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+    shoulder_r = analyzer.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+    wrist_l = analyzer.pose_result.get_kpt_pos_by_name("left_wrist", True)
+    wrist_r = analyzer.pose_result.get_kpt_pos_by_name("right_wrist", True)
 
     # 繪製圖表
-    if not is_3d:
-        ax.plot(dist[:, 0], dist[:, 1], label="hand to gravity line")
-        ax.scatter(dist[0, 0], dist[0, 1], label="hand center")
-        ax.scatter(dist[1, 0], dist[1, 1], label="body gravity")
-    else:
-        ax.plot(dist[:, 0], dist[:, 2], dist[:, 1], label="hand to gravity line")
-        ax.scatter(dist[0, 0], dist[0, 2], dist[0, 1], label="hand center")
-        ax.scatter(dist[1, 0], dist[1, 2], dist[1, 1], label="body gravity")
+    ax.plot(
+        [shoulder_l[0], shoulder_r[0]],
+        [shoulder_l[2], shoulder_r[2]],
+        label="Shoulder",
+    )
+    ax.plot(
+        [wrist_l[0], gravity[0]],
+        [wrist_l[2], gravity[2]],
+        label="Wrist to gravity line(left)",
+    )
+    ax.plot(
+        [wrist_r[0], gravity[0]],
+        [wrist_r[2], gravity[2]],
+        label="Wrist to gravity line(right)",
+    )
+    ax.scatter(gravity[0], gravity[2], label="Gravity Point")
+    ax.scatter(wrist_l[0], wrist_l[2], label="Left wrist")
+    ax.scatter(wrist_r[0], wrist_r[2], label="Right wrist")
 
     return ax
 
