@@ -185,16 +185,20 @@ def get_bones_plot_axes(
 # In[ ]:
 
 
-def get_staggered_angle_axes(result: PoseLandmarkerResult, ax: Axes = None) -> Axes:
-    """取得肩臀交錯角度圖表座標(有問題)
+def get_staggered_angle_axes(
+    result: PoseLandmarkerResult, is_3d: bool = False, ax: Axes = None
+) -> Axes | Axes3D:
+    """取得肩臀交錯角度圖表座標
 
     Args:
         result (PoseLandmarkerResult): 姿勢分析結果
+        is_3d (bool, optional): 是否顯示 3D 座標結果(不是的話會顯示 xz 軸畫面). Defaults to False.
         ax (Axes, optional): 圖表座標. Defaults to None.
 
     Returns:
-        Axes: 圖表座標
+        Axes | Axes3D: 圖表座標
     """
+
     # 取得當前圖表座標
     if ax is None:
         ax = plt.gca()
@@ -213,12 +217,40 @@ def get_staggered_angle_axes(result: PoseLandmarkerResult, ax: Axes = None) -> A
     hip_r = pose_result.get_kpt_pos_by_name("right_hip", True)
 
     # 繪製圖表資訊
-    ax.plot(
-        [shoulder_l[0], shoulder_r[0]],
-        [shoulder_l[2], shoulder_r[2]],
-        label="shoulder",
-    )
-    ax.plot([hip_l[0], hip_r[0]], [hip_l[2], hip_r[2]], label="waist")
+    if not is_3d:
+        ax.plot(
+            [shoulder_l[0], shoulder_r[0]],
+            [shoulder_l[2], shoulder_r[2]],
+            label="shoulder",
+        )
+        ax.plot([hip_l[0], hip_r[0]], [hip_l[2], hip_r[2]], label="waist")
+    else:
+        ax.scatter(
+            [shoulder_l[0], hip_l[0]],
+            [shoulder_l[2], hip_l[2]],
+            [shoulder_l[1], hip_l[1]],
+            c="#f00",
+            label="left",
+        )
+        ax.scatter(
+            [shoulder_r[0], hip_r[0]],
+            [shoulder_r[2], hip_r[2]],
+            [shoulder_r[1], hip_r[1]],
+            c="#0f0",
+            label="right",
+        )
+        ax.plot(
+            [shoulder_l[0], shoulder_r[0]],
+            [shoulder_l[2], shoulder_r[2]],
+            [shoulder_l[1], shoulder_r[1]],
+            label="shoulder",
+        )
+        ax.plot(
+            [hip_l[0], hip_r[0]],
+            [hip_l[2], hip_r[2]],
+            [hip_l[1], hip_r[1]],
+            label="waist",
+        )
 
     return ax
 
