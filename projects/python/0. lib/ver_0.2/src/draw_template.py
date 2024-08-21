@@ -255,66 +255,6 @@ def get_staggered_angle_axes(
     return ax
 
 
-# ##### 取得手到身體重心資訊的圖表座標
-
-# In[ ]:
-
-
-def get_a_hand_to_gravity_axes(
-    result: PoseLandmarkerResult, is_left: bool, is_3d: bool = False, ax: Axes3D = None
-) -> Axes3D:
-    """取得手到身體重心資訊的圖表座標
-
-    Args:
-        result (PoseLandmarkerResult): 姿勢分析結果
-        is_left (bool): 是否為左手
-        is_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-        ax (Axes3D, optional): 3D 圖表座標. Defaults to None.
-
-    Returns:
-        Axes3D: 圖表座標
-    """
-    # 取得當前圖表座標
-    if ax is None:
-        ax = plt.gca()
-
-    # 沒有資料則回傳原始表格座標
-    if len(result.pose_landmarks) <= 0:
-        return ax
-
-    # 設定分析器
-    pose_result = PoseResult(result)
-    analyzer = ResultAnalyzer(pose_result)
-
-    hand_kpt_name = "left_wrist" if is_left else "right_wrist"  # 手腕關鍵點名稱
-    hand_type = "left" if is_left else "right"  # 手的種類(左或右)
-
-    # 取得 手部到重心距離 的座標
-    dist = np.array(
-        [
-            pose_result.get_kpt_pos_by_name(hand_kpt_name, is_3d),
-            analyzer.get_body_gravity_position(is_3d),
-        ]
-    )
-
-    # 繪製圖表
-    if not is_3d:
-        ax.plot(dist[:, 0], dist[:, 1], label=f"{hand_type} hand to gravity line")
-        ax.scatter(dist[0, 0], dist[0, 1], label=f"{hand_type} hand")
-        ax.scatter(dist[1, 0], dist[1, 1], label="body gravity")
-    else:
-        ax.plot(
-            dist[:, 0],
-            dist[:, 2],
-            dist[:, 1],
-            label=f"{hand_type} hand to gravity line",
-        )
-        ax.scatter(dist[0, 0], dist[0, 2], dist[0, 1], label=f"{hand_type} hand")
-        ax.scatter(dist[1, 0], dist[1, 2], dist[1, 1], label="body gravity")
-
-    return ax
-
-
 # ##### 取得雙手腕到身體重心的圖表座標
 
 # In[ ]:
@@ -345,23 +285,22 @@ def get_both_wrists_to_gravity_axes(
     analyzer = ResultAnalyzer(pose_result)
 
     # 取得關鍵點座標
-    gravity = [0, 0, 0]
-    shoulder_l = analyzer.pose_result.get_kpt_pos_by_name("left_shoulder", True)
-    shoulder_r = analyzer.pose_result.get_kpt_pos_by_name("right_shoulder", True)
-    wrist_l = analyzer.pose_result.get_kpt_pos_by_name("left_wrist", True)
-    wrist_r = analyzer.pose_result.get_kpt_pos_by_name("right_wrist", True)
+    hip_l = analyzer.pose_result.get_kpt_pos_by_name("left_hip", True)  # 左腰
+    hip_r = analyzer.pose_result.get_kpt_pos_by_name("right_hip", True)  # 右腰
+    wrist_l = analyzer.pose_result.get_kpt_pos_by_name("left_wrist", True)  # 左手腕
+    wrist_r = analyzer.pose_result.get_kpt_pos_by_name("right_wrist", True)  # 右手腕
+    gravity = np.mean([hip_l, hip_r], axis=0)
 
-    # 繪製圖表
-    ax.plot(
-        [shoulder_l[0], shoulder_r[0]],
-        [shoulder_l[2], shoulder_r[2]],
-        label="Shoulder",
-    )
+    ### 繪製圖表
+    # 腰部
+    ax.plot([hip_l[0], hip_r[0]], [hip_l[2], hip_r[2]], label="Waist")
+    # 左手到腰部中心
     ax.plot(
         [wrist_l[0], gravity[0]],
         [wrist_l[2], gravity[2]],
         label="Wrist to gravity line(left)",
     )
+    # 右手到腰部中心
     ax.plot(
         [wrist_r[0], gravity[0]],
         [wrist_r[2], gravity[2]],
@@ -370,128 +309,6 @@ def get_both_wrists_to_gravity_axes(
     ax.scatter(gravity[0], gravity[2], label="Gravity Point")
     ax.scatter(wrist_l[0], wrist_l[2], label="Left wrist")
     ax.scatter(wrist_r[0], wrist_r[2], label="Right wrist")
-
-    return ax
-
-
-# ##### 取得手或重心是否遠離身體資料的圖表座標
-
-# In[ ]:
-
-
-def get_hand_to_gravity_info_axes(
-    result: PoseLandmarkerResult, is_3d: bool = False, ax: Axes3D = None
-) -> Axes3D:
-    """取得手或重心是否遠離身體資料的圖表座標
-
-    Args:
-        result (PoseLandmarkerResult): 姿勢分析結果
-        is_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
-        ax (Axes3D, optional): 3D 圖表座標. Defaults to None.
-
-    Returns:
-        Axes3D: 圖表座標
-    """
-    # 取得當前圖表座標
-    if ax is None:
-        ax = plt.gca()
-
-    # 沒有資料則回傳原始表格座標
-    if len(result.pose_landmarks) <= 0:
-        return ax
-
-    # 設定分析器
-    pose_result = PoseResult(result)
-    analyzer = ResultAnalyzer(pose_result)
-
-    # 關鍵點座標
-    left_wrist = np.array(pose_result.get_kpt_pos_by_name("left_wrist", is_3d))
-    left_elbow = np.array(pose_result.get_kpt_pos_by_name("left_elbow", is_3d))
-    right_wrist = np.array(pose_result.get_kpt_pos_by_name("right_wrist", is_3d))
-    right_elbow = np.array(pose_result.get_kpt_pos_by_name("right_elbow", is_3d))
-    body_gravity = np.array(analyzer.get_body_gravity_position(is_3d))
-
-    # 上臂線條座標
-    left_upper_arm = np.array([left_wrist, left_elbow])
-    right_upper_arm = np.array([right_wrist, right_elbow])
-    # 手腕到重心線條座標
-    left_hand_to_gravity = np.array([left_wrist, body_gravity])
-    right_hand_to_gravity = np.array([right_wrist, body_gravity])
-
-    # 繪製圖表
-    if not is_3d:
-        ax.plot(left_upper_arm[:, 0], left_upper_arm[:, 1], label="left upper arm")
-        ax.plot(right_upper_arm[:, 0], right_upper_arm[:, 1], label="right upper arm")
-        ax.plot(
-            left_hand_to_gravity[:, 0],
-            left_hand_to_gravity[:, 1],
-            label="left hand to gravity",
-        )
-        ax.plot(
-            right_hand_to_gravity[:, 0],
-            right_hand_to_gravity[:, 1],
-            label="right hand to gravity",
-        )
-        ax.scatter(left_wrist[:, 0], left_wrist[:, 1], label="left wrist")
-        ax.scatter(left_elbow[:, 0], left_elbow[:, 1], label="left elbow")
-        ax.scatter(right_wrist[:, 0], right_wrist[:, 1], label="right wrist")
-        ax.scatter(right_elbow[:, 0], right_elbow[:, 1], label="right elbow")
-        ax.scatter(body_gravity[:, 0], body_gravity[:, 1], label="body gravity")
-    else:
-        ax.plot(
-            left_upper_arm[:, 0],
-            left_upper_arm[:, 2],
-            left_upper_arm[:, 1],
-            label="left upper arm",
-        )
-        ax.plot(
-            right_upper_arm[:, 0],
-            right_upper_arm[:, 2],
-            right_upper_arm[:, 1],
-            label="right upper arm",
-        )
-        ax.plot(
-            left_hand_to_gravity[:, 0],
-            left_hand_to_gravity[:, 2],
-            left_hand_to_gravity[:, 1],
-            label="left hand to gravity",
-        )
-        ax.plot(
-            right_hand_to_gravity[:, 0],
-            right_hand_to_gravity[:, 2],
-            right_hand_to_gravity[:, 1],
-            label="right hand to gravity",
-        )
-        ax.scatter(
-            left_wrist[0],
-            left_wrist[2],
-            left_wrist[1],
-            label="left wrist",
-        )
-        ax.scatter(
-            left_elbow[0],
-            left_elbow[2],
-            left_elbow[1],
-            label="left elbow",
-        )
-        ax.scatter(
-            right_wrist[0],
-            right_wrist[2],
-            right_wrist[1],
-            label="right wrist",
-        )
-        ax.scatter(
-            right_elbow[0],
-            right_elbow[2],
-            right_elbow[1],
-            label="right elbow",
-        )
-        ax.scatter(
-            body_gravity[0],
-            body_gravity[2],
-            body_gravity[1],
-            label="body gravity",
-        )
 
     return ax
 
