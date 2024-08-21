@@ -516,35 +516,32 @@ class ResultAnalyzer:
         Returns:
             bool: 手或重心是否遠離身體
         """
-        # 手遠離身體時，肩膀長度 和 手到重心距離 的比率(肩膀長度: 手到重心距離 = 1: RATE)
-        # 或是 手到重心距離 / 肩膀長度 = RATE
-        # 或是 手到重心距離 = 肩膀長度 * RATE
-        RATE = 1.4
+        # 手遠離身體時，手到重心的距離
+        DIST = 0.4
 
         result = False  # 判斷結果
 
         # 取得關鍵點座標
         wrist_l = self.pose_result.get_kpt_pos_by_name("left_wrist", True)[0::2]
-        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)[0::2]
         wrist_r = self.pose_result.get_kpt_pos_by_name("right_wrist", True)[0::2]
-        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)[0::2]
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)[0::2]
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)[0::2]
 
-        # 取得肩膀長度
-        shoulder_len = np.linalg.norm(np.array(shoulder_l) - np.array(shoulder_r))
+        gravity = np.mean([hip_l, hip_r], axis=0)
 
         # 左手到重心距離
-        left_hand_to_gravity = np.linalg.norm(np.array(wrist_l) - np.array([0, 0]))
+        left_hand_to_gravity = np.linalg.norm(np.array(wrist_l) - gravity)
         # 右手到重心距離
-        right_hand_to_gravity = np.linalg.norm(np.array(wrist_r) - np.array([0, 0]))
+        right_hand_to_gravity = np.linalg.norm(np.array(wrist_r) - gravity)
 
-        # 左手到重心距離 大於 左臂長度*比率
+        # 左手到重心距離 大於 手遠離身體時，手到重心的距離
         left_result = False
-        if left_hand_to_gravity > shoulder_len * RATE:
+        if left_hand_to_gravity > DIST:
             left_result = True
 
-        # 右手到重心距離 大於 右臂長度*比率
+        # 右手到重心距離 大於 手遠離身體時，手到重心的距離
         right_result = False
-        if right_hand_to_gravity > shoulder_len * RATE:
+        if right_hand_to_gravity > DIST:
             right_result = True
 
         # 只要其中一隻手符合，則都會被認定為真
