@@ -71,8 +71,8 @@ def get_angle_between_two_lines_position(
     pos2a = np.array(line2[0])
     pos2b = np.array(line2[1])
 
-    vec1 = pos1a - pos1b
-    vec2 = pos2a - pos2b
+    vec1 = pos1b - pos1a
+    vec2 = pos2b - pos2a
 
     norm1 = np.linalg.norm(vec1)
     norm2 = np.linalg.norm(vec2)

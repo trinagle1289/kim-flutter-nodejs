@@ -180,15 +180,15 @@ def get_bones_plot_axes(
     return ax
 
 
-# ##### 取得肩臀交錯角度圖表座標
+# ##### 取得肩臀交錯線條的軸
 
 # In[ ]:
 
 
-def get_staggered_angle_axes(
+def get_axes_with_staggered_lines(
     result: PoseLandmarkerResult, is_3d: bool = False, ax: Axes = None
 ) -> Axes | Axes3D:
-    """取得肩臀交錯角度圖表座標
+    """取得肩臀交錯線條的軸
 
     Args:
         result (PoseLandmarkerResult): 姿勢分析結果
@@ -255,15 +255,70 @@ def get_staggered_angle_axes(
     return ax
 
 
-# ##### 取得雙手腕到身體重心的圖表座標
+# ##### 取得肩臀交錯向量的軸
 
 # In[ ]:
 
 
-def get_both_wrists_to_gravity_axes(
+def get_axes_with_staggered_vector(
+    result: PoseLandmarkerResult, is_3d: bool = False, ax: Axes = None
+) -> Axes | Axes3D:
+    """取得肩臀交錯向量的軸
+
+    Args:
+        result (PoseLandmarkerResult): 姿勢分析結果
+        is_3d (bool, optional): 是否顯示 3D 座標結果(不是的話會顯示 xz 軸畫面). Defaults to False.
+        ax (Axes, optional): 圖表座標. Defaults to None.
+
+    Returns:
+        Axes | Axes3D: 圖表座標
+    """
+
+    # 取得當前圖表座標
+    if ax is None:
+        ax = plt.gca()
+
+    # 沒有資料則回傳原始表格座標
+    if len(result.pose_landmarks) <= 0:
+        return ax
+
+    # 建立分析器
+    pose_result = PoseResult(result)
+
+    # 取得關鍵點座標
+    shoulder_l = pose_result.get_kpt_pos_by_name("left_shoulder", True)
+    shoulder_r = pose_result.get_kpt_pos_by_name("right_shoulder", True)
+    hip_l = pose_result.get_kpt_pos_by_name("left_hip", True)
+    hip_r = pose_result.get_kpt_pos_by_name("right_hip", True)
+
+    shoulder_vec = np.array(shoulder_r) - np.array(shoulder_l)
+    hip_vec = np.array(hip_r) - np.array(hip_l)
+
+    # 繪製圖表資訊
+    if not is_3d:
+        ax.plot([0, shoulder_vec[0]], [0, shoulder_vec[2]], label="shoulder vector")
+        ax.plot([0, hip_vec[0]], [0, hip_vec[2]], label="waist vector")
+    else:
+        ax.plot(
+            [0, shoulder_vec[0]],
+            [0, shoulder_vec[2]],
+            [0, shoulder_vec[1]],
+            label="shoulder vector",
+        )
+        ax.plot([0, hip_vec[0]], [0, hip_vec[2]], [0, hip_vec[1]], label="waist vector")
+
+    return ax
+
+
+# ##### 取得雙手腕到身體重心的軸
+
+# In[ ]:
+
+
+def get_axes_with_both_wrists_to_gravity(
     result: PoseLandmarkerResult, ax: Axes = None
 ) -> Axes:
-    """取得雙手腕到身體重心的圖表座標
+    """取得雙手腕到身體重心的軸
 
     Args:
         result (PoseLandmarkerResult): 姿勢分析結果
