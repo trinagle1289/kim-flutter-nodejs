@@ -569,6 +569,40 @@ class ResultAnalyzer:
             bool: 軀幹是否扭轉/側傾
         """
         TWISTED_ANGLE = 15
+
+        result = False
+
+        # 軀幹扭轉 
+        if self.get_pose_shoulder_hip_staggered_angle_xz() > TWISTED_ANGLE:
+            result = True
+        # 軀幹側傾 
+        if self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE:
+            result = True
+
+        return result
+
+    def check_if_trunk_is_twisted_xz(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否扭轉(xz平面)
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 軀幹是否扭轉
+        """
+        TWISTED_ANGLE = 15
+        return self.get_pose_shoulder_hip_staggered_angle_xz() > TWISTED_ANGLE
+
+    def check_if_trunk_is_twisted_3d(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否側傾(三維座標)
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 軀幹是否側傾
+        """
+        TWISTED_ANGLE = 15
         return self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE
 
     def check_if_hands_at_a_distance(self, get_3d: bool = False) -> bool:
@@ -1076,7 +1110,7 @@ class LhcPoseListAnalyzer:
         if len(labels) < STEP * 2:
             # 直接計算最多次數的姿勢
             values, counts = np.unique(labels, return_counts=True)
-            val_max = str(values[counts.argmax()])
+            val_max = values[counts.argmax()]
             result = [val_max] * len(labels)
         else:
             filtered_labels = []  # 過濾後的標籤列表
@@ -1092,7 +1126,50 @@ class LhcPoseListAnalyzer:
 
                 # 添加 STEP 數量的最多姿勢標籤
                 values, counts = np.unique(labels_in_step, return_counts=True)
-                filtered_labels += [str(values[counts.argmax()])] * len(labels_in_step)
+                filtered_labels += [values[counts.argmax()]] * len(labels_in_step)
+
+            result = filtered_labels.copy()
+
+        return result
+
+    def filter_label_list_in_fun_d(origin_labels: list[str]) -> list[str]:
+        """透過方法 D 來過濾標籤列表
+
+        過濾方法:
+            每 5 幀抓姿勢，設定其 5 幀中的最多姿勢為其代表姿勢，最後不足 5 幀的影像會合併跟前一組一同計算
+
+        Args:
+            origin_labels (list[str]): 原始標籤列表
+
+        Returns:
+            list[str]: 過濾後的標籤列表
+        """
+        STEP = 5  # 每 STEP 幀抓姿勢(每秒影片約 30 幀)
+        LEGAL_STEP = 10  # 合法的次數
+
+        result = []  # 過濾後的標籤列表
+        labels = np.array(origin_labels)  # np 格式的標籤列表
+
+        if len(labels) < STEP * 2:
+            # 直接計算最多次數的姿勢
+            values, counts = np.unique(labels, return_counts=True)
+            val_max = values[counts.argmax()]
+            result = [val_max] * len(labels)
+        else:
+            filtered_labels = []  # 過濾後的標籤列表
+
+            # 索引值列表(只是為了用在之後的標籤索引值)
+            idxs = np.concatenate((range(0, len(labels), STEP), [len(labels)]))
+            if idxs[-1] - idxs[-2] < STEP:
+                idxs = np.delete(idxs, -2)
+
+            for i in range(len(idxs) - 1):
+                # 在 STEP 中的所有標籤
+                labels_in_step = labels[idxs[i] : idxs[i + 1]]
+
+                # 添加 STEP 數量的最多姿勢標籤
+                values, counts = np.unique(labels_in_step, return_counts=True)
+                filtered_labels += [values[counts.argmax()]] * len(labels_in_step)
 
             result = filtered_labels.copy()
 
@@ -1123,10 +1200,47 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 軀幹扭轉/側傾的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
+
+    def get_trunk_is_twisted_list_xz(self, get_3d: bool = False) -> list[bool]:
+        """取得軀幹扭轉的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 軀幹扭轉的 bool 列表
+        """
+        tmp_lst = [
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted_xz(True)
+            for result in self.result_lst
+        ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
+
+    def get_trunk_is_twisted_list_3d(self, get_3d: bool = False) -> list[bool]:
+        """取得軀幹側傾的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 軀幹側傾的 bool 列表
+        """
+        tmp_lst = [
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted_3d(True)
+            for result in self.result_lst
+        ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     def get_hands_at_a_distance_list(self, get_3d: bool = False) -> list[bool]:
         """取得手或重心遠離身體的 bool 列表
@@ -1137,10 +1251,13 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手或重心遠離身體的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_hands_at_a_distance(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     def get_arms_raised_list(self, get_3d: bool = False) -> list[bool]:
         """取得手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
@@ -1151,10 +1268,13 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_arms_raised(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     def get_hands_above_shoulder_list(self, get_3d: bool = False) -> list[bool]:
         """取得手會高過肩膀的 bool 列表
@@ -1165,10 +1285,13 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手會高過肩膀的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_hands_above_shoulder(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     # 取得身體姿勢額外加分項目的頻率
 
