@@ -383,16 +383,16 @@ class ResultAnalyzer:
         Returns:
             float: 肩臀交錯角度
         """
-        shoulder = [
-            self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d),
-            self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d),
-        ]
-        hip = [
-            self.pose_result.get_kpt_pos_by_name("left_hip", get_3d),
-            self.pose_result.get_kpt_pos_by_name("right_hip", get_3d),
-        ]
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
 
-        return get_angle_between_two_lines_position(shoulder, hip)
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array([shoulder_l, shoulder_r])
+        hip_vec = np.array([hip_l, hip_r])
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
 
     def get_pose_shoulder_hip_staggered_angle_xz(self) -> float:
         """取得身體姿勢的肩臀交錯角度(xz軸)
@@ -400,16 +400,80 @@ class ResultAnalyzer:
         Returns:
             float: 肩臀交錯角度
         """
-        shoulder = [
-            self.pose_result.get_kpt_pos_by_name("left_shoulder", True)[0::2],
-            self.pose_result.get_kpt_pos_by_name("right_shoulder", True)[0::2],
-        ]
-        hip = [
-            self.pose_result.get_kpt_pos_by_name("left_hip", True)[0::2],
-            self.pose_result.get_kpt_pos_by_name("right_hip", True)[0::2],
-        ]
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
 
-        return get_angle_between_two_lines_position(shoulder, hip)
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array(
+            [
+                [shoulder_l[0], shoulder_l[2]],
+                [shoulder_r[0], shoulder_r[2]],
+            ]
+        )
+        hip_vec = np.array(
+            [
+                [hip_l[0], hip_l[2]],
+                [hip_r[0], hip_r[2]],
+            ]
+        )
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
+
+    def get_pose_shoulder_hip_staggered_angle_xy(self) -> float:
+        """取得身體姿勢的肩臀交錯角度(xy軸)
+
+        Returns:
+            float: 肩臀交錯角度
+        """
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array(
+            [
+                [shoulder_l[0], shoulder_l[1]],
+                [shoulder_r[0], shoulder_r[1]],
+            ]
+        )
+        hip_vec = np.array(
+            [
+                [hip_l[0], hip_l[1]],
+                [hip_r[0], hip_r[1]],
+            ]
+        )
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
+
+    def get_pose_shoulder_hip_staggered_angle_yz(self) -> float:
+        """取得身體姿勢的肩臀交錯角度(yz軸)
+
+        Returns:
+            float: 肩臀交錯角度
+        """
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array(
+            [
+                [shoulder_l[1], shoulder_l[2]],
+                [shoulder_r[1], shoulder_r[2]],
+            ]
+        )
+        hip_vec = np.array(
+            [
+                [hip_l[1], hip_l[2]],
+                [hip_r[1], hip_r[2]],
+            ]
+        )
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
 
     # 複合函式(有使用到基礎函式)
 
