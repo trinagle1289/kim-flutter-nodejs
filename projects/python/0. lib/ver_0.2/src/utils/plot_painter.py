@@ -292,7 +292,6 @@ def draw_bool_list_line_chart(
             data.append(0)
 
     ax.set_xlabel("time frame")
-    ax.set_ylabel("do")
     ax.set_yticks([1, 0], [True, False])  # 設定 y 軸刻度值
     ax.set_ylim(-0.1, 1.1)
     ax.plot(range(len(data)), data, label=data_type)
