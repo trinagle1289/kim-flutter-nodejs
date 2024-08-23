@@ -310,6 +310,56 @@ def get_axes_with_staggered_vector(
     return ax
 
 
+# ##### 取得兩肩膀的軸
+
+# In[ ]:
+
+
+def get_axes_with_both_shoulders(result: PoseLandmarkerResult, ax: Axes = None) -> Axes:
+    """取得兩肩膀的軸
+
+    Args:
+        result (PoseLandmarkerResult): 姿勢分析結果
+        ax (Axes, optional): 圖表軸. Defaults to None.
+
+    Returns:
+        Axes: 圖表軸
+    """
+    # 取得當前圖表軸
+    if ax is None:
+        ax = plt.gca()
+
+    # 沒有資料則回傳原始表格座標
+    if len(result.pose_world_landmarks) <= 0:
+        return ax
+
+    pose_result = PoseResult(result)
+
+    shoulder_l = pose_result.get_kpt_pos_by_name("left_shoulder", True)
+    shoulder_r = pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+    ax.scatter(
+        shoulder_l[0],
+        shoulder_l[1],
+        c="#f00",
+        label="left shoulder",
+    )
+    ax.scatter(
+        shoulder_r[0],
+        shoulder_r[1],
+        c="#0f0",
+        label="right shoulder",
+    )
+    ax.plot(
+        [shoulder_l[0], shoulder_r[0]],
+        [shoulder_l[1], shoulder_r[1]],
+        c="#00f",
+        label="shoulder width",
+    )
+
+    return ax
+
+
 # ##### 取得雙手腕到身體重心的軸
 
 # In[ ]:
@@ -366,4 +416,42 @@ def get_axes_with_both_wrists_to_gravity(
     ax.scatter(wrist_r[0], wrist_r[2], label="Right wrist")
 
     return ax
+
+
+# ##### 取得分析肩膀高度差的軸
+
+# In[ ]:
+
+
+def get_axes_with_shoulder_hight_diff(
+    result_lst: list[PoseLandmarkerResult], ax: Axes = None
+) -> Axes:
+    """取得分析肩膀高度差的軸
+
+    Args:
+        result_lst (list[PoseLandmarkerResult]): 姿勢分析結果列表
+        ax (Axes, optional): 圖表軸. Defaults to None.
+
+    Returns:
+        Axes: 圖表軸
+    """
+    # 取得當前圖表軸
+    if ax is None:
+        ax = plt.gca()
+
+    # 沒有資料則回傳原始表格座標
+    if len(result_lst) <= 0:
+        return ax
+
+    shoulder_diff_lst = []
+    for result in result_lst:
+        pose_result = PoseResult(result)
+        shoulder_l = pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = pose_result.get_kpt_pos_by_name("right_shoulder", True)
+        shoulder_diff = np.linalg.norm(shoulder_l[1] - shoulder_r[1])
+        shoulder_diff_lst.append(shoulder_diff)
+
+    ax.plot(range(len(shoulder_diff_lst)), shoulder_diff_lst)
+
+    pass
 
