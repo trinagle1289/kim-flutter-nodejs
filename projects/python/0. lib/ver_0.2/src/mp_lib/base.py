@@ -559,7 +559,9 @@ class ResultAnalyzer:
 
     # 身體姿勢額外加分項目的判斷
 
-    def check_if_trunk_is_twisted(self, get_3d: bool = False) -> bool:
+    def check_if_trunk_is_twisted_or_lateral_inclination(
+        self, get_3d: bool = False
+    ) -> bool:
         """檢查軀幹是否扭轉/側傾
 
         Args:
@@ -568,21 +570,19 @@ class ResultAnalyzer:
         Returns:
             bool: 軀幹是否扭轉/側傾
         """
-        TWISTED_ANGLE = 15
-
         result = False
 
-        # 軀幹扭轉 
-        if self.get_pose_shoulder_hip_staggered_angle_xz() > TWISTED_ANGLE:
+        # 軀幹扭轉
+        if self.check_if_trunk_is_twisted(get_3d):
             result = True
-        # 軀幹側傾 
-        if self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE:
+        # 軀幹側傾
+        if self.check_if_trunk_is_lateral_inclination(get_3d):
             result = True
 
         return result
 
-    def check_if_trunk_is_twisted_xz(self, get_3d: bool = False) -> bool:
-        """檢查軀幹是否扭轉(xz平面)
+    def check_if_trunk_is_twisted(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否扭轉
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -593,8 +593,8 @@ class ResultAnalyzer:
         TWISTED_ANGLE = 15
         return self.get_pose_shoulder_hip_staggered_angle_xz() > TWISTED_ANGLE
 
-    def check_if_trunk_is_twisted_3d(self, get_3d: bool = False) -> bool:
-        """檢查軀幹是否側傾(三維座標)
+    def check_if_trunk_is_lateral_inclination(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否側傾
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -602,8 +602,16 @@ class ResultAnalyzer:
         Returns:
             bool: 軀幹是否側傾
         """
-        TWISTED_ANGLE = 15
-        return self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE
+        HEIGHT_DIFF = 0.06  # 高度差
+
+        # 取得關鍵點座標
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+        # 取得肩膀高度差
+        shoulder_diff = np.linalg.norm(shoulder_l[1] - shoulder_r[1])
+
+        return shoulder_diff > HEIGHT_DIFF
 
     def check_if_hands_at_a_distance(self, get_3d: bool = False) -> bool:
         """檢查手或重心是否遠離身體(只會算xz軸平面)
@@ -1191,7 +1199,9 @@ class LhcPoseListAnalyzer:
             for result in self.result_lst
         ]
 
-    def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
+    def get_trunk_is_twisted_or_lateral_inclination_list(
+        self, get_3d: bool = False
+    ) -> list[bool]:
         """取得軀幹扭轉/側傾的 bool 列表
 
         Args:
@@ -1201,14 +1211,16 @@ class LhcPoseListAnalyzer:
             list[bool]: 軀幹扭轉/側傾的 bool 列表
         """
         tmp_lst = [
-            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(get_3d)
+            ResultAnalyzer(
+                PoseResult(result)
+            ).check_if_trunk_is_twisted_or_lateral_inclination(get_3d)
             for result in self.result_lst
         ]
 
         result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
         return result
 
-    def get_trunk_is_twisted_list_xz(self, get_3d: bool = False) -> list[bool]:
+    def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
         """取得軀幹扭轉的 bool 列表
 
         Args:
@@ -1218,14 +1230,14 @@ class LhcPoseListAnalyzer:
             list[bool]: 軀幹扭轉的 bool 列表
         """
         tmp_lst = [
-            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted_xz(True)
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(True)
             for result in self.result_lst
         ]
 
         result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
         return result
 
-    def get_trunk_is_twisted_list_3d(self, get_3d: bool = False) -> list[bool]:
+    def get_trunk_is_lateral_inclination_list(self, get_3d: bool = False) -> list[bool]:
         """取得軀幹側傾的 bool 列表
 
         Args:
@@ -1235,7 +1247,9 @@ class LhcPoseListAnalyzer:
             list[bool]: 軀幹側傾的 bool 列表
         """
         tmp_lst = [
-            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted_3d(True)
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_lateral_inclination(
+                True
+            )
             for result in self.result_lst
         ]
 
@@ -1304,7 +1318,9 @@ class LhcPoseListAnalyzer:
         Returns:
             Frequency: 頻率
         """
-        check_list = self.get_trunk_is_twisted_list(get_3d)  # 取得檢查名單
+        check_list = self.get_trunk_is_twisted_or_lateral_inclination_list(
+            get_3d
+        )  # 取得檢查名單
         frequency = LhcPoseListAnalyzer.get_frequency_from_bool_list(
             check_list
         )  # 取得頻率
