@@ -3,7 +3,7 @@
 
 # #### 套件
 
-# In[1]:
+# In[ ]:
 
 
 import cv2
@@ -14,7 +14,7 @@ import numpy as np
 
 # ##### 繪製字母徽章
 
-# In[11]:
+# In[ ]:
 
 
 def draw_letter_badge(
@@ -38,12 +38,13 @@ def draw_letter_badge(
     """
     result = img.copy()
 
-    # 繪製倫繪製倫
-    cv2.circle(result, position, 20, outline_color, -1)
-    cv2.circle(result, position, 18, graphic_color, -1)
+    cv2.circle(result, position, 20, outline_color, -1)  # 繪製輪廓
+    cv2.circle(result, position, 18, graphic_color, -1)  # 繪製圓心
+
+    # 填入文字
     cv2.putText(
         img=result,
-        text=letter[0],
+        text=letter,
         org=np.array(position) + [-10, 10],
         fontFace=cv2.FONT_HERSHEY_DUPLEX,
         fontScale=1,
