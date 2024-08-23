@@ -107,9 +107,15 @@ def draw_debug_in_img(
     analyzer = ResultAnalyzer(PoseResult(result))
 
     ### 繪製驗證標誌
+    # 軀幹是否扭轉/側傾
+    if analyzer.check_if_trunk_is_twisted_or_lateral_inclination(is_3d):
+        result_img = draw_letter_badge(result_img, "A", (30, 30))
     # 軀幹是否扭轉
     if analyzer.check_if_trunk_is_twisted(is_3d):
-        result_img = draw_letter_badge(result_img, "A", (30, 30))
+        result_img = draw_letter_badge(result_img, "A1", (80, 30))
+    # 軀幹是否扭轉
+    if analyzer.check_if_trunk_is_lateral_inclination(is_3d):
+        result_img = draw_letter_badge(result_img, "A2", (130, 30))
     # 手是否遠離身體
     if analyzer.check_if_hands_at_a_distance(is_3d):
         result_img = draw_letter_badge(result_img, "B", (30, 80))
@@ -452,6 +458,5 @@ def get_axes_with_shoulder_hight_diff(
         shoulder_diff_lst.append(shoulder_diff)
 
     ax.plot(range(len(shoulder_diff_lst)), shoulder_diff_lst)
-
-    pass
+    return ax
 
