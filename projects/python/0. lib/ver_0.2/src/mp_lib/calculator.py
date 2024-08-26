@@ -316,3 +316,130 @@ def label_list_rule_to_label_list(label_list_rule: list[list[str, int]]) -> list
 
     return result
 
+
+# ##### 平滑姿勢標籤列表
+
+# In[ ]:
+
+
+def smooth_label_lst(label_lst: list[str], min_frame_rate: int = 15) -> list[str]:
+    """平滑姿勢標籤列表
+
+    Args:
+        label_lst (list[bool]): 姿勢標籤列表
+        min_frame_rate (int, optional): 最低幀數. Defaults to 15.
+
+    Returns:
+        list[bool]: 平滑過後的姿勢標籤列表
+    """
+
+    smoothed_lst = []
+    count = 1
+    n = len(label_lst)
+
+    # 計算前面影像幀是否超過最低幀數
+    for i in range(1, n):
+        if label_lst[i] == label_lst[i - 1]:
+            count += 1
+        else:
+            if count > min_frame_rate:
+                smoothed_lst.extend([label_lst[i - 1]] * count)
+            count = 1
+
+    # 檢查最後一段
+    if count > min_frame_rate:
+        smoothed_lst.extend([label_lst[-1]] * count)
+
+    return smoothed_lst
+
+
+# ##### 姿勢標籤列表的去抖動(消除重複內容)
+
+# In[ ]:
+
+
+def deduplicate_label_lst(label_lst: list[str]) -> list[str]:
+    """姿勢標籤列表的去抖動
+
+    Args:
+        label_lst (list[str]): 姿勢標籤列表
+
+    Returns:
+        list[str]: 去抖動的姿勢標籤列表
+    """
+    if not label_lst:
+        return []
+
+    # 初始情況：保留第一個字串
+    deduped = [label_lst[0]]
+
+    for i in range(1, len(label_lst)):
+        # 如果當前字串與上一次保留的字串不同，則添加到結果中
+        if label_lst[i] != deduped[-1]:
+            deduped.append(label_lst[i])
+
+    return deduped
+
+
+# ##### 計算 LHC 姿勢評級分數(不包含額外加分項)
+
+# In[ ]:
+
+
+def calculate_posture_rating(start: str, end: str) -> int:
+    """計算 LHC 姿勢評級分數(不包含額外加分項)
+
+    為求方便計算，
+    以下列表的 A3 跟 A2 將會合併為相同類型的姿勢，只顯示出 A2 字串
+
+    標籤    分數\n
+    A1-A1   0\n
+    A1-A2   3\n
+    A2-A2   5\n
+    A1-A4   7\n
+    A1-A5   9\n
+
+    A2-A4   10\n
+    A2-A5   13\n
+    A4-A5   15\n
+    A4-A4   18\n
+    A5-A5   20\n
+
+    Args:
+        start (str): 開始姿勢
+        end (str): 結束姿勢
+
+    Returns:
+        int: 姿勢評級分數(不包含額外加分項)
+    """
+
+    # 將 A3 字串修改為 A2
+    if start == "A3":
+        start = "A2"
+    if end == "A3":
+        end = "A2"
+    # 設定分數
+    score = 0
+    if start == "A1" and end == "A1":
+        score = 0
+    if start == "A1" and end == "A2" or end == "A1" and start == "A2":
+        score = 3
+    if start == "A2" and end == "A2":
+        score = 5
+    if start == "A1" and end == "A4" or end == "A1" and start == "A4":
+        score = 7
+    if start == "A1" and end == "A5" or end == "A1" and start == "A5":
+        score = 9
+    if start == "A2" and end == "A4" or end == "A2" and start == "A4":
+        score = 10
+    if start == "A2" and end == "A5" or end == "A2" and start == "A5":
+        score = 13
+    if start == "A4" and end == "A4":
+        score = 15
+    if start == "A4" and end == "A5" or end == "A4" and start == "A5":
+        score = 18
+    if start == "A5" and end == "A5":
+        score = 20
+
+    return score
+
