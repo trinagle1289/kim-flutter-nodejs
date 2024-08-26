@@ -49,6 +49,9 @@ if __name__ == "__main__":
         get_triangle_gravity_position,
         label_list_to_label_list_rule,
         label_list_rule_to_label_list,
+        smooth_label_lst,
+        deduplicate_label_lst,
+        calculate_posture_rating
     )
     from value import (
         KPT_IDX_DICT,
@@ -67,6 +70,9 @@ else:
         get_triangle_gravity_position,
         label_list_to_label_list_rule,
         label_list_rule_to_label_list,
+        smooth_label_lst,
+        deduplicate_label_lst,
+        calculate_posture_rating
     )
     from src.mp_lib.value import (
         KPT_IDX_DICT,
@@ -1382,39 +1388,46 @@ class LhcPoseListAnalyzer:
         Returns:
             list[str, str]: 姿勢標籤[開始, 結束]
         """
-        # 取得影片姿勢標籤
-        labels = self.get_lhc_label_list(get_3d)
 
-        # 初始化開始、結束姿勢標籤
-        start, end = "null", "null"
+        score = 0  # 姿勢評級分數
+        start, end = "", ""  # 開始, 結束姿勢
 
-        # 取得已被過濾後的姿勢標籤列表
-        filtered = np.array(LhcPoseListAnalyzer.filter_label_list_in_fun_c(labels))
+        # 取得原始 LHC 姿勢標籤列表
+        origin = self.get_lhc_label_list(get_3d)
 
-        # 設定起始和結束姿勢標籤
-        if len(filtered) > 0:
-            start, end = filtered[0], filtered[-1]
+        ### 平滑姿勢標籤列表
+        # 移除低於 15 幀的連續姿勢
+        smoothed_15 = smooth_label_lst(origin)
+        # 移除低於 150 幀(3 秒)的連續姿勢
+        smoothed_150 = smooth_label_lst(smoothed_15, 150)
+
+        # 將字串去除抖動
+        labels_15 = deduplicate_label_lst(smoothed_15)
+        labels_150 = deduplicate_label_lst(smoothed_150)
+
+        # 計算保持超過 3 秒的姿勢評級
+        for lab in labels_150:
+            tmp = calculate_posture_rating(lab, lab)  # 計算評級分數
+            # 替代較低分的資訊
+            if tmp > score:
+                score = tmp
+                start, end = lab, lab
+
+        # 計算身體有變化的姿勢評級
+        start_end_labels = [
+            [labels_15[i], labels_15[i + 1]] for i in range(len(labels_15) - 1)
+        ]
+        for _start, _end in start_end_labels:
+            tmp = calculate_posture_rating(_start, _end)  # 計算評級分數
+            # 替代較低分的資訊
+            if tmp > score:
+                score = tmp
+                start, end = _start, _end
 
         return [start, end]
 
     def get_lhc_body_posture_rating_points(self, get_3d: bool = False) -> int:
         """取得 LHC 姿勢評級分數(不包含額外加分項)
-
-        為求方便計算，
-        以下列表的 A3 跟 A2 將會合併為相同類型的姿勢，只顯示出 A2 字串
-
-        標籤    分數\n
-        A1-A1   0\n
-        A1-A2   3\n
-        A2-A2   5\n
-        A1-A4   7\n
-        A1-A5   9\n
-
-        A2-A4   10\n
-        A2-A5   13\n
-        A4-A5   15\n
-        A4-A4   18\n
-        A5-A5   20\n
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -1422,35 +1435,7 @@ class LhcPoseListAnalyzer:
         Returns:
             int: 姿勢評級分數(不包含額外加分項)
         """
-        # 取得開始與結束姿勢
-        start, end = self.get_start_and_finish_poses(get_3d)
-        # 將 A3 字串修改為 A2
-        if start == "A3":
-            start = "A2"
-        if end == "A3":
-            end = "A2"
-        # 設定分數
-        score = 0
-        if start == "A1" and end == "A1":
-            score = 0
-        if start == "A1" and end == "A2" or end == "A1" and start == "A2":
-            score = 3
-        if start == "A2" and end == "A2":
-            score = 5
-        if start == "A1" and end == "A4" or end == "A1" and start == "A4":
-            score = 7
-        if start == "A1" and end == "A5" or end == "A1" and start == "A5":
-            score = 9
-        if start == "A2" and end == "A4" or end == "A2" and start == "A4":
-            score = 10
-        if start == "A2" and end == "A5" or end == "A2" and start == "A5":
-            score = 13
-        if start == "A4" and end == "A4":
-            score = 15
-        if start == "A4" and end == "A5" or end == "A4" and start == "A5":
-            score = 18
-        if start == "A5" and end == "A5":
-            score = 20
+        score = calculate_posture_rating(self.get_start_and_finish_poses(get_3d))
 
         return score
 

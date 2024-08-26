@@ -3,7 +3,7 @@
 
 # #### 使用套件
 
-# In[1]:
+# In[ ]:
 
 
 import numpy as np
@@ -82,7 +82,7 @@ def get_angle_between_two_lines_position(
 
 # ##### 取得多組點之間的距離
 
-# In[7]:
+# In[ ]:
 
 
 def get_dist_between_points(*point_list: list[list[float]]) -> float:
