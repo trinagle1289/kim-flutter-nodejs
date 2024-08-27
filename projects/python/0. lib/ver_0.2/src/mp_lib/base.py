@@ -1189,6 +1189,23 @@ class LhcPoseListAnalyzer:
 
         return result
 
+    def filter_label_list_in_fun_e(origin_labels: list[str]) -> list[str]:
+        """透過方法 E 來過濾標籤列表
+
+        過濾方法:
+            去除低於連續 15 幀的姿勢
+
+        Args:
+            origin_labels (list[str]): 原始標籤列表
+
+        Returns:
+            list[str]: 過濾後的標籤列表
+        """
+
+        smoothed_15 = smooth_label_lst(origin_labels)
+
+        return smoothed_15
+
     # LHC 資料列表
 
     def get_lhc_label_list(self, get_3d: bool = False) -> list[str]:
@@ -1435,7 +1452,8 @@ class LhcPoseListAnalyzer:
         Returns:
             int: 姿勢評級分數(不包含額外加分項)
         """
-        score = calculate_posture_rating(self.get_start_and_finish_poses(get_3d))
+        start, end = self.get_start_and_finish_poses(get_3d)
+        score = calculate_posture_rating(start, end)
 
         return score
 
