@@ -1426,18 +1426,23 @@ class LhcPoseListAnalyzer:
         for lab in labels_150:
             tmp = calculate_posture_rating(lab, lab)  # 計算評級分數
             # 替代較低分的資訊
-            if tmp > score:
+            if tmp >= score:
                 score = tmp
                 start, end = lab, lab
 
         # 計算身體有變化的姿勢評級
-        start_end_labels = [
-            [labels_15[i], labels_15[i + 1]] for i in range(len(labels_15) - 1)
-        ]
+        start_end_labels = []
+        if len(labels_15) > 1:
+            start_end_labels = [
+                [labels_15[i], labels_15[i + 1]] for i in range(len(labels_15) - 1)
+            ]
+        elif len(labels_15) == 1:
+            start_end_labels = [[labels_15[0], labels_15[0]]]
+
         for _start, _end in start_end_labels:
             tmp = calculate_posture_rating(_start, _end)  # 計算評級分數
             # 替代較低分的資訊
-            if tmp > score:
+            if tmp >= score:
                 score = tmp
                 start, end = _start, _end
 
