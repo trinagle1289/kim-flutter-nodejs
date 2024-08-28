@@ -1415,15 +1415,15 @@ class LhcPoseListAnalyzer:
         ### 平滑姿勢標籤列表
         # 移除低於 15 幀的連續姿勢
         smoothed_15 = smooth_label_lst(origin)
-        # 移除低於 150 幀(3 秒)的連續姿勢
-        smoothed_150 = smooth_label_lst(smoothed_15, 150)
+        # 移除低於 90 幀(3 秒)的連續姿勢
+        smoothed_90 = smooth_label_lst(smoothed_15, 90)
 
         # 將字串去除抖動
         labels_15 = deduplicate_label_lst(smoothed_15)
-        labels_150 = deduplicate_label_lst(smoothed_150)
+        labels_90 = deduplicate_label_lst(smoothed_90)
 
         # 計算保持超過 3 秒的姿勢評級
-        for lab in labels_150:
+        for lab in labels_90:
             tmp = calculate_posture_rating(lab, lab)  # 計算評級分數
             # 替代較低分的資訊
             if tmp >= score:
