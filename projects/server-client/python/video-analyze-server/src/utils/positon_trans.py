@@ -73,10 +73,7 @@ def translate_a_kpt_to_plot_pos(all_kpt_pos: list, origin_kpt_pos: list) -> list
     Returns:
         list: 圖表座標
     """
-    all_kpts = np.array(all_kpt_pos)
-    add_y = all_kpts[:, 1].max()
-
-    return transYAxis(scaleYAxis(origin_kpt_pos, -1), add_y)
+    return scaleYAxis(origin_kpt_pos, -1)
 
 
 # In[ ]:

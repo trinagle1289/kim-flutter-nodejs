@@ -49,6 +49,9 @@ if __name__ == "__main__":
         get_triangle_gravity_position,
         label_list_to_label_list_rule,
         label_list_rule_to_label_list,
+        smooth_label_lst,
+        deduplicate_label_lst,
+        calculate_posture_rating
     )
     from value import (
         KPT_IDX_DICT,
@@ -59,7 +62,7 @@ if __name__ == "__main__":
         blazepose_line,
     )
 else:
-    from src.mediapipe_lib.calculator import (
+    from src.mp_lib.calculator import (
         angles_to_lhc_label,
         get_angle_between_two_lines_position,
         get_angle_by_3_points,
@@ -67,8 +70,11 @@ else:
         get_triangle_gravity_position,
         label_list_to_label_list_rule,
         label_list_rule_to_label_list,
+        smooth_label_lst,
+        deduplicate_label_lst,
+        calculate_posture_rating
     )
-    from src.mediapipe_lib.value import (
+    from src.mp_lib.value import (
         KPT_IDX_DICT,
         KPT_LIST,
         JOINT_NAME_DICT,
@@ -383,16 +389,16 @@ class ResultAnalyzer:
         Returns:
             float: 肩臀交錯角度
         """
-        shoulder = [
-            self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d),
-            self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d),
-        ]
-        hip = [
-            self.pose_result.get_kpt_pos_by_name("left_hip", get_3d),
-            self.pose_result.get_kpt_pos_by_name("right_hip", get_3d),
-        ]
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
 
-        return get_angle_between_two_lines_position(shoulder, hip)
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array([shoulder_l, shoulder_r])
+        hip_vec = np.array([hip_l, hip_r])
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
 
     def get_pose_shoulder_hip_staggered_angle_xz(self) -> float:
         """取得身體姿勢的肩臀交錯角度(xz軸)
@@ -400,16 +406,80 @@ class ResultAnalyzer:
         Returns:
             float: 肩臀交錯角度
         """
-        shoulder = [
-            self.pose_result.get_kpt_pos_by_name("left_shoulder", True)[0::2],
-            self.pose_result.get_kpt_pos_by_name("right_shoulder", True)[0::2],
-        ]
-        hip = [
-            self.pose_result.get_kpt_pos_by_name("left_hip", True)[0::2],
-            self.pose_result.get_kpt_pos_by_name("right_hip", True)[0::2],
-        ]
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
 
-        return get_angle_between_two_lines_position(shoulder, hip)
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array(
+            [
+                [shoulder_l[0], shoulder_l[2]],
+                [shoulder_r[0], shoulder_r[2]],
+            ]
+        )
+        hip_vec = np.array(
+            [
+                [hip_l[0], hip_l[2]],
+                [hip_r[0], hip_r[2]],
+            ]
+        )
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
+
+    def get_pose_shoulder_hip_staggered_angle_xy(self) -> float:
+        """取得身體姿勢的肩臀交錯角度(xy軸)
+
+        Returns:
+            float: 肩臀交錯角度
+        """
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array(
+            [
+                [shoulder_l[0], shoulder_l[1]],
+                [shoulder_r[0], shoulder_r[1]],
+            ]
+        )
+        hip_vec = np.array(
+            [
+                [hip_l[0], hip_l[1]],
+                [hip_r[0], hip_r[1]],
+            ]
+        )
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
+
+    def get_pose_shoulder_hip_staggered_angle_yz(self) -> float:
+        """取得身體姿勢的肩臀交錯角度(yz軸)
+
+        Returns:
+            float: 肩臀交錯角度
+        """
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)
+
+        shoulder_vec = np.array(
+            [
+                [shoulder_l[1], shoulder_l[2]],
+                [shoulder_r[1], shoulder_r[2]],
+            ]
+        )
+        hip_vec = np.array(
+            [
+                [hip_l[1], hip_l[2]],
+                [hip_r[1], hip_r[2]],
+            ]
+        )
+
+        return get_angle_between_two_lines_position(shoulder_vec, hip_vec)
 
     # 複合函式(有使用到基礎函式)
 
@@ -495,7 +565,9 @@ class ResultAnalyzer:
 
     # 身體姿勢額外加分項目的判斷
 
-    def check_if_trunk_is_twisted(self, get_3d: bool = False) -> bool:
+    def check_if_trunk_is_twisted_or_lateral_inclination(
+        self, get_3d: bool = False
+    ) -> bool:
         """檢查軀幹是否扭轉/側傾
 
         Args:
@@ -504,11 +576,51 @@ class ResultAnalyzer:
         Returns:
             bool: 軀幹是否扭轉/側傾
         """
+        result = False
+
+        # 軀幹扭轉
+        if self.check_if_trunk_is_twisted(get_3d):
+            result = True
+        # 軀幹側傾
+        if self.check_if_trunk_is_lateral_inclination(get_3d):
+            result = True
+
+        return result
+
+    def check_if_trunk_is_twisted(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否扭轉
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 軀幹是否扭轉
+        """
         TWISTED_ANGLE = 15
-        return self.get_pose_shoulder_hip_staggered_angle(get_3d) > TWISTED_ANGLE
+        return self.get_pose_shoulder_hip_staggered_angle_xz() > TWISTED_ANGLE
+
+    def check_if_trunk_is_lateral_inclination(self, get_3d: bool = False) -> bool:
+        """檢查軀幹是否側傾
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            bool: 軀幹是否側傾
+        """
+        HEIGHT_DIFF = 0.06  # 高度差
+
+        # 取得關鍵點座標
+        shoulder_l = self.pose_result.get_kpt_pos_by_name("left_shoulder", True)
+        shoulder_r = self.pose_result.get_kpt_pos_by_name("right_shoulder", True)
+
+        # 取得肩膀高度差
+        shoulder_diff = np.linalg.norm(shoulder_l[1] - shoulder_r[1])
+
+        return shoulder_diff > HEIGHT_DIFF
 
     def check_if_hands_at_a_distance(self, get_3d: bool = False) -> bool:
-        """檢查手或重心是否遠離身體
+        """檢查手或重心是否遠離身體(只會算xz軸平面)
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -516,39 +628,32 @@ class ResultAnalyzer:
         Returns:
             bool: 手或重心是否遠離身體
         """
-        # 手遠離身體時，整個手臂長 和 手到重心距離 的比率(臂長: 手到重心距離 = 1: RATE)
-        # 或是 手到重心距離 / 整個手臂長 = RATE
-        # 或是 手到重心距離 = 整個手臂長 * RATE
-        RATE = 0.8
+        # 手遠離身體時，手到重心的距離
+        DIST = 0.4
 
         result = False  # 判斷結果
 
         # 取得關鍵點座標
-        left_wrist = self.pose_result.get_kpt_pos_by_name("left_wrist", get_3d)
-        left_elbow = self.pose_result.get_kpt_pos_by_name("left_elbow", get_3d)
-        left_shoulder = self.pose_result.get_kpt_pos_by_name("left_shoulder", get_3d)
-        right_wrist = self.pose_result.get_kpt_pos_by_name("right_wrist", get_3d)
-        right_elbow = self.pose_result.get_kpt_pos_by_name("right_elbow", get_3d)
-        right_shoulder = self.pose_result.get_kpt_pos_by_name("right_shoulder", get_3d)
+        wrist_l = self.pose_result.get_kpt_pos_by_name("left_wrist", True)[0::2]
+        wrist_r = self.pose_result.get_kpt_pos_by_name("right_wrist", True)[0::2]
+        hip_l = self.pose_result.get_kpt_pos_by_name("left_hip", True)[0::2]
+        hip_r = self.pose_result.get_kpt_pos_by_name("right_hip", True)[0::2]
 
-        # 左臂長度
-        left_arm = get_dist_between_points(left_wrist, left_elbow, left_shoulder)
-        # 右臂長度
-        right_arm = get_dist_between_points(right_wrist, right_elbow, right_shoulder)
+        gravity = np.mean([hip_l, hip_r], axis=0)
 
         # 左手到重心距離
-        left_hand_to_gravity = self.get_a_hand_to_gravity_dist(True, get_3d)
+        left_hand_to_gravity = np.linalg.norm(np.array(wrist_l) - gravity)
         # 右手到重心距離
-        right_hand_to_gravity = self.get_a_hand_to_gravity_dist(False, get_3d)
+        right_hand_to_gravity = np.linalg.norm(np.array(wrist_r) - gravity)
 
-        # 左手到重心距離 大於 左臂長度*比率
+        # 左手到重心距離 大於 手遠離身體時，手到重心的距離
         left_result = False
-        if left_hand_to_gravity > left_arm * RATE:
+        if left_hand_to_gravity > DIST:
             left_result = True
 
-        # 右手到重心距離 大於 右臂長度*比率
+        # 右手到重心距離 大於 手遠離身體時，手到重心的距離
         right_result = False
-        if right_hand_to_gravity > right_arm * RATE:
+        if right_hand_to_gravity > DIST:
             right_result = True
 
         # 只要其中一隻手符合，則都會被認定為真
@@ -565,7 +670,7 @@ class ResultAnalyzer:
         Returns:
             bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
         """
-        RAISED_ANGLE = 45  # 判斷抬舉的角度
+        RAISED_ANGLE = 60  # 判斷抬舉的角度
 
         result = False  # 判斷結果
 
@@ -742,7 +847,7 @@ class ResultAnalyzer:
         Returns:
             bool: 手臂是否需抬舉，手的水平位於手肘與肩膀之間
         """
-        RAISED_ANGLE = 45  # 判斷抬舉的角度
+        RAISED_ANGLE = 60  # 判斷抬舉的角度
 
         result = False  # 判斷結果
 
@@ -1019,7 +1124,7 @@ class LhcPoseListAnalyzer:
         if len(labels) < STEP * 2:
             # 直接計算最多次數的姿勢
             values, counts = np.unique(labels, return_counts=True)
-            val_max = str(values[counts.argmax()])
+            val_max = values[counts.argmax()]
             result = [val_max] * len(labels)
         else:
             filtered_labels = []  # 過濾後的標籤列表
@@ -1035,11 +1140,71 @@ class LhcPoseListAnalyzer:
 
                 # 添加 STEP 數量的最多姿勢標籤
                 values, counts = np.unique(labels_in_step, return_counts=True)
-                filtered_labels += [str(values[counts.argmax()])] * len(labels_in_step)
+                filtered_labels += [values[counts.argmax()]] * len(labels_in_step)
 
             result = filtered_labels.copy()
 
         return result
+
+    def filter_label_list_in_fun_d(origin_labels: list[str]) -> list[str]:
+        """透過方法 D 來過濾標籤列表
+
+        過濾方法:
+            每 5 幀抓姿勢，設定其 5 幀中的最多姿勢為其代表姿勢，最後不足 5 幀的影像會合併跟前一組一同計算
+
+        Args:
+            origin_labels (list[str]): 原始標籤列表
+
+        Returns:
+            list[str]: 過濾後的標籤列表
+        """
+        STEP = 5  # 每 STEP 幀抓姿勢(每秒影片約 30 幀)
+        LEGAL_STEP = 10  # 合法的次數
+
+        result = []  # 過濾後的標籤列表
+        labels = np.array(origin_labels)  # np 格式的標籤列表
+
+        if len(labels) < STEP * 2:
+            # 直接計算最多次數的姿勢
+            values, counts = np.unique(labels, return_counts=True)
+            val_max = values[counts.argmax()]
+            result = [val_max] * len(labels)
+        else:
+            filtered_labels = []  # 過濾後的標籤列表
+
+            # 索引值列表(只是為了用在之後的標籤索引值)
+            idxs = np.concatenate((range(0, len(labels), STEP), [len(labels)]))
+            if idxs[-1] - idxs[-2] < STEP:
+                idxs = np.delete(idxs, -2)
+
+            for i in range(len(idxs) - 1):
+                # 在 STEP 中的所有標籤
+                labels_in_step = labels[idxs[i] : idxs[i + 1]]
+
+                # 添加 STEP 數量的最多姿勢標籤
+                values, counts = np.unique(labels_in_step, return_counts=True)
+                filtered_labels += [values[counts.argmax()]] * len(labels_in_step)
+
+            result = filtered_labels.copy()
+
+        return result
+
+    def filter_label_list_in_fun_e(origin_labels: list[str]) -> list[str]:
+        """透過方法 E 來過濾標籤列表
+
+        過濾方法:
+            去除低於連續 15 幀的姿勢
+
+        Args:
+            origin_labels (list[str]): 原始標籤列表
+
+        Returns:
+            list[str]: 過濾後的標籤列表
+        """
+
+        smoothed_15 = smooth_label_lst(origin_labels)
+
+        return smoothed_15
 
     # LHC 資料列表
 
@@ -1057,7 +1222,9 @@ class LhcPoseListAnalyzer:
             for result in self.result_lst
         ]
 
-    def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
+    def get_trunk_is_twisted_or_lateral_inclination_list(
+        self, get_3d: bool = False
+    ) -> list[bool]:
         """取得軀幹扭轉/側傾的 bool 列表
 
         Args:
@@ -1066,10 +1233,51 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 軀幹扭轉/側傾的 bool 列表
         """
-        return [
-            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(get_3d)
+        tmp_lst = [
+            ResultAnalyzer(
+                PoseResult(result)
+            ).check_if_trunk_is_twisted_or_lateral_inclination(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
+
+    def get_trunk_is_twisted_list(self, get_3d: bool = False) -> list[bool]:
+        """取得軀幹扭轉的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 軀幹扭轉的 bool 列表
+        """
+        tmp_lst = [
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_twisted(True)
+            for result in self.result_lst
+        ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
+
+    def get_trunk_is_lateral_inclination_list(self, get_3d: bool = False) -> list[bool]:
+        """取得軀幹側傾的 bool 列表
+
+        Args:
+            get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
+
+        Returns:
+            list[bool]: 軀幹側傾的 bool 列表
+        """
+        tmp_lst = [
+            ResultAnalyzer(PoseResult(result)).check_if_trunk_is_lateral_inclination(
+                True
+            )
+            for result in self.result_lst
+        ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     def get_hands_at_a_distance_list(self, get_3d: bool = False) -> list[bool]:
         """取得手或重心遠離身體的 bool 列表
@@ -1080,10 +1288,13 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手或重心遠離身體的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_hands_at_a_distance(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     def get_arms_raised_list(self, get_3d: bool = False) -> list[bool]:
         """取得手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
@@ -1094,10 +1305,13 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手臂抬舉，手的水平位於手肘與肩膀之間的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_arms_raised(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     def get_hands_above_shoulder_list(self, get_3d: bool = False) -> list[bool]:
         """取得手會高過肩膀的 bool 列表
@@ -1108,10 +1322,13 @@ class LhcPoseListAnalyzer:
         Returns:
             list[bool]: 手會高過肩膀的 bool 列表
         """
-        return [
+        tmp_lst = [
             ResultAnalyzer(PoseResult(result)).check_if_hands_above_shoulder(get_3d)
             for result in self.result_lst
         ]
+
+        result = LhcPoseListAnalyzer.filter_label_list_in_fun_d(tmp_lst)
+        return result
 
     # 取得身體姿勢額外加分項目的頻率
 
@@ -1124,7 +1341,9 @@ class LhcPoseListAnalyzer:
         Returns:
             Frequency: 頻率
         """
-        check_list = self.get_trunk_is_twisted_list(get_3d)  # 取得檢查名單
+        check_list = self.get_trunk_is_twisted_or_lateral_inclination_list(
+            get_3d
+        )  # 取得檢查名單
         frequency = LhcPoseListAnalyzer.get_frequency_from_bool_list(
             check_list
         )  # 取得頻率
@@ -1186,39 +1405,51 @@ class LhcPoseListAnalyzer:
         Returns:
             list[str, str]: 姿勢標籤[開始, 結束]
         """
-        # 取得影片姿勢標籤
-        labels = self.get_lhc_label_list(get_3d)
 
-        # 初始化開始、結束姿勢標籤
-        start, end = "null", "null"
+        score = 0  # 姿勢評級分數
+        start, end = "", ""  # 開始, 結束姿勢
 
-        # 取得已被過濾後的姿勢標籤列表
-        filtered = np.array(LhcPoseListAnalyzer.filter_label_list_in_fun_c(labels))
+        # 取得原始 LHC 姿勢標籤列表
+        origin = self.get_lhc_label_list(get_3d)
 
-        # 設定起始和結束姿勢標籤
-        if len(filtered) > 0:
-            start, end = filtered[0], filtered[-1]
+        ### 平滑姿勢標籤列表
+        # 移除低於 15 幀的連續姿勢
+        smoothed_15 = smooth_label_lst(origin)
+        # 移除低於 150 幀(3 秒)的連續姿勢
+        smoothed_150 = smooth_label_lst(smoothed_15, 150)
+
+        # 將字串去除抖動
+        labels_15 = deduplicate_label_lst(smoothed_15)
+        labels_150 = deduplicate_label_lst(smoothed_150)
+
+        # 計算保持超過 3 秒的姿勢評級
+        for lab in labels_150:
+            tmp = calculate_posture_rating(lab, lab)  # 計算評級分數
+            # 替代較低分的資訊
+            if tmp >= score:
+                score = tmp
+                start, end = lab, lab
+
+        # 計算身體有變化的姿勢評級
+        start_end_labels = []
+        if len(labels_15) > 1:
+            start_end_labels = [
+                [labels_15[i], labels_15[i + 1]] for i in range(len(labels_15) - 1)
+            ]
+        elif len(labels_15) == 1:
+            start_end_labels = [[labels_15[0], labels_15[0]]]
+
+        for _start, _end in start_end_labels:
+            tmp = calculate_posture_rating(_start, _end)  # 計算評級分數
+            # 替代較低分的資訊
+            if tmp >= score:
+                score = tmp
+                start, end = _start, _end
 
         return [start, end]
 
     def get_lhc_body_posture_rating_points(self, get_3d: bool = False) -> int:
         """取得 LHC 姿勢評級分數(不包含額外加分項)
-
-        為求方便計算，
-        以下列表的 A3 跟 A2 將會合併為相同類型的姿勢，只顯示出 A2 字串
-
-        標籤    分數\n
-        A1-A1   0\n
-        A1-A2   3\n
-        A2-A2   5\n
-        A1-A4   7\n
-        A1-A5   9\n
-
-        A2-A4   10\n
-        A2-A5   13\n
-        A4-A5   15\n
-        A4-A4   18\n
-        A5-A5   20\n
 
         Args:
             get_3d (bool, optional): 是否為 3D 姿勢. Defaults to False.
@@ -1226,35 +1457,8 @@ class LhcPoseListAnalyzer:
         Returns:
             int: 姿勢評級分數(不包含額外加分項)
         """
-        # 取得開始與結束姿勢
         start, end = self.get_start_and_finish_poses(get_3d)
-        # 將 A3 字串修改為 A2
-        if start == "A3":
-            start = "A2"
-        if end == "A3":
-            end = "A2"
-        # 設定分數
-        score = 0
-        if start == "A1" and end == "A1":
-            score = 0
-        if start == "A1" and end == "A2" or end == "A1" and start == "A2":
-            score = 3
-        if start == "A2" and end == "A2":
-            score = 5
-        if start == "A1" and end == "A4" or end == "A1" and start == "A4":
-            score = 7
-        if start == "A1" and end == "A5" or end == "A1" and start == "A5":
-            score = 9
-        if start == "A2" and end == "A4" or end == "A2" and start == "A4":
-            score = 10
-        if start == "A2" and end == "A5" or end == "A2" and start == "A5":
-            score = 13
-        if start == "A4" and end == "A4":
-            score = 15
-        if start == "A4" and end == "A5" or end == "A4" and start == "A5":
-            score = 18
-        if start == "A5" and end == "A5":
-            score = 20
+        score = calculate_posture_rating(start, end)
 
         return score
 

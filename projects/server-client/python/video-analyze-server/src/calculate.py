@@ -13,11 +13,9 @@ from mediapipe.tasks.python.vision.pose_landmarker import PoseLandmarkerResult
 
 
 if __name__ == "__main__":
-    from mediapipe_lib.base import PoseResult, ResultAnalyzer
-    from utils.positon_trans import translate_multi_kpt_to_plot_pos
+    from mp_lib.base import PoseResult, ResultAnalyzer
 else:
-    from src.mediapipe_lib.base import PoseResult, ResultAnalyzer
-    from src.utils.positon_trans import translate_multi_kpt_to_plot_pos
+    from src.mp_lib.base import PoseResult, ResultAnalyzer
 
 
 # #### 函式
@@ -48,11 +46,6 @@ def line_3d_result_to_plot_pos(
     # 取得關鍵點和線條資料
     kpts = pose_result.get_all_kpt_positions(is_3d)
     left, center, right = analyzer.get_line_positions(get_3d=is_3d)
-
-    # 轉換關鍵點和線條資料
-    kpts, left, center, right = translate_multi_kpt_to_plot_pos(
-        kpts, kpts, left, center, right
-    )
 
     return [kpts, left, center, right]
 

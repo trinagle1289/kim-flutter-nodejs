@@ -3,7 +3,7 @@
 
 # ### 套件
 
-# In[ ]:
+# In[1]:
 
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -12,7 +12,7 @@ import numpy as np
 import cv2
 
 
-# In[ ]:
+# In[2]:
 
 
 from matplotlib.figure import Figure
@@ -28,7 +28,7 @@ from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
 # ##### 設定圖表資料範圍(方形)
 
-# In[ ]:
+# In[3]:
 
 
 def set_square_data_range(
@@ -57,7 +57,7 @@ def set_square_data_range(
 
 # ##### 設定圖表資料範圍
 
-# In[ ]:
+# In[4]:
 
 
 def set_data_range(
@@ -91,7 +91,7 @@ def set_data_range(
 
 # ##### 設定圖表標籤
 
-# In[ ]:
+# In[5]:
 
 
 def set_plot_labels(
@@ -125,7 +125,7 @@ def set_plot_labels(
 
 # ##### 繪製多個點
 
-# In[ ]:
+# In[6]:
 
 
 def draw_dots(
@@ -169,7 +169,7 @@ def draw_dots(
 
 # ##### 繪製多組線條
 
-# In[ ]:
+# In[7]:
 
 
 def draw_lines(
@@ -223,7 +223,7 @@ def draw_lines(
 
 # ##### 繪製姿勢結果折線圖
 
-# In[ ]:
+# In[8]:
 
 
 def draw_pose_result_line_chart(
@@ -253,7 +253,7 @@ def draw_pose_result_line_chart(
             data.append(POSE_LABEL_DICT[lab])
 
     # 設定標籤名稱
-    ax.set_xlabel("time frame")
+    ax.set_xlabel("frames")
     ax.set_ylabel("pose label")
 
     # 設定 y 軸刻度
@@ -270,14 +270,74 @@ def draw_pose_result_line_chart(
     return ax
 
 
+# ##### 繪製姿勢結果折線圖(秒數)
+
+# In[9]:
+
+
+def draw_pose_result_line_chart_for_secs(
+    labels: list[str], frame_rate=30, data_type: str = None, ax: Axes = None
+) -> Axes:
+    """繪製姿勢結果折線圖(秒數)
+
+    Args:
+        labels (list[str]): 姿勢標籤列表
+        frame_rate (int, optional): 每秒幀數. Defaults to 30.
+        data_type (str, optional): 資料意義. Defaults to None.
+        ax (Axes, optional): 坐標軸. Defaults to None.
+
+    Returns:
+        Axes: 坐標軸
+    """
+    # 取得當前使用的座標
+    if ax is None:
+        ax = plt.gca()
+
+    # 姿勢標籤字典
+    POSE_LABEL_DICT = {"A1": 0, "A2": 1, "A3": 2, "A4": 3, "A5": 4}
+
+    data = []
+    # 將標籤以數值的形式存入到 data 中
+    for lab in labels:
+        if lab == "A1" or lab == "A2" or lab == "A3" or lab == "A4" or lab == "A5":
+            data.append(POSE_LABEL_DICT[lab])
+
+    # 設定標籤名稱
+    ax.set_xlabel("time")
+    ax.set_ylabel("pose label")
+
+    # 設定 y 軸刻度
+    ticks = list(POSE_LABEL_DICT.values())
+    labels = list(POSE_LABEL_DICT.keys())
+    ax.set_yticks(ticks, labels)
+    ax.set_ylim(-0.1, 4.1)
+
+    # 繪製折線圖
+    x = np.array(range(len(data))) / frame_rate
+    y = data
+    ax.plot(x, y, label=data_type)
+
+    return ax
+
+
 # ##### 繪製 bool 陣列折線圖
 
-# In[ ]:
+# In[10]:
 
 
 def draw_bool_list_line_chart(
     bool_lst: list[bool], data_type: str = None, ax: Axes = None
 ) -> Axes:
+    """繪製 bool 陣列折線圖
+
+    Args:
+        bool_lst (list[bool]): bool 陣列
+        data_type (str, optional): 資料意義. Defaults to None.
+        ax (Axes, optional): 坐標軸. Defaults to None.
+
+    Returns:
+        Axes: 坐標軸
+    """
     # 取得當前使用的座標
     if ax is None:
         ax = plt.gca()
@@ -291,8 +351,7 @@ def draw_bool_list_line_chart(
         else:
             data.append(0)
 
-    ax.set_xlabel("time frame")
-    ax.set_ylabel("do")
+    ax.set_xlabel("frame")
     ax.set_yticks([1, 0], [True, False])  # 設定 y 軸刻度值
     ax.set_ylim(-0.1, 1.1)
     ax.plot(range(len(data)), data, label=data_type)
@@ -300,9 +359,52 @@ def draw_bool_list_line_chart(
     return ax
 
 
+# ##### 繪製 bool 陣列折線圖(秒數)
+
+# In[11]:
+
+
+def draw_bool_list_line_chart_for_secs(
+    bool_lst: list[bool], frame_rate=30, data_type: str = None, ax: Axes = None
+) -> Axes:
+    """繪製 bool 陣列折線圖(秒數)
+
+    Args:
+        bool_lst (list[bool]): bool 陣列
+        frame_rate (int, optional): 每秒幀數. Defaults to 30.
+        data_type (str, optional): 資料意義. Defaults to None.
+        ax (Axes, optional): 坐標軸. Defaults to None.
+
+    Returns:
+        Axes: 坐標軸
+    """
+    # 取得當前使用的座標
+    if ax is None:
+        ax = plt.gca()
+
+    data: list[int] = []
+    # 將 True 或 False 以數值的形式存入到 data 中
+    for element in bool_lst:
+        # True 資料訂為 1，False 資料訂為 0
+        if element:
+            data.append(1)
+        else:
+            data.append(0)
+
+    ax.set_xlabel("time(sec)")
+    ax.set_yticks([1, 0], [True, False])  # 設定 y 軸刻度值
+    ax.set_ylim(-0.1, 1.1)
+
+    x = np.array(range(len(data))) / frame_rate
+    y = data.copy()
+    ax.plot(x, y, label=data_type)
+
+    return ax
+
+
 # ##### 繪製頻率直方圖
 
-# In[ ]:
+# In[12]:
 
 
 def draw_frequency_list_bar_chart(
@@ -356,7 +458,7 @@ def draw_frequency_list_bar_chart(
 
 # ##### 繪製動作執行比率直方圖
 
-# In[ ]:
+# In[13]:
 
 
 def draw_execution_rate_bar_chart(
@@ -394,7 +496,7 @@ def draw_execution_rate_bar_chart(
 
 # ##### 將圖表轉換成圖片格式
 
-# In[ ]:
+# In[14]:
 
 
 def plot_to_opencv_img(fig: Figure) -> cv2.typing.MatLike:
